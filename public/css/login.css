@@ -1,0 +1,90 @@
+/*GLOBAL*/
+
+h1 {
+  margin-bottom: 70px;
+  font-weight: 400;
+}
+
+input::placeholder {
+  color: rgb(215, 215, 215);
+}
+
+button {
+  padding: 6px 15px;
+}
+
+.inactive-display p {
+  width: 60%;
+  margin-bottom: 25px;
+  color: white;
+  font-size: 1.5em;
+}
+
+/*AUTHENTICATION BOX*/
+.auth {
+  width: 600px;
+  height: 340px;
+  margin: 100px auto;
+  display: flex;
+}
+
+/*LOGIN*/
+.login-box {
+  width: 400px;
+  position: relative;
+}
+
+.login-box svg {
+  position: absolute;
+  top: 0;
+  z-index: -5;
+  filter: drop-shadow(0px 0px 3px rgb(92, 92, 92));
+}
+
+.login-inter {
+  padding: 30px;
+}
+
+.login-inputs input:first-of-type {
+  margin-left: 60px;
+}
+
+.login-inputs input:last-of-type {
+  margin-left: 30px;
+}
+
+/*SIGNUP*/
+.signup-box {
+  width: 400px;
+  position: relative;
+  margin-left: -200px;
+  margin-top: 30px;
+}
+
+.signup-box svg {
+  position: absolute;
+  right: 0;
+  z-index: -10;
+  filter: drop-shadow(0px 0px 3px rgb(92, 92, 92));
+}
+
+.signup-inter {
+  text-align: right;
+  padding: 30px;
+}
+
+.signup-box .inactive-display p {
+  margin-left: 40%;
+}
+
+.signup-inputs input:nth-of-type(1) {
+  margin-inline: auto 30px;
+}
+
+.signup-inputs input:nth-of-type(2) {
+  margin-inline: auto 60px;
+}
+
+.signup-inputs input:nth-of-type(3) {
+  margin-inline: auto 90px;
+}

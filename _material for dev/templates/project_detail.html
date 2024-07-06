@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Karla:wght@200&family=Roboto:wght@300;400&display=swap");
+    </style>
+    <link rel="stylesheet" href="../../public/css/main.css" />
+    <link rel="stylesheet" href="../../public/css/detail.css" />
+    <script src="https://www.youtube.com/iframe_api" defer></script>
+    <script src="../../public/js/yt_loader.js" defer></script>
+    <title>OpenConTRIBUTE</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-top">
+          <div class="content-stripe">
+            <div class="logo">
+              <a href="/">
+                <img
+                  src="../../public/img/static/logo_svg.svg"
+                  alt="OpenConTRIBUTE logo"
+                />
+              </a>
+            </div>
+            <div class="user-nav">
+              <nav>
+                <a href="/login">LogIn</a>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <div class="project-hero">
+          <div class="content-stripe">
+            <div class="project-cover-image">
+              <img
+                src="../../public/img/projects/test_project_05_cover.jpg"
+                alt="lead image"
+              />
+            </div>
+
+            <div class="type-badge">
+              <svg>
+                <path
+                  d="M 0 0 l 16 4 l 16 -4 l -4 24 l -12 5 l -12 -5 z"
+                ></path>
+              </svg>
+              <span class="type-badge-name">Developement</span>
+            </div>
+
+            <div class="project-headline">
+              <div class="project-cover-name">
+                <h1>New home for homeless dogs</h1>
+                <h2>
+                  lead by
+                  <span class="project-leader">Jeamy Winkler</span>
+                </h2>
+              </div>
+
+              <div class="deadline">Deadline 02.12.2025</div>
+            </div>
+
+            <div class="project-description">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt
+                expedita, quisquam nemo qui eos deleniti? Eligendi hic,
+                molestiae inventore, in vero unde possimus similique minima, nam
+                illo corporis quisquam nihil? Lorem, ipsum dolor sit amet
+                consectetur adipisicing elit. Quod nulla dolorem, totam eum
+                explicabo fugiat eaque quos nemo. Dolor repellendus placeat
+                voluptatibus impedit, omnis ducimus porro voluptate aliquam vel
+                id? Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                Eos ut sunt consequatur corporis facilis aliquam dignissimos
+                molestiae eum doloribus ipsum quas minima ducimus excepturi
+                quisquam repellat exercitationem, velit corrupti omnis? Lorem
+                ipsum dolor sit amet consectetur adipisicing elit. Nisi deleniti
+                dignissimos repudiandae ipsa et voluptatem facilis neque
+                voluptas? Perferendis, esse? Rerum magni quod aliquam iste eum
+                in dolor sint cum!
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="milestones">
+          <div class="bg-cover"></div>
+          <div class="content-stripe clip-sides">
+            <div class="rotation-box">
+              <ul class="milestones-images">
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_01.jpg"
+                    alt="Milestone 1"
+                  />
+                </li>
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_02.jpg"
+                    alt="Milestone 2"
+                  />
+                </li>
+                <li>
+                  <img
+                    class="in-progress"
+                    src="../../public/img/projects/milestones/test_project_05_milestone_03.jpg"
+                    alt="Milestone 3"
+                  />
+                </li>
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_04.jpg"
+                    alt="Milestone 4"
+                  />
+                </li>
+              </ul>
+
+              <div class="next-milestone">
+                <span>In Progress: </span>
+                <h2>The Runaway</h2>
+              </div>
+              <div class="overall">
+                <span>Milestones done: 2/4</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="resources">
+          <div class="content-stripe">
+            <h2 class="headline">Resources needed</h2>
+            <div class="resources-elements">
+              <ul class="resources-icons">
+                <li>
+                  <input
+                    form="contribute"
+                    class="hidden"
+                    type="radio"
+                    name="resource"
+                    id="finantial"
+                    value="finantial"
+                    required
+                  />
+                  <label for="finantial">
+                    <svg>
+                      <path
+                        d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                      ></path>
+                    </svg>
+                  </label>
+                </li>
+
+                <li>
+                  <input
+                    form="contribute"
+                    class="hidden"
+                    type="radio"
+                    name="resource"
+                    id="human-power"
+                    value="human-power"
+                    required
+                  />
+                  <label for="human-power">
+                    <svg>
+                      <path
+                        d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                      ></path>
+                    </svg>
+                  </label>
+                </li>
+
+                <li>
+                  <input
+                    form="contribute"
+                    class="hidden"
+                    type="radio"
+                    name="resource"
+                    id="working-machine"
+                    value="working-machine"
+                    required
+                  />
+                  <label for="working-machine">
+                    <svg>
+                      <path
+                        d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                      ></path>
+                    </svg>
+                  </label>
+                </li>
+              </ul>
+              <div class="priority">
+                <span>Low priority</span>
+                <span>High priority</span>
+              </div>
+            </div>
+
+            <div class="resources-details">
+              <div class="resource-quantity-info">
+                <div class="resource-info">
+                  <span>Limit</span>
+                  <div>
+                    <div>15 Persons</div>
+                    <div>7 already applied</div>
+                  </div>
+                </div>
+
+                <div class="resource-info">
+                  <span>Priority</span>
+                  <div>2/3</div>
+                </div>
+              </div>
+
+              <div class="resource-notes">
+                <h2>Helping hands / Human power</h2>
+                <span>Important notes - </span>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  Deserunt expedita beatae molestias dolore sequi, voluptatibus
+                  cum a ducimus atque, ad quibusdam unde suscipit tenetur rem
+                  vitae doloribus, quod excepturi! Vero. Lorem ipsum dolor sit
+                  amet consectetur adipisicing elit. Vero, iusto quisquam
+                  accusantium nam animi laborum expedita saepe earum. Impedit
+                  autem a, cupiditate officiis inventore repudiandae
+                  reprehenderit accusantium! Ipsum, quisquam sequi! Lorem ipsum
+                  dolor sit amet consectetur adipisicing elit. Perferendis
+                  reprehenderit recusandae minima deleniti facilis velit
+                  explicabo voluptas modi id blanditiis, maxime molestias sint
+                  veritatis cumque alias sit ab voluptatum iste.
+                </p>
+              </div>
+
+              <div class="resource-finantial-input">
+                <label class="hidden" for="payment-amount">Amount in USD</label>
+                <input
+                  form="contribute"
+                  type="number"
+                  name="payment-amount"
+                  id="payment-amount"
+                  placeholder="USD"
+                  required
+                />
+              </div>
+
+              <!--div class="payment-methods">
+                                <input
+                                    form="contribute"
+                                    class="hidden"
+                                    type="radio"
+                                    name="payment-method"
+                                    id="visa"
+                                    value="visa"
+                                    required
+                                />
+                                <label for="visa">
+                                    <img
+                                        src="../../public/img/paymentMethods/visa.png"
+                                        alt="visa"
+                                    /><span class="hidden">Visa</span></label
+                                >
+
+                                <input
+                                    form="contribute"
+                                    class="hidden"
+                                    type="radio"
+                                    name="payment-method"
+                                    id="paypal"
+                                    value="paypal"
+                                    required
+                                />
+                                <label for="paypal">
+                                    <img
+                                        src="../../public/img/paymentMethods/paypal.png"
+                                        alt="paypal"
+                                    />
+                                    <span class="hidden">Pay Pal</span>
+                                </label>
+
+                                <input
+                                    form="contribute"
+                                    class="hidden"
+                                    type="radio"
+                                    name="payment-method"
+                                    id="stripe"
+                                    value="stripe"
+                                    required
+                                /><label for="stripe">
+                                    <img
+                                        src="../../public/img/paymentMethods/stripe.png"
+                                        alt="stripe"
+                                    />
+                                    <span class="hidden">Stripe</span>
+                                </label>
+                            </div-->
+
+              <div class="resource-contribution">
+                <p class="require-login">
+                  You need to be logged in to contribute with this resource.
+                </p>
+                <form id="contribute" class="submit-button-wrapper">
+                  <button class="submit-contribution-btn">
+                    <span>Contribute</span>
+                  </button>
+                </form>
+              </div>
+
+              <div class="resource-contribution-acknowledgement">
+                <input
+                  form="contribute"
+                  type="checkbox"
+                  name="contribution-ack"
+                  id="contribution-ack"
+                  required
+                />
+                <label for="contribution-ack"
+                  >I have read and accept the leaders requests. I will do my
+                  part in accordance with the notes.</label
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="location">
+          <div class="content-stripe">
+            <div id="map"></div>
+          </div>
+        </section>
+
+        <section class="contributors">
+          <div class="bg-cover">
+            <div class="btn-pseudo-bg-front stretch"></div>
+            <div class="btn-pseudo-bg-tail stretch"></div>
+          </div>
+
+          <div class="content-stripe clip-sides">
+            <div class="header">
+              <h2>Contributors</h2>
+            </div>
+
+            <div class="rotation-box">
+              <ul class="last-contributors">
+                <li>
+                  <img
+                    src="../../public/img/users/test_user_01.jpg"
+                    alt="User photo"
+                  />
+                  <div class="name">Adam Boycotte</div>
+                </li>
+                <li>
+                  <img
+                    src="../../public/img/users/test_user_03.jpg"
+                    alt="User photo"
+                  />
+                  <div class="name">Jessica Stones</div>
+                </li>
+                <li>
+                  <img
+                    src="../../public/img/users/test_user_04.jpg"
+                    alt="User photo"
+                  />
+                  <div class="name">Joseph Steel</div>
+                </li>
+              </ul>
+              <button class="all-contributors">
+                <span>See All ></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="progress">
+          <div class="content-stripe">
+            <h2 class="headline">Progress</h2>
+
+            <section>
+              <article class="feed">
+                <header>
+                  <span class="feed-date">24.02.2024</span>
+                  <h3>Milestone "Shelters" done!</h3>
+                </header>
+
+                <div class="feed-content">
+                  <aside class="tags">
+                    <div class="milestone-tag"></div>
+                  </aside>
+
+                  <div class="post">
+                    <p class="post-text">
+                      Hooray! All shelters are done and furnished. Of course
+                      from "DOGKEA" :D 21 from 32 are already taken in use. Next
+                      week we would have an official opening for future dog
+                      owners to adopt, give a long lasting happiness and love
+                      for these dogs. Thank you all who participated and
+                      contributed to reach this milestone!
+                    </p>
+                    <div class="post-multimedia">
+                      <div class="video">
+                        <div id="player"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="feed">
+                <header>
+                  <span class="feed-date">05.02.2024</span>
+                  <h3>First inhabitants.</h3>
+                </header>
+
+                <div class="feed-content">
+                  <aside class="tags"></aside>
+
+                  <div class="post">
+                    <p class="post-text">
+                      The Shelters are not yet fully done, but the first 3 of
+                      them are ready for occupancy, and we got a call, that 2
+                      dogs needs a place urgently. So we tougth that we could
+                      offer these for them. They was wery happy about their new
+                      home, and was a love on first sight. Special thanks for
+                      John and Mary to drive all night to bring them safely to
+                      us.
+                    </p>
+                    <div class="post-multimedia">
+                      <div class="gallery">
+                        <div class="slideshow">
+                          <img
+                            src="../../public/img/projects/feed/test_gallery_img.jpg"
+                            alt="Photo"
+                          />
+
+                          <div class="controls">
+                            <div class="arrow">
+                              <div class="arrow-left">&lt;</div>
+                            </div>
+                            <div class="arrow">
+                              <div class="arrow-right">&gt;</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <div class="content-stripe">
+          <div class="reach-info">
+            <article>
+              <h2>OpenConTRIBUTE HQ</h2>
+              <p>
+                Examplestr. 11 <br />
+                00000 Examplecity
+              </p>
+              <p>
+                Examplestr. 12 <br />
+                11111 Examplecity
+              </p>
+            </article>
+            <ul>
+              <li>
+                E-mail:
+                <span class="reach-contact"
+                  ><a href="mailto:some@mailing.de">some@mailing.de</a></span
+                >
+              </li>
+              <li>
+                Tel.:
+                <span class="reach-contact">0123/456789</span>
+              </li>
+              <li>
+                Fax.:
+                <span class="reach-contact">0987/65432</span>
+              </li>
+            </ul>
+          </div>
+
+          <nav>
+            <li>
+              <a href="impressum.html" target="_self">Impressum</a>
+            </li>
+            <li>
+              <a href="contact.html" target="_self">Contact</a>
+            </li>
+            <li>
+              <a href="about.html" target="_self">About Us</a>
+            </li>
+            <li>
+              <a href="links.html" target="_self">Useful links</a>
+            </li>
+            <li>
+              <a href="story.html" target="_self">Our Story</a>
+            </li>
+          </nav>
+
+          <div class="copyright">
+            <p>OpenConTRIBUTE &copy; 2023</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

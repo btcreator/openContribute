@@ -1,0 +1,234 @@
+/*MAIN*/
+main .content-stripe {
+  padding-block: 50px;
+  height: 100%;
+}
+
+a.active {
+  color: rgb(255 145 9);
+}
+
+a:hover {
+  color: #b15500;
+}
+
+.user-window {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  background-color: rgb(239, 239, 239);
+  padding: 40px;
+  display: flex;
+}
+
+/*USER MENU - LEFT*/
+.user-menu {
+  width: 30%;
+  padding-right: 30px;
+}
+
+.user-photo {
+  position: relative;
+}
+.photo-frame img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.change-photo img {
+  width: 50%;
+  border-radius: initial;
+  margin-top: 3px;
+}
+
+.change-photo {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  bottom: 10px;
+  right: 10px;
+  border-radius: 50%;
+  border: 1px dashed #52ce58;
+  background: white;
+}
+
+.user-nav-items {
+  margin-left: 20px;
+  margin-top: 40px;
+}
+nav {
+  font-weight: 500;
+}
+.user-nav-items li {
+  margin-block: 20px;
+}
+
+/*SETTINGS - RIGHT*/
+.settings {
+  margin-left: 30px;
+}
+
+.settings-profile {
+  width: 60%;
+}
+
+.settings-contribution {
+  width: calc(70% - 30px);
+}
+
+.settings section {
+  padding-inline: 10px;
+}
+
+.settings article {
+  margin-bottom: 30px;
+}
+
+.settings h2 {
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.settings form {
+  text-align: right;
+}
+
+.settings button {
+  padding: 6px 15px;
+  margin-right: 40px;
+}
+
+.delimiter {
+  transform: rotate(3deg);
+  margin-block: 24px;
+}
+
+/*SETTINGS - CONTRIBUTION & PROJECTS*/
+
+li > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.project-thumbs {
+  display: flex;
+  margin-top: 30px;
+  gap: 30px 5%;
+  flex-wrap: wrap;
+}
+
+.project-box {
+  width: 30%;
+  padding: 5px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.project-thumbs .project-box {
+  cursor: pointer;
+}
+.project-thumbs .project-box:hover {
+  box-shadow: 0 0 3px 0 rgb(188 188 188);
+  transform: translateY(2px);
+  transition: 100ms;
+  border-radius: 10px;
+}
+
+.project-box.done .project-image:after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  bottom: 0;
+  right: 0;
+  background-color: green;
+}
+
+.project-image {
+  width: 80%;
+  margin-inline: auto;
+  position: relative;
+}
+
+.project-image img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.project-box h3 {
+  margin-top: 20px;
+}
+
+.resources {
+  display: flex;
+}
+
+.resources li {
+  width: 30px;
+  height: 30px;
+}
+
+.project-details {
+  background-color: white;
+  padding: 20px 15px;
+  margin-top: 20px;
+  border-radius: 7px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.project-details > .project-box {
+  width: 30%;
+}
+
+.project-description {
+  margin-block: 20px;
+  padding-inline: 20px;
+  width: 70%;
+}
+
+.description-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.description-header h3 {
+  font-weight: 400;
+  font-size: 1em;
+}
+.description-header h3 span {
+  font-weight: 500;
+  font-size: 1.2em;
+}
+.description-header > span {
+  font-size: 0.8em;
+}
+
+.description-text {
+  margin-block: 20px;
+}
+
+.description-text p {
+  text-align: justify;
+}
+
+.description-resources li {
+  display: flex;
+  align-items: center;
+}
+
+.description-resources span {
+  margin-left: 20px;
+}
+
+.description-done {
+  margin-top: 20px;
+  font-size: 0.8em;
+  font-weight: 500;
+  color: green;
+}

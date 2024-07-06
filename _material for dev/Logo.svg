@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="some.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="Logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.69219276"
+     inkscape:cx="283.15812"
+     inkscape:cy="234.7612"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient2"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#817400;stop-opacity:1;"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color:#ffeb60;stop-opacity:1;"
+         offset="1"
+         id="stop3" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2"
+       id="linearGradient3"
+       x1="40.854802"
+       y1="92.315533"
+       x2="168.65904"
+       y2="92.315533"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-39.99064,-85.409763)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;font-family:'Mongolian Baiti';-inkscape-font-specification:'Mongolian Baiti';fill:url(#linearGradient3);stroke-width:0.264583"
+       x="0.14449635"
+       y="10.532323"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.1111px;font-family:Montserrat-Alt1;-inkscape-font-specification:Montserrat-Alt1;fill:url(#linearGradient3);stroke-width:0.264583"
+         x="0.14449635"
+         y="10.532323">OpenConTRIBUTE</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;line-height:0;font-family:Montserrat-Alt1;-inkscape-font-specification:Montserrat-Alt1;letter-spacing:1.03188px;white-space:pre;inline-size:0;fill:#191f86;fill-opacity:1;stroke-width:0.264583"
+       x="38.606178"
+       y="109.32046"
+       id="text2"
+       transform="translate(-38.843922,-91.08595)"><tspan
+         id="tspan2"
+         style="font-size:7.76111px;line-height:0;letter-spacing:1.03188px;fill:#191f86;fill-opacity:1;stroke-width:0.264583"
+         x="38.606178"
+         y="109.32046"
+         dx="0">ProgressForCommonCause</tspan></text>
+  </g>
+</svg>
