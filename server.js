@@ -12,9 +12,9 @@ mongoose
   .then(() => {
     console.log(`${logDate()} > Connection to database established...`);
   })
-  .catch((err) =>
-    console.log(`${logDate()} > Connection to database is terminated...`)
-  );
+  .catch((err) => {
+    console.log(`${logDate()} > Connection to database is terminated...`, err);
+  });
 
 const port = process.env.PORT || 3500;
 const host = process.env.HOST || "localhost";
