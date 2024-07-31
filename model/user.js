@@ -1,41 +1,77 @@
 const mongoose = require("mongoose");
-const { createHash } = require("crypto");
+const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    validator: function () {},
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  alias: String,
-  name: {
-    type: String,
-    validate: {
-      validator: function (val) {
-        return val.indexOf(" ") > 1;
+const excludePassword = function (doc, ret) {
+  delete ret.password;
+  return ret;
+};
+
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: function (email) {
+          const reg =
+            /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+          return reg.test(email);
+        },
+        message: "Please provide a valid email address.",
       },
-      message: "Please provide a valid name.",
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    alias: String,
+    name: {
+      type: String,
+      validate: {
+        validator: function (name) {
+          return name.indexOf(" ") > 1;
+        },
+        message: "Please provide a valid name.",
+      },
+    },
+    photo: {
+      type: String,
+      default: "default.jpg",
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
   },
-  photo: {
-    type: String,
-    default: "default.jpg",
-  },
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
-  },
-});
+  {
+    virtuals: {
+      confirmPassword: String,
+    },
+    toObject: {
+      transform: excludePassword,
+    },
+    toJSON: {
+      transform: excludePassword,
+    },
+  }
+);
 
-userSchema.pre("save", function (next) {
-  const hash = createHash("sha256");
-  hash.update(this.password);
-  this.password = hash.digest("hex");
+userSchema.statics.checkPassword = async (
+  toVerifyPassword,
+  encryptedPassword
+) => await bcrypt.compare(toVerifyPassword, encryptedPassword);
+
+userSchema.pre("save", async function (next) {
+  if (this.isNew && this.password !== this.confirmPassword)
+    return next(
+      new Error("Your password does not match with confirm password")
+    );
+
+  const hashPasword = await bcrypt.hash(this.password, 10);
+  this.password = hashPasword;
+
   next();
 });
 
