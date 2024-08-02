@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const AppError = require("./../utils/appError");
 const bcrypt = require("bcrypt");
 
+// When the retrived documnet is converted to Object or JSON format, the password gets excluded from the document (see Schema options)
 const excludePassword = function (doc, ret) {
   delete ret.password;
   return ret;
@@ -58,17 +60,23 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Static methods
+////
 userSchema.statics.checkPassword = async (
   toVerifyPassword,
   encryptedPassword
 ) => await bcrypt.compare(toVerifyPassword, encryptedPassword);
 
+// Hooks (Middlewares)
+////
 userSchema.pre("save", async function (next) {
+  // just when the user is created - signup - check the password confirmation
   if (this.isNew && this.password !== this.confirmPassword)
     return next(
-      new Error("Your password does not match with confirm password")
+      new AppError(401, "Your password does not match with confirm password")
     );
 
+  // hash the password and replace with the hashed one in the document
   const hashPasword = await bcrypt.hash(this.password, 10);
   this.password = hashPasword;
 
