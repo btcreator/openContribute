@@ -1,3 +1,10 @@
+const enumerateErrors = function (errObj) {
+  const errors = Object.keys(errObj);
+  const last = errors.pop();
+  const errTxt = errors.join(", ");
+
+  return `${errTxt}${errTxt && " and "}${last}`;
+};
 // Error handlers
 ////
 // Operational errors
@@ -7,11 +14,23 @@ const handleAppError = (err) => ({
 });
 
 // Mongoose validation error
-const handleValidationError = (err) => {
-  const errors = Object.keys(err.errors);
+const handleValidationError = (err) => ({
+  statusCode: 400,
+  message: `Please provide a valid ${enumerateErrors(err.errors)}`,
+});
+
+// Mongo database error
+const handleMongoError = (err) => {
+  const message =
+    err.code === 11000
+      ? `Duplicate key(s). The ${enumerateErrors(
+          err.keyPattern
+        )} should be a uniqe value, but it is/they are already in the database.`
+      : "Error thrown by database server. Try again.";
+
   return {
-    statusCode: 400,
-    message: `Please provide a valid ${errors}`,
+    statusCode: 500,
+    message,
   };
 };
 
@@ -25,6 +44,7 @@ const handleUnexpectedError = () => ({
 const errorRouter = function (err) {
   if (err.name === "AppError") return handleAppError(err);
   if (err.name === "ValidationError") return handleValidationError(err);
+  if (err.name === "MongoServerError") return handleMongoError(err);
   return handleUnexpectedError();
 };
 

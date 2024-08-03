@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, "Please enter an email address."],
       unique: true,
       validate: {
         validator: function (email) {
@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Please enter a password."],
+      minlength: 8,
     },
     alias: String,
     name: {
@@ -70,15 +71,18 @@ userSchema.statics.checkPassword = async (
 // Hooks (Middlewares)
 ////
 userSchema.pre("save", async function (next) {
-  // just when the user is created - signup - check the password confirmation
-  if (this.isNew && this.password !== this.confirmPassword)
-    return next(
-      new AppError(401, "Your password does not match with confirm password")
-    );
+  // if the password is modified, created, changed
+  if (this.isModified("password")) {
+    // there must be a confirmation of the validity of the password
+    if (this.password !== this.confirmPassword) {
+      const msg = this.confirmPassword
+        ? "Your password does not match with confirm password"
+        : "Please confirm your password";
+      return next(new AppError(401, msg));
+    }
 
-  // hash the password and replace with the hashed one in the document
-  const hashPasword = await bcrypt.hash(this.password, 10);
-  this.password = hashPasword;
+    this.password = await bcrypt.hash(this.password, 12);
+  }
 
   next();
 });

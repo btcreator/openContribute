@@ -6,15 +6,26 @@ const { serverLog } = require("../../utils/helpers");
 const { promisify } = require("util");
 
 // Generate and set jwt token on response cookies or destroy token cookie
-const setJWTcookie = (id, res) => {
+const setJWTandSend = async (res, statusCode, resPayload, jwtPayload) => {
   const options = { httpOnly: true, secure: true };
 
-  if (!id) return res.clearCookie("jwt", options);
+  // if no id provided, clear cookie, else sign token
+  if (!jwtPayload) res.clearCookie("jwt", options);
+  else {
+    const token = await promisify(jwt.sign)(
+      jwtPayload,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
+    res.cookie("jwt", token, options);
+  }
 
-  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+  res.status(statusCode).json({
+    status: "success",
+    data: resPayload,
   });
-  res.cookie("jwt", token, options);
 };
 
 // Authentication routes
@@ -26,44 +37,52 @@ exports.signup = catchAsync(async (req, res) => {
   // confirmPassword is a virtual property - get not written in to the database
   const user = await User.create({ email, password, confirmPassword });
 
-  setJWTcookie(user._id, res);
-
-  // 201 - new resource is created
-  res.status(201).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
+  await setJWTandSend(res, 201, { user }, { id: user._id });
 });
 
 exports.login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
+
+  // check for incoming data presence
+  if (!email || !password)
+    throw new AppError(401, "Please enter an email and password to login.");
+
+  // find user
   const user = await User.findOne({ email });
 
   // check if user found and if the password is correct
   if (!user || !(await User.checkPassword(password, user.password)))
     throw new AppError(401, "Wrong email or password.");
 
-  setJWTcookie(user._id, res);
-
-  // 200 - OK
-  res.status(200).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
+  await setJWTandSend(res, 200, { user }, { id: user._id });
 });
 
 exports.logout = catchAsync(async (req, res) => {
   // destroy token cookie
-  setJWTcookie(null, res);
+  await setJWTandSend(res, 200, { message: "You logged out successfully" });
+});
 
-  res.status(200).json({
-    status: "success",
-    message: "Logged out successfully.",
-  });
+// Password related routes
+////
+exports.changeMyPassword = catchAsync(async (req, res) => {
+  const user = req.user;
+  const { newPassword, confirmPassword } = req.body;
+
+  // proof incoming data
+  if (!newPassword || !confirmPassword)
+    throw new AppError(401, "Please provide and confirm your new password.");
+
+  // confirm password equalty
+  if (!(await User.checkPassword(req.body.password, user.password)))
+    throw new AppError(401, "Wrong password.");
+
+  // set new password
+  user.password = newPassword;
+  user.confirmPassword = confirmPassword;
+
+  await user.save();
+
+  await setJWTandSend(res, 200, { user });
 });
 
 // Middlewares (no endpoint)
@@ -88,5 +107,6 @@ exports.authenticate = catchAsync(async (req, res, next) => {
     throw new AppError(401, "User does no longer exists. Please login again.");
 
   // access granted
+  req.user = user;
   next();
 });
