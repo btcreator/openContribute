@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AppError = require("./../utils/appError");
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
 // When the retrived documnet is converted to Object or JSON format, the password gets excluded from the document (see Schema options)
@@ -47,6 +48,12 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    resetTokenExpire: {
+      type: Date,
+    },
+    passwordResetToken: {
+      type: String,
+    },
   },
   {
     virtuals: {
@@ -67,6 +74,23 @@ userSchema.statics.checkPassword = async (
   toVerifyPassword,
   encryptedPassword
 ) => await bcrypt.compare(toVerifyPassword, encryptedPassword);
+
+// Instance methods
+////
+userSchema.methods.addResetPasswordToken = () => {
+  // create token and an expiration date
+  const token = crypto.randomBytes(32).toString("hex");
+  const expDate = Date.now() + 15 * 60 * 1000;
+
+  // save it to the instance
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  this.resetTokenExpire = new Date(expDate);
+
+  return token;
+};
 
 // Hooks (Middlewares)
 ////

@@ -1,7 +1,10 @@
 const User = require("../../model/user");
 const AppError = require("../../utils/appError");
 const catchAsync = require("../../utils/catchAsync");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const Email = require("./../../utils/mail");
+const { convert } = require("html-to-text");
 const { serverLog } = require("../../utils/helpers");
 const { promisify } = require("util");
 
@@ -45,7 +48,7 @@ exports.login = catchAsync(async (req, res) => {
 
   // check for incoming data presence
   if (!email || !password)
-    throw new AppError(401, "Please enter an email and password to login.");
+    throw new AppError(400, "Please enter an email and password to login.");
 
   // find user
   const user = await User.findOne({ email });
@@ -70,7 +73,7 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
 
   // proof incoming data
   if (!newPassword || !confirmPassword)
-    throw new AppError(401, "Please provide and confirm your new password.");
+    throw new AppError(400, "Please provide and confirm your new password.");
 
   // confirm password equalty
   if (!(await User.checkPassword(req.body.password, user.password)))
@@ -83,6 +86,50 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
   await user.save();
 
   await setJWTandSend(res, 200, { user });
+});
+
+exports.forgotPassword = catchAsync(async (req, res) => {
+  // check if the requied data is sent with the request
+  const { email, url } = req.body;
+  if (!email) throw new AppError(400, "Missing email address.");
+  if (!url) throw new AppError(400, "Missing url, where to link the token.");
+
+  // search for the user
+  const user = await User.findOne({ email });
+  if (!user)
+    throw new AppError(404, "User with that email addres is not found.");
+
+  // add a reset token to the user and save it
+  const token = user.addResetPasswordToken();
+  await user.save();
+
+  // create link with token
+  const subject = "Reset password link";
+  const html = `<div>
+    <h2>Reset Your Password</h2>
+    <p>Hello,</p>
+    <p>You recently requested to reset your password. Click the button below to reset it:</p>
+    <p><a href="https://${url}?token=${token}">Reset Password</a></p>
+    <p>Your reset password token expires in <b>15 min.</b></p>
+    <p>If you didn't request a password reset, please ignore this email.</p>
+    <div>
+      <p>Thank you,</p>
+      <p>The OpenContribute Team</p>
+    </div>
+  </div>`;
+  const text = convert(html);
+
+  //send email
+  const mail = new Email(email);
+  await mail.send(subject, text, html);
+
+  // return response
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Message sent on your email with the password resert link",
+    },
+  });
 });
 
 // Middlewares (no endpoint)
