@@ -49,10 +49,12 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     resetTokenExpire: {
-      type: Date,
+      type: Number,
+      select: false,
     },
     passwordResetToken: {
       type: String,
+      select: false,
     },
   },
   {
@@ -75,19 +77,19 @@ userSchema.statics.checkPassword = async (
   encryptedPassword
 ) => await bcrypt.compare(toVerifyPassword, encryptedPassword);
 
+userSchema.statics.hashToken = (token) =>
+  crypto.createHash("sha256").update(token).digest("hex");
+
 // Instance methods
 ////
-userSchema.methods.addResetPasswordToken = () => {
+userSchema.methods.addResetPasswordToken = function () {
   // create token and an expiration date
   const token = crypto.randomBytes(32).toString("hex");
   const expDate = Date.now() + 15 * 60 * 1000;
 
   // save it to the instance
-  this.passwordResetToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
-  this.resetTokenExpire = new Date(expDate);
+  this.passwordResetToken = this.constructor.hashToken(token);
+  this.resetTokenExpire = expDate;
 
   return token;
 };

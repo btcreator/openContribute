@@ -1,9 +1,9 @@
 const User = require("../../model/user");
 const AppError = require("../../utils/appError");
 const catchAsync = require("../../utils/catchAsync");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const Email = require("./../../utils/mail");
+const crypto = require("crypto");
 const { convert } = require("html-to-text");
 const { serverLog } = require("../../utils/helpers");
 const { promisify } = require("util");
@@ -128,6 +128,54 @@ exports.forgotPassword = catchAsync(async (req, res) => {
     status: "success",
     data: {
       message: "Message sent on your email with the password resert link",
+    },
+  });
+});
+
+exports.resetPassword = catchAsync(async (req, res) => {
+  // get token - from query or body - allowing both for API implementor
+  let token = req.query.token;
+  if (!token) token = req.body.token;
+
+  // get the rest of the data...
+  const { password, confirmPassword } = req.body;
+
+  // find user with token
+  const passwordResetToken = User.hashToken(token);
+  const user = await User.findOne({ passwordResetToken }).select(
+    "+resetTokenExpire"
+  );
+
+  // no user, no chocolate ;)
+  if (!user)
+    throw new AppError(
+      401,
+      "We could not find your request, please try again or request for reset password again."
+    );
+
+  // token expiration check
+  if (user.resetTokenExpire < Date.now())
+    throw new AppError(
+      403,
+      "Your token is expired. Please request a new reset password token."
+    );
+
+  // everithing looks right, so set new password - validation and hashing happens during the save process
+  user.password = password;
+  user.confirmPassword = confirmPassword;
+
+  // remove exp date and token
+  user.resetTokenExpire = undefined;
+  user.passwordResetToken = undefined;
+
+  // save in db
+  await user.save();
+
+  // response message
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Password changed successfully.",
     },
   });
 });
