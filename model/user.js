@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 const AppError = require("./../utils/appError");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const { type } = require("express/lib/response");
 
 // When the retrived documnet is converted to Object or JSON format, the password gets excluded from the document (see Schema options)
-const excludePassword = function (doc, ret) {
+const excludePasswordRelated = function (doc, ret) {
   delete ret.password;
+  delete ret.passwordChangedAt;
   return ret;
 };
 
@@ -28,6 +30,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter a password."],
       minlength: 8,
+    },
+    passwordChangedAt: {
+      type: Number,
+      select: false,
     },
     alias: String,
     name: {
@@ -62,10 +68,10 @@ const userSchema = new mongoose.Schema(
       confirmPassword: String,
     },
     toObject: {
-      transform: excludePassword,
+      transform: excludePasswordRelated,
     },
     toJSON: {
-      transform: excludePassword,
+      transform: excludePasswordRelated,
     },
   }
 );
@@ -108,6 +114,7 @@ userSchema.pre("save", async function (next) {
     }
 
     this.password = await bcrypt.hash(this.password, 12);
+    this.passwordChangedAt = Date.now();
   }
 
   next();

@@ -3,7 +3,6 @@ const AppError = require("../../utils/appError");
 const catchAsync = require("../../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const Email = require("./../../utils/mail");
-const crypto = require("crypto");
 const { convert } = require("html-to-text");
 const { serverLog } = require("../../utils/helpers");
 const { promisify } = require("util");
@@ -12,6 +11,7 @@ const { promisify } = require("util");
 const setJWTandSend = async (res, statusCode, resPayload, jwtPayload) => {
   const options = { httpOnly: true, secure: true };
 
+  jwtPayload.iat = Date.now();
   // if no id provided, clear cookie, else sign token
   if (!jwtPayload) res.clearCookie("jwt", options);
   else {
@@ -48,7 +48,7 @@ exports.login = catchAsync(async (req, res) => {
 
   // check for incoming data presence
   if (!email || !password)
-    throw new AppError(400, "Please enter an email and password to login.");
+    throw new AppError(400, "Please enter an email and password to log in.");
 
   // find user
   const user = await User.findOne({ email });
@@ -105,18 +105,20 @@ exports.forgotPassword = catchAsync(async (req, res) => {
 
   // create link with token
   const subject = "Reset password link";
-  const html = `<div>
-    <h2>Reset Your Password</h2>
-    <p>Hello,</p>
-    <p>You recently requested to reset your password. Click the button below to reset it:</p>
-    <p><a href="https://${url}?token=${token}">Reset Password</a></p>
-    <p>Your reset password token expires in <b>15 min.</b></p>
-    <p>If you didn't request a password reset, please ignore this email.</p>
-    <div>
-      <p>Thank you,</p>
-      <p>The OpenContribute Team</p>
-    </div>
-  </div>`;
+  const html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #dcdcdc; border-radius: 5px;">
+  <h2 style="color: #333333; text-align: center;">Reset Your Password</h2>
+  <p style="color: #333333;">Hello,</p>
+  <p style="color: #333333;">You recently requested to reset your password. Click the button below to reset it:</p>
+  <p style="text-align: center;">
+    <a href="https://${url}?token=${token}" style="display: inline-block; padding: 10px 20px; color: #ffffff; background-color: #007bff; border-radius: 5px; text-decoration: none; font-weight: bold;">Reset Password</a>
+  </p>
+  <p style="color: #333333;">Your reset password token expires in <b>15 min.</b></p>
+  <p style="color: #333333;">If you didn't request a password reset, please ignore this email.</p>
+  <div style="margin-top: 30px; text-align: center; border-top: 1px solid #dcdcdc; padding-top: 20px;">
+    <p style="color: #555555;">Thank you,</p>
+    <p style="color: #555555;"><strong>The OpenContribute Team</strong></p>
+  </div>
+</div>`;
   const text = convert(html);
 
   //send email
@@ -193,15 +195,30 @@ exports.authenticate = catchAsync(async (req, res, next) => {
     process.env.JWT_SECRET
   ).catch((err) => {
     serverLog(`Security log: ${err.name} - ${err.message}`);
-    throw new AppError(401, "Invalid token. Please login again.");
+    throw new AppError(401, "Invalid token. Please log in again.");
   });
 
   // check if user still exists
-  const user = await User.findById(tokenData.id);
+  const user = await User.findById(tokenData.id).select("+passwordChangedAt");
   if (!user)
-    throw new AppError(401, "User does no longer exists. Please login again.");
+    throw new AppError(401, "User does no longer exists. Please log in again.");
+
+  // was the password after token issue date changed?
+  if (user.passwordChangedAt > tokenData.iat)
+    throw new AppError(
+      401,
+      "The user recently changed his/her password. Please log in again."
+    );
 
   // access granted
+  delete user.passwordChangedAt;
   req.user = user;
+  next();
+});
+
+exports.adminAreaRestriction = catchAsync(async (req, res, next) => {
+  if (req.user.role !== "admin")
+    throw new AppError(403, "You are not permitted to use this route.");
+
   next();
 });
