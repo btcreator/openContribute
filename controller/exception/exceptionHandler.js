@@ -1,5 +1,6 @@
 const AppError = require("../../utils/appError");
 
+// Enumerate error fields in a text form like "email, password and name"
 const enumerateErrors = function (errObj) {
   const errors = Object.keys(errObj);
   const last = errors.pop();
