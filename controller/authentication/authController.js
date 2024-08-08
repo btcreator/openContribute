@@ -6,6 +6,7 @@ const Email = require("./../../utils/mail");
 const { convert } = require("html-to-text");
 const { serverLog } = require("../../utils/helpers");
 const { promisify } = require("util");
+const mongoose = require("mongoose");
 
 // Generate and set jwt token on response cookies or destroy token cookie
 const setJWTandSend = async (res, statusCode, resPayload, jwtPayload) => {
@@ -31,9 +32,17 @@ const setJWTandSend = async (res, statusCode, resPayload, jwtPayload) => {
   });
 };
 
+// Special case functions - No Middlewares
+////
+//Log out the user after a delete operation - reset cookie
+exports.logDeletedMeOutAndSend = async (res) => {
+  await setJWTandSend(res, 204, {});
+};
+
 // Authentication routes
 ////
 exports.signup = catchAsync(async (req, res) => {
+  // TODO - response on inactive user is false
   // destructuring, so no one can inject suspicious data to database
   const { email, password, confirmPassword } = req.body;
 
@@ -51,7 +60,7 @@ exports.login = catchAsync(async (req, res) => {
     throw new AppError(400, "Please enter an email and password to log in.");
 
   // find user
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, isActive: true });
 
   // check if user found and if the password is correct
   if (!user || !(await User.checkPassword(password, user.password)))
@@ -85,7 +94,7 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
 
   await user.save();
 
-  await setJWTandSend(res, 200, { user });
+  await setJWTandSend(res, 200, { user }, { id: user._id });
 });
 
 exports.forgotPassword = catchAsync(async (req, res) => {
@@ -96,8 +105,7 @@ exports.forgotPassword = catchAsync(async (req, res) => {
 
   // search for the user
   const user = await User.findOne({ email });
-  if (!user)
-    throw new AppError(404, "User with that email addres is not found.");
+  if (!user) throw new AppError(404, "User with that email is not found.");
 
   // add a reset token to the user and save it
   const token = user.addResetPasswordToken();
@@ -144,7 +152,8 @@ exports.resetPassword = catchAsync(async (req, res) => {
 
   // find user with token
   const passwordResetToken = User.hashToken(token);
-  const user = await User.findOne({ passwordResetToken }).select(
+  const user = await User.findOne(
+    { passwordResetToken, isActive: true },
     "+resetTokenExpire"
   );
 
@@ -156,22 +165,27 @@ exports.resetPassword = catchAsync(async (req, res) => {
     );
 
   // token expiration check
-  if (user.resetTokenExpire < Date.now())
+  const expired = user.resetTokenExpire < Date.now();
+
+  // when everithing looks right, set new password - validation and hashing happens during the save process
+  if (!expired) {
+    user.password = password;
+    user.confirmPassword = confirmPassword;
+  }
+
+  // remove exp date and token - because its expired, or password gets reset
+  user.resetTokenExpire = undefined;
+  user.passwordResetToken = undefined;
+
+  // save changes in db
+  await user.save();
+
+  // if token expired, throw error
+  if (expired)
     throw new AppError(
       403,
       "Your token is expired. Please request a new reset password token."
     );
-
-  // everithing looks right, so set new password - validation and hashing happens during the save process
-  user.password = password;
-  user.confirmPassword = confirmPassword;
-
-  // remove exp date and token
-  user.resetTokenExpire = undefined;
-  user.passwordResetToken = undefined;
-
-  // save in db
-  await user.save();
 
   // response message
   res.status(200).json({
@@ -199,7 +213,12 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   });
 
   // check if user still exists
-  const user = await User.findById(tokenData.id).select("+passwordChangedAt");
+  const _id = new mongoose.Types.ObjectId(`${tokenData.id}`);
+  const user = await User.findOne(
+    { _id, isActive: true },
+    "+passwordChangedAt"
+  );
+
   if (!user)
     throw new AppError(401, "User does no longer exists. Please log in again.");
 
@@ -216,9 +235,11 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.adminAreaRestriction = catchAsync(async (req, res, next) => {
-  if (req.user.role !== "admin")
-    throw new AppError(403, "You are not permitted to use this route.");
-
-  next();
-});
+// Restriction to some roles
+exports.restrictedTo = function (...roles) {
+  return catchAsync(async (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      throw new AppError(403, "You are not permitted to use this route.");
+    next();
+  });
+};

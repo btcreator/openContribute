@@ -2,14 +2,7 @@ const mongoose = require("mongoose");
 const AppError = require("./../utils/appError");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const { type } = require("express/lib/response");
-
-// When the retrived documnet is converted to Object or JSON format, the password gets excluded from the document (see Schema options)
-const excludePasswordRelated = function (doc, ret) {
-  delete ret.password;
-  delete ret.passwordChangedAt;
-  return ret;
-};
+const { excludeSensitiveFields } = require("./../utils/cleanIOdata");
 
 const userSchema = new mongoose.Schema(
   {
@@ -62,16 +55,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    setInactiveAt: Number,
   },
   {
     virtuals: {
       confirmPassword: String,
     },
     toObject: {
-      transform: excludePasswordRelated,
+      transform: excludeSensitiveFields,
     },
     toJSON: {
-      transform: excludePasswordRelated,
+      transform: excludeSensitiveFields,
     },
   }
 );
@@ -116,6 +114,18 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 12);
     this.passwordChangedAt = Date.now();
   }
+
+  next();
+});
+
+// User remove or reactivate
+userSchema.pre("save", function (next) {
+  if (this.isModified("isActive"))
+    if (this.isActive)
+      // when user is reactivated, the date of inactivation is removed
+      this.setInactiveAt = undefined;
+    // when user is set to inactive (removed), then set the date but be idempotent too.
+    else this.setInactiveAt = this.setInactiveAt || Date.now();
 
   next();
 });

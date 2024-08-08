@@ -1,6 +1,6 @@
 const projectRouter = require("./routers/projectRouter");
 const userRouter = require("./routers/userRouter");
-const { globalErrorHandler } = require("./controller/error/errorHandler");
+const exception = require("./controller/exception/exceptionHandler");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
@@ -17,7 +17,10 @@ app.use(express.static("public"));
 app.use("/api/v1/project", projectRouter);
 app.use("/api/v1/user", userRouter);
 
+// Routes, that are not implemented - 404
+app.use(exception.globalRouteHandler);
+
 // Error handling
-app.use(globalErrorHandler);
+app.use(exception.globalErrorHandler);
 
 module.exports = app;

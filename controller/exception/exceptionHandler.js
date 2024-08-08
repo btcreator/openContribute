@@ -1,3 +1,5 @@
+const AppError = require("../../utils/appError");
+
 const enumerateErrors = function (errObj) {
   const errors = Object.keys(errObj);
   const last = errors.pop();
@@ -58,4 +60,12 @@ exports.globalErrorHandler = function (err, req, res, next) {
   delete error.statusCode;
 
   res.status(statusCode).json(Object.assign(error, { status: "error" }));
+};
+
+// Global route handler
+exports.globalRouteHandler = function (req, res) {
+  throw new AppError(
+    404,
+    "Sorry, the route what you looking for does not exist."
+  );
 };

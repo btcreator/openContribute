@@ -14,9 +14,12 @@ router.route("/resetPassword").patch(authController.resetPassword);
 router.use(authController.authenticate);
 
 router.route("/changeMyPassword").patch(authController.changeMyPassword);
+router.route("/myProfile").get(userController.myProfile);
+router.route("/updateMyProfile").patch(userController.updateMyProfile);
+router.route("/deleteMyProfile").delete(userController.deleteMyProfile);
 
 // After this point is the restricted area for admins
-router.use(authController.adminAreaRestriction);
+router.use(authController.restrictedTo("admin"));
 
 router
   .route("/")
