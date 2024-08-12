@@ -114,3 +114,9 @@ exports.findAllUsers = catchAsync(async (req, res) => {
     },
   });
 });
+
+// check if ID in params is right (length)
+exports.checkId = function (req, res, next) {
+  if (`${req.params.id}`.length !== 24) return next("route");
+  next();
+};
