@@ -28,7 +28,7 @@ router
 
 router
   .route("/:id")
-  .all(userController.checkId)
+  .all(userController.checkId) // check the id and redirect to next middleware or route
   .get(userController.findUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);

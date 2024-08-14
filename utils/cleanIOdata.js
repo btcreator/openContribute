@@ -1,10 +1,7 @@
-// OUTGOING (response) data - Exclude sensitive data
+// OUTGOING (response) data
 ////
-// When the retrived documnet is converted to Object or JSON format, sensitive data gets excluded from the document based on user role (see Schema options)
-exports.excludeSensitiveFields = function (doc, ret, options) {
-  if (!options.user) options.user = "user";
-  if (options.user !== "admin") delete ret.isActive;
-
+// When the retrived documnet is converted to Object or JSON format, sensitive data gets excluded from the document (see Schema options)
+exports.excludeSensitiveFields = function (doc, ret) {
   // these gets excluded for everybody
   delete ret.password;
   delete ret.passwordChangedAt;
@@ -12,11 +9,13 @@ exports.excludeSensitiveFields = function (doc, ret, options) {
   return ret;
 };
 
-// INCOMING (request) data - Exclude sensitive data
+// INCOMING (request) data
 ////
-// Clean incoming request from sesitive data
-const cleanBody = function (body, ...except) {
-  // these are excluded essentially
+// Clean incoming request from sesitive data to not to write or overwrite in DB
+exports.cleanBody = function (body, ...except) {
+  const cleaned = { ...body };
+
+  // these are excluded essentially - not even for admins are allowed to rewrite
   const exclusions = [
     "resetTokenExpire",
     "passwordResetToken",
@@ -27,5 +26,7 @@ const cleanBody = function (body, ...except) {
   // add any additional exclusions
   if (except.length) exclusions.push(...except);
 
-  exclusions.forEach((prop) => delete body[prop]);
+  exclusions.forEach((prop) => delete cleaned[prop]);
+
+  return cleaned;
 };

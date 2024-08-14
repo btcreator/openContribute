@@ -9,7 +9,7 @@ const { promisify } = require("util");
 const mongoose = require("mongoose");
 
 // Generate and set jwt token on response cookies or destroy token cookie
-const setJWTandSend = async (res, statusCode, resPayload, jwtPayload) => {
+const setJWTandSend = async (res, statusCode, resPayload, jwtPayload = {}) => {
   const options = { httpOnly: true, secure: true };
 
   jwtPayload.iat = Date.now();
@@ -42,12 +42,22 @@ exports.logDeletedMeOutAndSend = async (res) => {
 // Authentication routes
 ////
 exports.signup = catchAsync(async (req, res) => {
-  // TODO - response on inactive user is false
   // destructuring, so no one can inject suspicious data to database
   const { email, password, confirmPassword } = req.body;
 
-  // confirmPassword is a virtual property - get not written in to the database
-  const user = await User.create({ email, password, confirmPassword });
+  // look first if inactive user exists with that email
+  const inactiveUser = await User.findOne({ email, isActive: false });
+  // when yes, reactivate user
+  if (inactiveUser) {
+    inactiveUser.isActive = true;
+    inactiveUser.password = password;
+    inactiveUser.confirmPassword = confirmPassword;
+  }
+
+  // reactivate user or create new user in DB
+  const user = await (inactiveUser
+    ? inactiveUser.save()
+    : User.create({ email, password, confirmPassword }));
 
   await setJWTandSend(res, 201, { user }, { id: user._id });
 });

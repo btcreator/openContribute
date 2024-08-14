@@ -2,7 +2,7 @@ const User = require("./../model/user");
 const { logDeletedMeOutAndSend } = require("./authentication/authController");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { cleanBody } = require("../utils/cleanIOdata");
+const { cleanBody, filterQueryFor } = require("../utils/cleanIOdata");
 
 // User "MY" operations
 ////
@@ -16,15 +16,15 @@ exports.myProfile = catchAsync(async (req, res) => {
 });
 
 exports.updateMyProfile = catchAsync(async (req, res) => {
-  cleanBody(req.body, "role", "isActive");
+  const bodyCl = cleanBody(req.body, "role", "isActive");
 
-  if (req.body.password)
+  if (bodyCl.password)
     throw new AppError(
       400,
       "For password updates use the corresponding route."
     );
 
-  Object.assign(req.user, req.body);
+  Object.assign(req.user, bodyCl);
 
   const updatedUser = await req.user.save();
 
@@ -37,7 +37,7 @@ exports.updateMyProfile = catchAsync(async (req, res) => {
 });
 
 exports.deleteMyProfile = catchAsync(async (req, res) => {
-  // set the user just to inactive and save the date when, for futher processes like: delete all user which are inactive after 3 months...
+  // set the user just to inactive and save the date of inactivation, for futher processes like: delete all user which are inactive after 3 months...
   req.user.isActive = false;
   req.user.setInactiveAt = Date.now();
   req.user.save();
@@ -49,9 +49,9 @@ exports.deleteMyProfile = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.createUser = catchAsync(async (req, res) => {
-  cleanBody(req.body);
+  const bodyCl = cleanBody(req.body);
 
-  const user = (await User.create(req.body)).toObject({ user: req.user.role });
+  const user = await User.create(bodyCl);
 
   res.status(201).json({
     status: "success",
@@ -62,14 +62,12 @@ exports.createUser = catchAsync(async (req, res) => {
 });
 
 exports.updateUser = catchAsync(async (req, res) => {
-  cleanBody(req.body, "password");
+  const bodyCl = cleanBody(req.body, "password");
 
-  const user = (
-    await User.findByIdAndUpdate(req.params.id, req.body, {
-      runValidators: true,
-      returnOriginal: false,
-    })
-  ).toObject({ user: req.user.role });
+  const user = await User.findByIdAndUpdate(req.params.id, bodyCl, {
+    runValidators: true,
+    returnOriginal: false,
+  }).select("isActive");
 
   res.status(200).json({
     status: "success",
@@ -80,9 +78,7 @@ exports.updateUser = catchAsync(async (req, res) => {
 });
 
 exports.findUser = catchAsync(async (req, res) => {
-  const user = (await User.findById(req.params.id)).toObject({
-    user: req.user.role,
-  });
+  const user = await User.findById(req.params.id).select("isActive");
 
   res.status(200).json({
     status: "success",
@@ -98,13 +94,9 @@ exports.deleteUser = catchAsync(async (req, res) => {
   res.status(204).end();
 });
 
-// get all users
+// Get all users
 exports.findAllUsers = catchAsync(async (req, res) => {
-  // TODO build search with query
-  const usersRes = await User.find({});
-
-  // remove/allow in all docunemts in the result array sensitive data based on calling user role
-  const users = usersRes.map((user) => user.toObject({ user: req.user.role }));
+  const users = await User.find({}).select("isActive");
 
   res.status(200).json({
     status: "success",
@@ -115,7 +107,7 @@ exports.findAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-// check if ID in params is right (length)
+// check if ID in params has right length
 exports.checkId = function (req, res, next) {
   if (`${req.params.id}`.length !== 24) return next("route");
   next();

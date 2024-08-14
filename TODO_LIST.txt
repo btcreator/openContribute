@@ -1,13 +1,16 @@
 JWT - audience
-Rate limit against login - brutr force
-catch the unknown routes - 404 (restrictedTo)
-signup an inactive user again, reactivate the profile.
+Rate limit against login - brute force
+
+signup - remove isActive
 
 build search with query
 redirect to login and after login to initial route ?continue=http://....  - check for domain name if it is the same as the origin
+
 
 Always filter and sanitize user input to protect against cross-site scripting (XSS) and command injection attacks.
 Defend against SQL injection attacks by using parameterized queries or prepared statements.
 Use the open-source sqlmap tool to detect SQL injection vulnerabilities in your app.
 Use the nmap and sslyze tools to test the configuration of your SSL ciphers, keys, and renegotiation as well as the validity of your certificate.
 Use safe-regex to ensure your regular expressions are not susceptible to regular expression denial of service attacks.
+
+auth refactor functions to userSchema
