@@ -24,10 +24,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please enter a password."],
       minlength: 8,
     },
-    passwordChangedAt: {
-      type: Number,
-      select: false,
-    },
     alias: String,
     name: {
       type: String,
@@ -46,6 +42,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+
+    // fields that not get selected, so as defult, dont get to the output - setInactiveAt is not selected, because then the user is inactive "deleted"
+    passwordChangedAt: {
+      type: Number,
+      select: false,
     },
     resetTokenExpire: {
       type: Number,
@@ -99,8 +101,32 @@ userSchema.methods.addResetPasswordToken = function () {
   return token;
 };
 
+userSchema.methods.isResetTokenExpired = function () {
+  return this.resetTokenExpire < Date.now();
+};
+
 // Hooks (Middlewares)
 ////
+// Check if the user is inactive (deleted)
+userSchema.pre("save", async function (next) {
+  if (!this.isNew) return next();
+
+  // look first if inactive user exists with that email.
+  const inactiveUser = await this.constructor.findOne({
+    email: this.email,
+    isActive: false,
+  });
+  if (inactiveUser) {
+    throw new AppError(
+      423,
+      "Your profile is set to inactive at the moment. Use the appropriate route to reactivate it."
+    );
+  }
+
+  next();
+});
+
+// Confirm password check, and hash new password
 userSchema.pre("save", async function (next) {
   // if the password is modified, created, changed
   if (this.isModified("password")) {
@@ -116,6 +142,8 @@ userSchema.pre("save", async function (next) {
     this.passwordChangedAt = Date.now();
   }
 
+  // set local property to know if the document is new (signup / createUser)
+  this.$locals.isNew = this.isNew;
   next();
 });
 

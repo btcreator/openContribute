@@ -2,6 +2,9 @@
 ////
 // When the retrived documnet is converted to Object or JSON format, sensitive data gets excluded from the document (see Schema options)
 exports.excludeSensitiveFields = function (doc, ret) {
+  // remove isActive field when the docment is created
+  if (doc.$locals.isNew) delete ret.isActive;
+
   // these gets excluded for everybody
   delete ret.password;
   delete ret.passwordChangedAt;

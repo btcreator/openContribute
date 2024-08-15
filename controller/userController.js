@@ -2,7 +2,7 @@ const User = require("./../model/user");
 const { logDeletedMeOutAndSend } = require("./authentication/authController");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { cleanBody, filterQueryFor } = require("../utils/cleanIOdata");
+const { cleanBody } = require("../utils/cleanIOdata");
 
 // User "MY" operations
 ////
@@ -48,7 +48,7 @@ exports.deleteMyProfile = catchAsync(async (req, res) => {
 
 // CRUD operations
 ////
-exports.createUser = catchAsync(async (req, res) => {
+exports.createUser = catchAsync(async (req, res, next) => {
   const bodyCl = cleanBody(req.body);
 
   const user = await User.create(bodyCl);

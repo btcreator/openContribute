@@ -1,8 +1,6 @@
 JWT - audience
 Rate limit against login - brute force
 
-signup - remove isActive
-
 build search with query
 redirect to login and after login to initial route ?continue=http://....  - check for domain name if it is the same as the origin
 
@@ -12,5 +10,3 @@ Defend against SQL injection attacks by using parameterized queries or prepared 
 Use the open-source sqlmap tool to detect SQL injection vulnerabilities in your app.
 Use the nmap and sslyze tools to test the configuration of your SSL ciphers, keys, and renegotiation as well as the validity of your certificate.
 Use safe-regex to ensure your regular expressions are not susceptible to regular expression denial of service attacks.
-
-auth refactor functions to userSchema
