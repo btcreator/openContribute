@@ -9,41 +9,31 @@ const { promisify } = require('util');
 const emailMarkup = require('../../utils/emailMarkup');
 const mongoose = require('mongoose');
 
+const cookieOptions = { httpOnly: true, secure: true };
+
 // Token related functions
 ////
-// Generate and set jwt token on response cookies or destroy token cookie
-const setJWTandSend = async (res, statusCode, resPayload, jwtPayload = {}) => {
-  const options = { httpOnly: true, secure: true };
-
+// Generate jwt token
+const signJWT = (jwtPayload) => {
   jwtPayload.iat = Date.now();
-  // if no id provided, clear cookie, else sign token
-  if (!jwtPayload) res.clearCookie('jwt', options);
-  else {
-    const token = await promisify(jwt.sign)(jwtPayload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-    res.cookie('jwt', token, options);
-  }
-
-  res.status(statusCode).json({
-    status: 'success',
-    data: resPayload,
+  return promisify(jwt.sign)(jwtPayload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-const setResetPassAndSend = async (res, user, url, message) => {};
-
+// Verify jwt token
 const verifyJWT = (token) =>
   promisify(jwt.verify)(token, process.env.JWT_SECRET).catch((err) => {
     serverLog(`Security log: ${err.name} - ${err.message}`);
     throw new AppError(401, 'Invalid token. Please log in again.');
   });
 
-// Special case functions - No Middlewares
+// Special case functions - No Middlewares, No Routes
 ////
-//Log out the user after a delete operation - reset cookie
+// Log out the user after a delete operation - reset cookie
 exports.logDeletedMeOutAndSend = async (res) => {
-  await setJWTandSend(res, 204, {});
+  res.clearCookie('jwt', cookieOptions);
+  res.status(204).end();
 };
 
 // Authentication routes
@@ -55,11 +45,24 @@ exports.signup = catchAsync(async (req, res, next) => {
   // create new user
   const user = await User.create({ email, password, confirmPassword });
 
-  await setJWTandSend(res, 201, { user }, { id: user._id });
+  // create jwt token and set cookie
+  const token = await signJWT({ id: user._id });
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
 });
 
 exports.login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
+
+  // optional for redirecting after log in
+  const continueTo = req.body.continue || req.query.continue;
+  const originHostname = req.body.hostname;
 
   // check for incoming data presence
   if (!email || !password) throw new AppError(400, 'Please enter an email and password to log in.');
@@ -71,22 +74,41 @@ exports.login = catchAsync(async (req, res) => {
   if (!user || !(await User.checkPassword(password, user.password)))
     throw new AppError(401, 'Wrong email or password.');
 
-  await setJWTandSend(res, 200, { user }, { id: user._id });
+  // create jwt token and set cookie
+  const token = await signJWT({ id: user._id });
+  res.cookie('jwt', token, cookieOptions);
+
+  // check for redirection (when user initially wanted a route that needs authentication, then giving the possibility to redirect the user to that route for API implementors)
+  if (originHostname && continueTo) {
+    try {
+      // validate if the redirection follows to the same host (security reason - malicious link injection)
+      const hostname = new URL(continueTo).hostname;
+      if (originHostname === hostname) return res.redirect(continueTo);
+    } catch (err) {
+      // should nothing happen, and send a respons without redirecting
+    }
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
 });
 
 exports.logout = catchAsync(async (req, res) => {
-  // destroy token cookie
-  await setJWTandSend(res, 200, { message: 'You logged out successfully' });
+  res.clearCookie('jwt', cookieOptions);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'You logged out successfully',
+    },
+  });
 });
 
-exports.reactivateProfile = catchAsync(async (req, res, next) => {
-  req.resMessage = 'Reactivation link is sent to your email address.';
-  req.originate = 'reactivateProfile';
-
-  next();
-});
-
-// Password related routes
+// Password related middlewares
 ////
 exports.changeMyPassword = catchAsync(async (req, res) => {
   const user = req.user;
@@ -105,20 +127,21 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
 
   await user.save();
 
-  await setJWTandSend(res, 200, { user }, { id: user._id });
-});
+  // create jwt token and set cookie
+  const token = await signJWT({ id: user._id });
+  res.cookie('jwt', token, cookieOptions);
 
-exports.forgotPassword = catchAsync(async (req, res, next) => {
-  req.resMessage = 'Message sent on your email with the password resert link.';
-  req.originate = 'forgotPassword';
-
-  next();
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
 });
 
 exports.resetPassword = catchAsync(async (req, res) => {
   // get token - from query or body - allowing both for API implementor
-  let token = req.query.token;
-  if (!token) token = req.body.token;
+  const token = req.body.token || req.query.token;
 
   // get the rest of the data...
   const { password, confirmPassword } = req.body;
@@ -160,6 +183,7 @@ exports.resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+// Password recovering with verification trough email sent token - NEED A PREMIDDLEWARE
 exports.passwordRecoveryProcess = catchAsync(async (req, res) => {
   // check if the requied data is sent with the request
   const { email, url } = req.body;
@@ -222,10 +246,26 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   next();
 });
 
-// Restriction to some roles
+// Restriction of routes to some roles
 exports.restrictedTo = function (...roles) {
   return catchAsync(async (req, res, next) => {
     if (!roles.includes(req.user.role)) throw new AppError(403, 'You are not permitted to use this route.');
     next();
   });
 };
+
+// Middlewares for routes that needs a recovering password
+////
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  req.resMessage = 'Message sent on your email with the password resert link.';
+  req.originate = 'forgotPassword';
+
+  next();
+});
+
+exports.reactivateProfile = catchAsync(async (req, res, next) => {
+  req.resMessage = 'Reactivation link is sent to your email address.';
+  req.originate = 'reactivateProfile';
+
+  next();
+});
