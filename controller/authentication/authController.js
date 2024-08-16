@@ -46,7 +46,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const user = await User.create({ email, password, confirmPassword });
 
   // create jwt token and set cookie
-  const token = await signJWT({ id: user._id });
+  const token = await signJWT({ id: user._id, aud: req.get('origin') });
   res.cookie('jwt', token, cookieOptions);
 
   res.status(201).json({
@@ -74,7 +74,7 @@ exports.login = catchAsync(async (req, res) => {
     throw new AppError(401, 'Wrong email or password.');
 
   // create jwt token and set cookie
-  const token = await signJWT({ id: user._id });
+  const token = await signJWT({ id: user._id, aud: req.get('origin') });
   res.cookie('jwt', token, cookieOptions);
 
   // check for redirection (when user initially wanted a route that needs authentication, then giving the possibility to redirect the user to that route for API implementors)
@@ -239,6 +239,12 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   // was the password after token issue date changed?
   if (user.passwordChangedAt > tokenData.iat)
     throw new AppError(401, 'The user recently changed his/her password. Please log in again.');
+
+  // token is from the same audience
+  if (req.get('origin') !== tokenData.aud) {
+    serverLog(`Security log: Trying log in form ${req.get('origin')} where audience was ${tokenData.aud}`);
+    throw new AppError(401, 'Invalid token. Please login again.');
+  }
 
   // access granted
   delete user.passwordChangedAt;
