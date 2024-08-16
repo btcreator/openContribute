@@ -95,6 +95,7 @@ exports.deleteUser = catchAsync(async (req, res) => {
 exports.findAllUsers = catchAsync(async (req, res) => {
   const usersQuery = User.find({}).select('+isActive');
 
+  // filter, sort, project and pageing the query before execute
   const query = new RefineQuery(usersQuery, req.query).refine();
   const users = await query;
 
