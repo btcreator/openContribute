@@ -1,14 +1,15 @@
-const User = require("./../model/user");
-const { logDeletedMeOutAndSend } = require("./authentication/authController");
-const catchAsync = require("./../utils/catchAsync");
-const AppError = require("../utils/appError");
-const { cleanBody } = require("../utils/cleanIOdata");
+const User = require('./../model/user');
+const { logDeletedMeOutAndSend } = require('./authentication/authController');
+const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
+const { cleanBody } = require('../utils/cleanIOdata');
+const RefineQuery = require('../utils/refineQuery');
 
 // User "MY" operations
 ////
 exports.myProfile = catchAsync(async (req, res) => {
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       user: req.user,
     },
@@ -16,20 +17,16 @@ exports.myProfile = catchAsync(async (req, res) => {
 });
 
 exports.updateMyProfile = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, "role", "isActive");
+  const bodyCl = cleanBody(req.body, 'role', 'isActive');
 
-  if (bodyCl.password)
-    throw new AppError(
-      400,
-      "For password updates use the corresponding route."
-    );
+  if (bodyCl.password) throw new AppError(400, 'For password updates use the corresponding route.');
 
   Object.assign(req.user, bodyCl);
 
   const updatedUser = await req.user.save();
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       user: updatedUser,
     },
@@ -54,7 +51,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
   const user = await User.create(bodyCl);
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     data: {
       user,
     },
@@ -62,15 +59,15 @@ exports.createUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, "password");
+  const bodyCl = cleanBody(req.body, 'password');
 
   const user = await User.findByIdAndUpdate(req.params.id, bodyCl, {
     runValidators: true,
     returnOriginal: false,
-  }).select("isActive");
+  }).select('isActive');
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       user,
     },
@@ -78,10 +75,10 @@ exports.updateUser = catchAsync(async (req, res) => {
 });
 
 exports.findUser = catchAsync(async (req, res) => {
-  const user = await User.findById(req.params.id).select("isActive");
+  const user = await User.findById(req.params.id).select('isActive');
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       user,
     },
@@ -96,10 +93,13 @@ exports.deleteUser = catchAsync(async (req, res) => {
 
 // Get all users
 exports.findAllUsers = catchAsync(async (req, res) => {
-  const users = await User.find({}).select("isActive");
+  const usersQuery = User.find({}).select('+isActive');
+
+  const query = new RefineQuery(usersQuery, req.query).refine();
+  const users = await query;
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     results: users.length,
     data: {
       users,
@@ -107,8 +107,10 @@ exports.findAllUsers = catchAsync(async (req, res) => {
   });
 });
 
+// Middlewares (no endpoint)
+////
 // check if ID in params has right length
 exports.checkId = function (req, res, next) {
-  if (`${req.params.id}`.length !== 24) return next("route");
+  if (`${req.params.id}`.length !== 24) return next('route');
   next();
 };
