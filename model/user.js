@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
-const AppError = require("./../utils/appError");
-const crypto = require("crypto");
-const bcrypt = require("bcrypt");
-const { excludeSensitiveFields } = require("./../utils/cleanIOdata");
+const mongoose = require('mongoose');
+const AppError = require('./../utils/appError');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
 
 const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, "Please enter an email address."],
+      required: [true, 'Please enter an email address.'],
       unique: true,
       validate: {
         validator: function (email) {
@@ -16,12 +16,12 @@ const userSchema = new mongoose.Schema(
             /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
           return reg.test(email);
         },
-        message: "Please provide a valid email address.",
+        message: 'Please provide a valid email address.',
       },
     },
     password: {
       type: String,
-      required: [true, "Please enter a password."],
+      required: [true, 'Please enter a password.'],
       minlength: 8,
     },
     alias: String,
@@ -29,19 +29,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       validate: {
         validator: function (name) {
-          return name.indexOf(" ") > 1;
+          return name.indexOf(' ') > 1;
         },
-        message: "Please provide a valid name.",
+        message: 'Please provide a valid name.',
       },
     },
     photo: {
       type: String,
-      default: "default.jpg",
+      default: 'default.jpg',
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ['user', 'admin'],
+      default: 'user',
     },
 
     // fields that not get selected, so as defult, dont get to the output - setInactiveAt is not selected, because then the user is inactive "deleted"
@@ -79,19 +79,16 @@ const userSchema = new mongoose.Schema(
 
 // Static methods
 ////
-userSchema.statics.checkPassword = async (
-  toVerifyPassword,
-  encryptedPassword
-) => await bcrypt.compare(toVerifyPassword, encryptedPassword);
+userSchema.statics.checkPassword = async (toVerifyPassword, encryptedPassword) =>
+  await bcrypt.compare(toVerifyPassword, encryptedPassword);
 
-userSchema.statics.hashToken = (token) =>
-  crypto.createHash("sha256").update(token).digest("hex");
+userSchema.statics.hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 // Instance methods
 ////
 userSchema.methods.addResetPasswordToken = function () {
   // create token and an expiration date
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomBytes(32).toString('hex');
   const expDate = Date.now() + 15 * 60 * 1000;
 
   // save it to the instance
@@ -108,7 +105,7 @@ userSchema.methods.isResetTokenExpired = function () {
 // Hooks (Middlewares)
 ////
 // Check if the user is inactive (deleted)
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   if (!this.isNew) return next();
 
   // look first if inactive user exists with that email.
@@ -119,7 +116,7 @@ userSchema.pre("save", async function (next) {
   if (inactiveUser) {
     throw new AppError(
       423,
-      "Your profile is set to inactive at the moment. Use the appropriate route to reactivate it."
+      'Your profile is set to inactive at the moment. Use the appropriate route to reactivate it.'
     );
   }
 
@@ -127,14 +124,14 @@ userSchema.pre("save", async function (next) {
 });
 
 // Confirm password check, and hash new password
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   // if the password is modified, created, changed
-  if (this.isModified("password")) {
+  if (this.isModified('password')) {
     // there must be a confirmation of the validity of the password
     if (this.password !== this.confirmPassword) {
       const msg = this.confirmPassword
-        ? "Your password does not match with confirm password"
-        : "Please confirm your password";
+        ? 'Your password does not match with confirm password'
+        : 'Please confirm your password';
       return next(new AppError(401, msg));
     }
 
@@ -148,8 +145,8 @@ userSchema.pre("save", async function (next) {
 });
 
 // User remove or reactivate
-userSchema.pre("save", function (next) {
-  if (this.isModified("isActive"))
+userSchema.pre('save', function (next) {
+  if (this.isModified('isActive'))
     if (this.isActive)
       // when user is reactivated, the date of inactivation is removed
       this.setInactiveAt = undefined;
@@ -159,6 +156,6 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

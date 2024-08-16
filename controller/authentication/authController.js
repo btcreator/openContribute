@@ -62,7 +62,6 @@ exports.login = catchAsync(async (req, res) => {
 
   // optional for redirecting after log in
   const continueTo = req.body.continue || req.query.continue;
-  const originHostname = req.body.hostname;
 
   // check for incoming data presence
   if (!email || !password) throw new AppError(400, 'Please enter an email and password to log in.');
@@ -79,9 +78,10 @@ exports.login = catchAsync(async (req, res) => {
   res.cookie('jwt', token, cookieOptions);
 
   // check for redirection (when user initially wanted a route that needs authentication, then giving the possibility to redirect the user to that route for API implementors)
-  if (originHostname && continueTo) {
+  if (continueTo) {
     try {
       // validate if the redirection follows to the same host (security reason - malicious link injection)
+      const originHostname = new URL(req.get('origin')).hostname;
       const hostname = new URL(continueTo).hostname;
       if (originHostname === hostname) return res.redirect(continueTo);
     } catch (err) {
