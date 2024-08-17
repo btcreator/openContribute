@@ -15,7 +15,7 @@ const cookieOptions = { httpOnly: true, secure: true };
 ////
 // Generate jwt token
 const signJWT = (jwtPayload) => {
-  jwtPayload.iat = Date.now();
+  jwtPayload.iat = Date.now() / 1000;
   return promisify(jwt.sign)(jwtPayload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
@@ -60,9 +60,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
 
-  // optional for redirecting after log in
-  const continueTo = req.body.continue || req.query.continue;
-
   // check for incoming data presence
   if (!email || !password) throw new AppError(400, 'Please enter an email and password to log in.');
 
@@ -76,18 +73,6 @@ exports.login = catchAsync(async (req, res) => {
   // create jwt token and set cookie
   const token = await signJWT({ id: user._id, aud: req.get('origin') });
   res.cookie('jwt', token, cookieOptions);
-
-  // check for redirection (when user initially wanted a route that needs authentication, then giving the possibility to redirect the user to that route for API implementors)
-  if (continueTo) {
-    try {
-      // validate if the redirection follows to the same host (security reason - malicious link injection)
-      const originHostname = new URL(req.get('origin')).hostname;
-      const hostname = new URL(continueTo).hostname;
-      if (originHostname === hostname) return res.redirect(continueTo);
-    } catch (err) {
-      // should nothing happen, and send a respons without redirecting
-    }
-  }
 
   res.status(200).json({
     status: 'success',
@@ -237,7 +222,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   if (!user) throw new AppError(401, 'User does no longer exists. Please log in again.');
 
   // was the password after token issue date changed?
-  if (user.passwordChangedAt > tokenData.iat)
+  if (user.passwordChangedAt > tokenData.iat * 1000)
     throw new AppError(401, 'The user recently changed his/her password. Please log in again.');
 
   // token is from the same audience

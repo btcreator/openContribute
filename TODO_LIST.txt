@@ -1,4 +1,3 @@
-JWT - audience
 Rate limit against login - brute force
 
 Always filter and sanitize user input to protect against cross-site scripting (XSS) and command injection attacks.
