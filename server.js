@@ -1,15 +1,12 @@
-const mongoose = require("mongoose");
-const app = require("./app");
-const { serverLog } = require("./utils/helpers");
-
 // Load environment variables
-require("@dotenvx/dotenvx").config({ path: "./config.env" });
+require('@dotenvx/dotenvx').config({ path: './config.env' });
+
+const mongoose = require('mongoose');
+const app = require('./app');
+const { serverLog } = require('./utils/helpers');
 
 // Establish connection with the database
-const DB = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 mongoose
   .connect(DB)
   .then(() => {
@@ -21,7 +18,7 @@ mongoose
 
 // Start the server
 const port = process.env.PORT || 3500;
-const host = process.env.HOST || "localhost";
+const host = process.env.HOST || 'localhost';
 app.listen(port, host, () => {
   serverLog(`Server start up on host:port ${host}:${port}...`);
 });
