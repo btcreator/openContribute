@@ -2,9 +2,18 @@ const projectRouter = require('./routers/projectRouter');
 const userRouter = require('./routers/userRouter');
 const exception = require('./controller/exception/exceptionHandler');
 const express = require('express');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const app = express();
 const security = require('./security');
+const cors = require('cors');
+
+// For barrier-free connections
+////
+// if behind proxy - TODO after deploying the app needs check for proxies between client and server
+app.enable('trust proxy');
+// enable cross origin resource sharing for everyone
+app.use(cors());
 
 // Load and parse
 //// body and cookies
@@ -15,7 +24,7 @@ app.use(cookieParser());
 app.use(security);
 
 // Serve the static files
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Route incoming requests to corresponding router
 app.use('/api/v1/project', projectRouter);

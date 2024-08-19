@@ -5,12 +5,13 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const limit = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from your IP. Try again in one Hour.',
+  validate: { trustProxy: false }, // TODO - remove after deploy - see "trust proxy" usage in the app
 });
 
 // Set security HTTP headers

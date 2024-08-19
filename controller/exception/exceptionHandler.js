@@ -1,12 +1,12 @@
-const AppError = require("../../utils/appError");
+const AppError = require('../../utils/appError');
 
 // Enumerate error fields in a text form like "email, password and name"
 const enumerateErrors = function (errObj) {
   const errors = Object.keys(errObj);
   const last = errors.pop();
-  const errTxt = errors.join(", ");
+  const errTxt = errors.join(', ');
 
-  return `${errTxt}${errTxt && " and "}${last}`;
+  return `${errTxt}${errTxt && ' and '}${last}`;
 };
 // Error handlers
 ////
@@ -29,7 +29,7 @@ const handleMongoError = (err) => {
       ? `Duplicate key(s). The ${enumerateErrors(
           err.keyPattern
         )} should be a uniqe value, but it is/they are already in the database.`
-      : "Error thrown by database server. Try again.";
+      : 'Error thrown by database server. Try again.';
 
   return {
     statusCode: 500,
@@ -37,17 +37,30 @@ const handleMongoError = (err) => {
   };
 };
 
+// File grabbing error form Multer middleware
+const handleMulterError = (err) => {
+  const message =
+    err.code === 'LIMIT_FILE_SIZE'
+      ? 'Max 5MB files are allowed to upload.'
+      : 'An unexpected error happened while trying to upload the media file. Check your file for right format, then try again.';
+  return {
+    statusCode: 520,
+    message,
+  };
+};
+
 // Default -an unexpected- error
 const handleUnexpectedError = () => ({
   statusCode: 500,
-  message: "Something went wrong.",
+  message: 'Something went wrong.',
 });
 
 // Routing each error to his error handler. The last one is a default behavior
 const errorRouter = function (err) {
-  if (err.name === "AppError") return handleAppError(err);
-  if (err.name === "ValidationError") return handleValidationError(err);
-  if (err.name === "MongoServerError") return handleMongoError(err);
+  if (err.name === 'AppError') return handleAppError(err);
+  if (err.name === 'ValidationError') return handleValidationError(err);
+  if (err.name === 'MongoServerError') return handleMongoError(err);
+  if (err.name === 'MulterError') return handleMulterError(err);
   return handleUnexpectedError();
 };
 
@@ -55,18 +68,15 @@ const errorRouter = function (err) {
 exports.globalErrorHandler = function (err, req, res, next) {
   let error = errorRouter(err);
 
-  if (process.env.NODE_ENV === "development") error.err = err.stack;
+  if (process.env.NODE_ENV === 'development') error.err = err.stack;
 
   const statusCode = error.statusCode;
   delete error.statusCode;
 
-  res.status(statusCode).json(Object.assign(error, { status: "error" }));
+  res.status(statusCode).json(Object.assign(error, { status: 'error' }));
 };
 
 // Global route handler
 exports.globalRouteHandler = function (req, res) {
-  throw new AppError(
-    404,
-    "Sorry, the route what you looking for does not exist."
-  );
+  throw new AppError(404, 'Sorry, the route what you looking for does not exist.');
 };
