@@ -1,3 +1,4 @@
+const catchAsync = require('./../../utils/catchAsync');
 const multer = require('multer');
 const sharp = require('sharp');
 
@@ -5,8 +6,6 @@ const sharp = require('sharp');
 ////
 // grab image from incoming request, and load it to memory for futher use
 exports.grabImage = (req, res, next) => {
-  // check if file exists
-  if (!req.file) return next();
   // save uploaded image in memory
   const storage = multer.memoryStorage();
 
@@ -25,17 +24,18 @@ exports.grabImage = (req, res, next) => {
 };
 
 // edit uploaded image to a frendly format
-exports.editImage = (req, res, next) => {
+exports.editImage = catchAsync(async (req, res, next) => {
   // check if file exists, and if its loaded to memory
   if (!req.file?.buffer) return next();
 
   // set file namoe and path
-  const filename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
+  const hasPhoto = !req.user.photo.includes('default');
+  const filename = hasPhoto ? req.user.photo : `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
   const filePath = `./public/img/users/${filename}`;
 
   // resize photo - default fit is "cover"
-  sharp(req.file.buffer).resize(800, 800).png().toFile(filePath);
+  await sharp(req.file.buffer).resize(800, 800).png().toFile(filePath);
 
-  req.body.photo = filename;
+  hasPhoto || (req.body.photo = filename);
   next();
-};
+});

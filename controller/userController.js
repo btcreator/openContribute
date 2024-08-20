@@ -64,7 +64,7 @@ exports.updateUser = catchAsync(async (req, res) => {
   const user = await User.findByIdAndUpdate(req.params.id, bodyCl, {
     runValidators: true,
     returnOriginal: false,
-  }).select('isActive');
+  }).select('+isActive');
 
   res.status(200).json({
     status: 'success',
@@ -75,7 +75,7 @@ exports.updateUser = catchAsync(async (req, res) => {
 });
 
 exports.findUser = catchAsync(async (req, res) => {
-  const user = await User.findById(req.params.id).select('isActive');
+  const user = await User.findById(req.params.id).select('+isActive');
 
   res.status(200).json({
     status: 'success',
