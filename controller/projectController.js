@@ -1,57 +1,83 @@
 const Project = require('./../model/project');
+const RefineQuery = require('./../utils/refineQuery');
+const catchAsync = require('./../utils/catchAsync');
 
-exports.queryProjects = (req, res) => {
-    const query = req.query;
+// Public routes
+////
+exports.getProject = catchAsync(async (req, res) => {
+  const project = await Project.findById(req.param.id);
 
-    const projects = 'Placeholder'; // make a db call
+  res.status(200).json({
+    status: 'success',
+    data: {
+      project,
+    },
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        data: {
-            project: query,
-        },
-    });
-};
+exports.getAllProjects = catchAsync(async (req, res) => {
+  const projectsQuery = Project.find({});
 
-exports.getProjectById = (req, res) => {
-    const projectId = req.params.id;
+  const query = new RefineQuery(projectsQuery, req.query).refine();
+  const projects = await query;
+  res.status(200).json({
+    status: 'success',
+    data: {
+      projects,
+    },
+  });
+});
 
-    const project = 'Placeholder'; //make a db call
+// Project "MY" operations
+////
+exports.myProjects = catchAsync(async (req, res) => {
+  const projects = await Project.find({ leader: req.user.id });
 
-    res.status(200).json({
-        status: 'success',
-        data: {
-            project,
-        },
-    });
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      projects,
+    },
+  });
+});
 
-exports.createNewProject = async (req, res) => {
-    const project = await Project.create(req.data);
+exports.createMyProject = catchAsync(async (req, res) => {
+  const project = await Project.create(req.body);
 
-    res.status(200).json({
-        status: 'success',
-        project,
-    });
-};
+  res.status(200).json({
+    status: 'success',
+    project,
+  });
+});
 
-exports.updateProject = (req, res) => {
-    res.status(404).json({
-        status: 'fail',
-        message: 'Route not yet implemented.',
-    });
-};
+exports.updateMyProject = catchAsync(async (req, res) => {
+  let resources = req.body.resources;
+  const project = await Project.findById(req.param.id);
 
-exports.deleteProject = (req, res) => {
-    res.status(404).json({
-        status: 'fail',
-        message: 'Route not yet implemented.',
-    });
-};
+  if (resources && Array.isArray(resources)) {
+    // convert resources Array to obj
+    const resourcesObj = {};
+    resources.forEach((el) => (resourcesObj[el.name] = el));
 
-exports.getMyProjects = (req, res) => {
-    res.status(404).json({
-        status: 'fail',
-        message: 'Route not yet implemented.',
-    });
-};
+    project.resources = project.resources.map((resrc) => resourcesObj[resrc.name] ?? resrc);
+  }
+
+  await project.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      project,
+    },
+  });
+});
+
+exports.deleteMyProject = catchAsync(async (req, res) => {
+  res.status(404).json({
+    status: 'fail',
+    message: 'Route not yet implemented.',
+  });
+});
+
+// CRUD operations
+////
