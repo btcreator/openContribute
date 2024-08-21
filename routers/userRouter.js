@@ -1,6 +1,7 @@
 const express = require('express');
 const userController = require('./../controller/userController');
 const { grabImage, editImage } = require('./../controller/mediaUpload/mediaController');
+const { checkId } = require('./../utils/helpers');
 const authController = require('./../controller/authentication/authController');
 
 const router = express.Router();
@@ -27,7 +28,7 @@ router.route('/').post(userController.createUser).get(userController.findAllUser
 
 router
   .route('/:id')
-  .all(userController.checkId) // check the id and redirect to next middleware or route
+  .all(checkId) // check the id and redirect to next middleware or route
   .get(userController.findUser)
   .patch(grabImage, editImage, userController.updateUser)
   .delete(userController.deleteUser);

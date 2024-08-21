@@ -107,11 +107,3 @@ exports.findAllUsers = catchAsync(async (req, res) => {
     },
   });
 });
-
-// Middlewares (no endpoint)
-////
-// check if ID in params has right length
-exports.checkId = function (req, res, next) {
-  if (`${req.params.id}`.length !== 24) return next('route');
-  next();
-};
