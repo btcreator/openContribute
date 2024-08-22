@@ -1,12 +1,38 @@
+const mongoose = require('mongoose');
 const Project = require('./../model/project');
+const User = require('./../model/user');
 const RefineQuery = require('./../utils/refineQuery');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
+
+// update array elements - (just update already existed, no new elements get added)
+const updateArray = (target, source) => {
+  // convert Array to obj
+  const sourceObj = {};
+  source.forEach((el) => (sourceObj[el.name] = el));
+
+  // merge all elements
+  return target.map((el) => sourceObj[el.name] ?? el);
+};
+
+// update array fileds
+const updateArrayFields = (doc, body, ...fields) => {
+  const updatedArrFields = {};
+
+  fields.forEach((field) => {
+    if (body[field] && Array.isArray(body[field])) {
+      updatedArrFields[field] = updateArray(doc[field], body[field]);
+    }
+  });
+
+  return updateArrayFields;
+};
 
 // Project "MY" operations
 ////
 exports.myProjects = catchAsync(async (req, res) => {
-  const projects = await Project.find({ leader: req.user.id, isActive: true });
+  const projects = await Project.find({ leader: req.user.id, isActive: true }).populate('leader');
 
   res.status(200).json({
     status: 'success',
@@ -17,8 +43,10 @@ exports.myProjects = catchAsync(async (req, res) => {
 });
 
 exports.createMyProject = catchAsync(async (req, res) => {
+  if (!req.user.name)
+    throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
   const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone');
-  req.body.leader = req.user._id;
+  bodyCl.leader = req.user._id;
 
   const project = await Project.create(bodyCl);
 
@@ -31,24 +59,20 @@ exports.createMyProject = catchAsync(async (req, res) => {
 exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
 
-  let resources = req.body.resources;
-  const project = await Project.findOne({ _id: req.param.id, isActive: true });
+  const _id = new mongoose.Types.ObjectId(`${req.params.id}`);
+  const project = await Project.findOne({ _id, isActive: true });
 
   if (!project) throw new AppError(404, 'No project found with that id.');
-  if (project.leader !== req.user._id) throw new AppError(403, 'You are not the leader of this project.');
+  if (project.leader.toString() !== req.user._id.toString())
+    throw new AppError(403, 'You are not the leader of this project.');
 
-  // update resources
-  if (resources && Array.isArray(resources)) {
-    // convert resources Array to obj
-    const resourcesObj = {};
-    resources.forEach((el) => (resourcesObj[el.name] = el));
+  // update array fields
+  const updatedArrFields = updateArrayFields(project, bodyCl, 'milestones', 'resources');
 
-    project.resources = project.resources.map((resrc) => resourcesObj[resrc.name] ?? resrc);
-  }
+  // update the document with new data
+  Object.assign(project, bodyCl, updatedArrFields);
 
-  // update milestones
-  // continue
-
+  // save
   await project.save();
 
   res.status(200).json({
@@ -68,7 +92,7 @@ exports.deleteMyProject = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.getProject = catchAsync(async (req, res) => {
-  const project = await Project.findById(req.param.id);
+  const project = await Project.findById(req.params.id);
 
   res.status(200).json({
     status: 'success',
@@ -79,7 +103,12 @@ exports.getProject = catchAsync(async (req, res) => {
 });
 
 exports.createProject = catchAsync(async (req, res) => {
-  const project = await Project.create(req.body);
+  const bodyCl = cleanBody(req.body);
+
+  if (bodyCl.leader && !(await User.findById(bodyCl.leader, { name: 1 }).exists('name')))
+    throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
+
+  const project = await Project.create(bodyCl);
 
   res.status(200).json({
     status: 'success',
@@ -90,10 +119,20 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.updateProject = catchAsync(async (req, res) => {
-  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-    runValidators: true,
-    returnOriginal: false,
-  });
+  const bodyCl = cleanBody(req.body, 'leader');
+
+  const project = await Project.findById(req.params.id).select('+isActive');
+
+  if (!project) throw new AppError(404, 'No project found with that id.');
+
+  // update array fields
+  const updatedArrFields = updateArrayFields(project, bodyCl, 'milestones', 'resources');
+
+  // update the document with new data
+  Object.assign(project, bodyCl, updatedArrFields);
+
+  // save
+  await project.save();
 
   res.status(200).json({
     status: 'success',
@@ -113,7 +152,7 @@ exports.deleteProject = catchAsync(async (req, res) => {
 exports.getAllProjects = catchAsync(async (req, res) => {
   // users cant search or query for inactive projects, just admins
   const queryObj = {};
-  if (req.user.role !== 'admin') {
+  if (req.user?.role !== 'admin') {
     queryObj.isActive = true;
     delete req.query.isActive;
   }

@@ -23,5 +23,6 @@ router.use(authController.restrictedTo('admin'));
 
 router.route('/').post(projectController.createProject);
 router.route('/:id').all(checkId).patch(projectController.updateProject).delete(projectController.deleteProject);
+router.route('/admin').get(projectController.getAllProjects);
 
 module.exports = router;
