@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema(
     summary: {
       type: String,
       required: true,
-      max: [160, 'Summary should be not longer than 160 characters. We got {VALUE}.'],
+      maxLength: [160, 'Summary should be not longer than 160 characters. We got {VALUE}.'],
     },
     description: { type: String, required: true },
     locations: [
@@ -19,13 +19,24 @@ const projectSchema = new mongoose.Schema(
           enum: ['Point', 'Just GeoJSON Points are accepted'],
           required: true,
         },
-        coordinates: { type: [Number], require: true },
+        coordinates: {
+          type: [Number],
+          required: true,
+          validate: {
+            validator: function (val) {
+              return val.length === 2;
+            },
+            message: 'False coordinates in location.',
+          },
+        },
+        _id: false,
       },
     ],
     milestones: [
       {
         name: { type: String, required: true },
         isDone: { type: Boolean, default: false },
+        _id: false,
       },
     ],
     resources: [
@@ -42,6 +53,8 @@ const projectSchema = new mongoose.Schema(
           min: Number,
           max: Number,
         },
+        description: String,
+        _id: false,
       },
     ],
     deadline: { type: Date, default: null },
@@ -72,10 +85,12 @@ const projectSchema = new mongoose.Schema(
 projectSchema.pre('save', function (next) {
   // things can change down the road, so let the leader rearrange his milestones when needed. When a milestone is skipped and not the next one
   // gets done first, then need a rearrange of the milestones. [done, done, undone, done, undone] => [done, done, done, undone, undone]
-  if(!this.isNew && this.isModified("milestones")) {
+  if (!this.isNew && this.isModified('milestones')) {
     const undone = [];
-    const sortedMilestones = this.milestones.filter(milest => milest.isDone || (undone.push(milest), false)).concat(undone);
-    
+    const sortedMilestones = this.milestones
+      .filter((milest) => milest.isDone || (undone.push(milest), false))
+      .concat(undone);
+
     // when the last one is done, the project can be marked as done as whole
     sortedMilestones.at(-1).isDone && (this.isDone = true);
 

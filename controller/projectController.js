@@ -26,7 +26,7 @@ const updateArrayFields = (doc, body, ...fields) => {
     }
   });
 
-  return updateArrayFields;
+  return updatedArrFields;
 };
 
 // Project "MY" operations
@@ -127,6 +127,8 @@ exports.updateProject = catchAsync(async (req, res) => {
 
   // update array fields
   const updatedArrFields = updateArrayFields(project, bodyCl, 'milestones', 'resources');
+  delete bodyCl.milestones;
+  delete bodyCl.resources;
 
   // update the document with new data
   Object.assign(project, bodyCl, updatedArrFields);
@@ -152,12 +154,15 @@ exports.deleteProject = catchAsync(async (req, res) => {
 exports.getAllProjects = catchAsync(async (req, res) => {
   // users cant search or query for inactive projects, just admins
   const queryObj = {};
+  let selector = '';
   if (req.user?.role !== 'admin') {
     queryObj.isActive = true;
     delete req.query.isActive;
+  } else {
+    selector = '+isActive';
   }
 
-  const projectsQuery = Project.find(queryObj);
+  const projectsQuery = Project.find(queryObj).select(selector);
 
   const query = new RefineQuery(projectsQuery, req.query).refine();
   const projects = await query;
