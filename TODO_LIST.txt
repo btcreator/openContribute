@@ -1,11 +1,8 @@
 Look into helmet docs for more security settings
 
-milestones and resources update - have mongoose some methods to update just the changed value in an array?
 test project,
-populate,
-aggregate,
+
+aggregate for search
 whitelist query
 try query search lt, gt..
 remove file after user gets deleted (permanently) - so by other resources
-
-_id converter in extra function??

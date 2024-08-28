@@ -6,6 +6,9 @@ const sharp = require('sharp');
 ////
 // grab image from incoming request, and load it to memory for futher use
 exports.grabImage = (req, res, next) => {
+  // be sure that no malicious filename gets uploaded
+  delete req.body.photo;
+
   // save uploaded image in memory
   const storage = multer.memoryStorage();
 
@@ -28,7 +31,7 @@ exports.editImage = catchAsync(async (req, res, next) => {
   // check if file exists, and if its loaded to memory
   if (!req.file?.buffer) return next();
 
-  // set file namoe and path
+  // set file name and path
   const hasPhoto = !req.user.photo.includes('default');
   const filename = hasPhoto ? req.user.photo : `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
   const filePath = `./public/img/users/${filename}`;

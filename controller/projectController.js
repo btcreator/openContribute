@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const Project = require('./../model/project');
 const User = require('./../model/user');
 const RefineQuery = require('./../utils/refineQuery');
@@ -6,28 +6,51 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
 
-// update array elements - (just update already existed, no new elements get added)
-const updateArray = (target, source) => {
-  // convert Array to obj
-  const sourceObj = {};
-  source.forEach((el) => (sourceObj[el.name] = el));
+//
+const updateProjectById = async function(id, body) {
+  // update the project with the new data
+  const _id = new ObjectId(`${id}`);
+  const updateLog = await Project.updateOne({ _id }, ...fieldsToUpdateObj(body));
 
-  // merge all elements
-  return target.map((el) => sourceObj[el.name] ?? el);
+  // no project found
+  if (!updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
+
+  // if milestones was changed, rearrange those
+  const project = await Project.findOne({ _id });
+  if(body.milestones) project.rearrangeMilestones();
+
+  return project;
 };
 
-// update array fileds
-const updateArrayFields = (doc, body, ...fields) => {
-  const updatedArrFields = {};
+// Convert the body to update object and when array fields are updated too, then set the arrayFilters option too for mongo/mongoose updateOne method
+const fieldsToUpdateObj = function(body) {
+  const set = {};
+  const arrayFilters = [];
 
+  const fields = Object.keys(body);
   fields.forEach((field) => {
-    if (body[field] && Array.isArray(body[field])) {
-      updatedArrFields[field] = updateArray(doc[field], body[field]);
-    }
+    // plain fields are just set with they value
+    if (!Array.isArray(body[field])) return (set[field] = body[field]);
+
+    // array fields contains objects
+    body[field].forEach((obj, i) => {
+      // in those objects the properties/keys gets updated
+      Object.keys(obj).forEach((key) => {
+        // the "name" is the unique key identifier
+        if (key !== 'name')
+          // the to-update keys are set with the "$[${field}${i}]" identifier which would be the unique filter for each object
+          set[`${field}.$[${field}${i}].${key}`] = body[field][i][key];
+        // the name property is used to filter out which properties should be updated in that ONE particular object. One, because name is unique, so no property in other objects get updated.
+        else
+          arrayFilters.push({
+            [`${field}${i}.${key}`]: body[field][i][key],
+          });
+      });
+    });
   });
 
-  return updatedArrFields;
-};
+  return [{ $set: set }, { arrayFilters }];
+}
 
 // Project "MY" operations
 ////
@@ -45,6 +68,7 @@ exports.myProjects = catchAsync(async (req, res) => {
 exports.createMyProject = catchAsync(async (req, res) => {
   if (!req.user.name)
     throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
+
   const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone');
   bodyCl.leader = req.user._id;
 
@@ -59,21 +83,7 @@ exports.createMyProject = catchAsync(async (req, res) => {
 exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
 
-  const _id = new mongoose.Types.ObjectId(`${req.params.id}`);
-  const project = await Project.findOne({ _id, isActive: true });
-
-  if (!project) throw new AppError(404, 'No project found with that id.');
-  if (project.leader.toString() !== req.user._id.toString())
-    throw new AppError(403, 'You are not the leader of this project.');
-
-  // update array fields
-  const updatedArrFields = updateArrayFields(project, bodyCl, 'milestones', 'resources');
-
-  // update the document with new data
-  Object.assign(project, bodyCl, updatedArrFields);
-
-  // save
-  await project.save();
+  const project = await updateProjectById(req.params.id, bodyCl);
 
   res.status(200).json({
     status: 'success',
@@ -92,7 +102,7 @@ exports.deleteMyProject = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.getProject = catchAsync(async (req, res) => {
-  const project = await Project.findById(req.params.id);
+  const project = await Project.findById(req.params.id).populate("leader");
 
   res.status(200).json({
     status: 'success',
@@ -121,20 +131,7 @@ exports.createProject = catchAsync(async (req, res) => {
 exports.updateProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'leader');
 
-  const project = await Project.findById(req.params.id).select('+isActive');
-
-  if (!project) throw new AppError(404, 'No project found with that id.');
-
-  // update array fields
-  const updatedArrFields = updateArrayFields(project, bodyCl, 'milestones', 'resources');
-  delete bodyCl.milestones;
-  delete bodyCl.resources;
-
-  // update the document with new data
-  Object.assign(project, bodyCl, updatedArrFields);
-
-  // save
-  await project.save();
+  const project = await updateProjectById(req.params.id, bodyCl);
 
   res.status(200).json({
     status: 'success',

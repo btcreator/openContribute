@@ -7,7 +7,7 @@ const { convert } = require('html-to-text');
 const { serverLog } = require('../../utils/helpers');
 const { promisify } = require('util');
 const emailMarkup = require('../../utils/emailMarkup');
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 
 const cookieOptions = {
   expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
@@ -220,7 +220,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   const tokenData = await verifyJWT(token);
 
   // check if user still exists
-  const _id = new mongoose.Types.ObjectId(`${tokenData.id}`);
+  const _id = new ObjectId(`${tokenData.id}`);
   const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
 
   if (!user) throw new AppError(401, 'User does no longer exists. Please log in again.');
