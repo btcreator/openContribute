@@ -11,7 +11,10 @@ router.route('/:id').get(checkId, projectController.getProject);
 // After this point an authentication is needed
 router.use(authController.authenticate);
 
-router.route('/myProjects').get(projectController.myProjects).post(projectController.createMyProject);
+router
+  .route('/myProjects')
+  .get(projectController.myProjects)
+  .post(projectController.createMyProject);
 router
   .route('/myProjects/:id')
   .all(checkId)
@@ -22,7 +25,11 @@ router
 router.use(authController.restrictedTo('admin'));
 
 router.route('/').post(projectController.createProject);
-router.route('/:id').all(checkId).patch(projectController.updateProject).delete(projectController.deleteProject);
+router
+  .route('/:id')
+  .all(checkId)
+  .patch(projectController.updateProject)
+  .delete(projectController.deleteProject);
 router.route('/admin').get(projectController.getAllProjects);
 
 module.exports = router;

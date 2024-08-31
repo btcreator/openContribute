@@ -4,6 +4,7 @@ const exception = require('./controller/exception/exceptionHandler');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const multiparter = require("./routers/multiparter/multipartRouter");
 const app = express();
 const security = require('./security');
 const cors = require('cors');
@@ -16,8 +17,9 @@ app.enable('trust proxy');
 app.use(cors());
 
 // Load and parse
-//// body and cookies
+//// body, images and cookies
 app.use(express.json({ limit: '10kb' }));
+app.use(multiparter);
 app.use(cookieParser());
 
 // Implement security - prevent attack procedures

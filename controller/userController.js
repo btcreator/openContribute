@@ -4,6 +4,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
+const { renameTempFiles } = require('./staticFilesystem/staticFileController');
 
 // User "MY" operations
 ////
@@ -47,8 +48,12 @@ exports.deleteMyProfile = catchAsync(async (req, res) => {
 ////
 exports.createUser = catchAsync(async (req, res, next) => {
   const bodyCl = cleanBody(req.body);
+  bodyCl.photo = req.tempFiles[0].filename;
 
   const user = await User.create(bodyCl);
+
+  // if creation succeeded, rename temp file
+  await renameTempFiles(req.tempFiles);
 
   res.status(201).json({
     status: 'success',

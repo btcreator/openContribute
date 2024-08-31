@@ -6,7 +6,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
 
-//
+// Update project 
 const updateProjectById = async function(id, body) {
   // update the project with the new data
   const _id = new ObjectId(`${id}`);
@@ -116,7 +116,7 @@ exports.createProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body);
 
   if (bodyCl.leader && !(await User.findById(bodyCl.leader, { name: 1 }).exists('name')))
-    throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
+    throw new AppError(400, 'To be a leader of a project, we need the leaders name. Please update it first.');
 
   const project = await Project.create(bodyCl);
 
@@ -130,7 +130,7 @@ exports.createProject = catchAsync(async (req, res) => {
 
 exports.updateProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'leader');
-
+  
   const project = await updateProjectById(req.params.id, bodyCl);
 
   res.status(200).json({

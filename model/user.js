@@ -3,6 +3,7 @@ const AppError = require('./../utils/appError');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
+const { removeFile } = require('../controller/staticFilesystem/staticFileController');
 
 const userSchema = new mongoose.Schema(
   {
@@ -153,6 +154,17 @@ userSchema.pre('save', function (next) {
       this.setInactiveAt = undefined;
     // when user is set to inactive (removed), then set the date but be idempotent too.
     else this.setInactiveAt = this.setInactiveAt || Date.now();
+
+  next();
+});
+
+// Delete photo of the user when gets permanently removed
+userSchema.pre('findOneAndDelete', async function (next) {
+  // query photo
+  const photo = (await this.clone().findOne().select('photo')).photo;
+  // the default.jpg should not get removed just when it was modified
+  if (photo === 'default.jpg') return next();
+  await removeFile('./public/img/users/', photo);
 
   next();
 });

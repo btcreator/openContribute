@@ -1,6 +1,5 @@
 const express = require('express');
 const userController = require('./../controller/userController');
-const { grabImage, editImage } = require('./../controller/mediaUpload/mediaController');
 const { checkId } = require('./../utils/helpers');
 const authController = require('./../controller/authentication/authController');
 
@@ -18,7 +17,7 @@ router.use(authController.authenticate);
 
 router.route('/changeMyPassword').patch(authController.changeMyPassword);
 router.route('/myProfile').get(userController.myProfile);
-router.route('/updateMyProfile').patch(grabImage, editImage, userController.updateMyProfile);
+router.route('/updateMyProfile').patch(userController.updateMyProfile);
 router.route('/deleteMyProfile').delete(userController.deleteMyProfile);
 
 // After this point is the restricted area for admins
@@ -30,7 +29,7 @@ router
   .route('/:id')
   .all(checkId) // check the id and redirect to next middleware or route
   .get(userController.findUser)
-  .patch(grabImage, editImage, userController.updateUser)
+  .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
 module.exports = router;

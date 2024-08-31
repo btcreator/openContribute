@@ -5,4 +5,3 @@ test project,
 aggregate for search
 whitelist query
 try query search lt, gt..
-remove file after user gets deleted (permanently) - so by other resources
