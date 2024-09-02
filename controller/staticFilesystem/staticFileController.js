@@ -4,8 +4,12 @@ const { serverLog } = require('../../utils/helpers');
 // On DELETE
 // When the resource gets deleted and has an image (user with photo), remove the photo
 exports.removeImage = async function (path, filename) {
-  if (filename.endsWith('.png')) await fsP.rm(`${path}${filename}`);
-  else serverLog('File could not be removed on path: ', `${path}${filename}`);
+  try {
+    if (filename.endsWith('.png')) await fsP.rm(`${path}${filename}`);
+    else serverLog('File could not be removed on path: ', `${path}${filename}`);
+  } catch {
+    serverLog('File error during removal.', `${path}${filename}`);
+  }
 };
 
 // On UPDATE

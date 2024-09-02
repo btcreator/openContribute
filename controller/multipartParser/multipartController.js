@@ -1,5 +1,4 @@
 const catchAsync = require('../../utils/catchAsync');
-const User = require('../../model/user');
 const multer = require('multer');
 const sharp = require('sharp');
 
@@ -22,7 +21,7 @@ exports.bufferImage = (image) => (req, res, next) => {
   return upload(req, res, next);
 };
 
-// edit uploaded image to a frendly format
+// Edit uploaded image to a frendly format
 exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   // check if file exists, and if its loaded to memory
   if (!req.files) return next();

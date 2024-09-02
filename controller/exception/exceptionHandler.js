@@ -67,7 +67,9 @@ const errorRouter = function (err) {
 
 // Global error handler
 exports.globalErrorHandler = function (err, req, res, next) {
+  // remove uploaded files (it would just pollute the server space capacity)
   clearImages(req.files);
+
   let error = errorRouter(err);
 
   if (process.env.NODE_ENV === 'development') error.err = err.stack;

@@ -164,7 +164,7 @@ userSchema.pre('findOneAndDelete', async function (next) {
   const photo = (await this.clone().findOne().select('photo')).photo;
   // the default.jpg should not get removed just when it was modified
   if (photo === 'default.jpg') return next();
-  await removeImage('./public/img/users/', photo);
+  removeImage('./public/img/users/', photo);
 
   next();
 });
