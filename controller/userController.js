@@ -4,7 +4,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
-const { renameTempFiles } = require('./staticFilesystem/staticFileController');
+const { updateImages } = require('./staticFilesystem/staticFileController');
 
 // User "MY" operations
 ////
@@ -18,9 +18,15 @@ exports.myProfile = catchAsync(async (req, res) => {
 });
 
 exports.updateMyProfile = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'role', 'isActive');
+  const bodyCl = cleanBody(req.body, 'photo', 'role', 'isActive');
 
   if (bodyCl.password) throw new AppError(400, 'For password updates use the corresponding route.');
+
+  // user photo update sequence
+  if (req.files) {
+    if (req.user.photo === 'default.jpg') bodyCl.photo = req.files.userPhoto[0].filename;
+    else await updateImages(req.files, { userPhoto: req.user.photo });
+  }
 
   Object.assign(req.user, bodyCl);
 
@@ -48,12 +54,9 @@ exports.deleteMyProfile = catchAsync(async (req, res) => {
 ////
 exports.createUser = catchAsync(async (req, res, next) => {
   const bodyCl = cleanBody(req.body);
-  bodyCl.photo = req.tempFiles[0].filename;
+  if (req.files) bodyCl.photo = req.files.userPhoto[0].filename;
 
   const user = await User.create(bodyCl);
-
-  // if creation succeeded, rename temp file
-  await renameTempFiles(req.tempFiles);
 
   res.status(201).json({
     status: 'success',
@@ -70,6 +73,14 @@ exports.updateUser = catchAsync(async (req, res) => {
     runValidators: true,
     returnOriginal: false,
   }).select('+isActive');
+
+  // user photo update sequence
+  if (req.files) {
+    if (user.photo === 'default.jpg') {
+      user.photo = req.files.userPhoto[0].filename;
+      await user.save();
+    } else await updateImages(req.files, { userPhoto: user.photo });
+  }
 
   res.status(200).json({
     status: 'success',

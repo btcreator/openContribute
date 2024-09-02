@@ -1,4 +1,5 @@
 const AppError = require('../../utils/appError');
+const { clearImages } = require('../staticFilesystem/staticFileController');
 
 // Enumerate error fields in a text form like "email, password and name"
 const enumerateErrors = function (errObj) {
@@ -66,6 +67,7 @@ const errorRouter = function (err) {
 
 // Global error handler
 exports.globalErrorHandler = function (err, req, res, next) {
+  clearImages(req.files);
   let error = errorRouter(err);
 
   if (process.env.NODE_ENV === 'development') error.err = err.stack;

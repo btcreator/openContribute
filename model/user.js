@@ -3,7 +3,7 @@ const AppError = require('./../utils/appError');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
-const { removeFile } = require('../controller/staticFilesystem/staticFileController');
+const { removeImage } = require('../controller/staticFilesystem/staticFileController');
 
 const userSchema = new mongoose.Schema(
   {
@@ -164,7 +164,7 @@ userSchema.pre('findOneAndDelete', async function (next) {
   const photo = (await this.clone().findOne().select('photo')).photo;
   // the default.jpg should not get removed just when it was modified
   if (photo === 'default.jpg') return next();
-  await removeFile('./public/img/users/', photo);
+  await removeImage('./public/img/users/', photo);
 
   next();
 });

@@ -5,3 +5,5 @@ test project,
 aggregate for search
 whitelist query
 try query search lt, gt..
+
+upload more files, what if just one gets uploaded? multer fields...for project cover/result images

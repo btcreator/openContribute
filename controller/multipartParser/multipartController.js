@@ -18,24 +18,26 @@ exports.bufferImage = (image) => (req, res, next) => {
   };
 
   // upload the image to memory
-  const upload = multer({ storage, fileFilter, limits: { fileSize: 5e6 } }).single(image);
+  const upload = multer({ storage, fileFilter, limits: { fileSize: 5e6 } }).fields([{ name: image, maxCount: 1 }]);
   return upload(req, res, next);
 };
 
 // edit uploaded image to a frendly format
 exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   // check if file exists, and if its loaded to memory
-  if (!req.file?.buffer) return next();
+  if (!req.files) return next();
 
   // set path and a temporary file name
+  const userPhoto = req.files.userPhoto[0];
   const filename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
   const path = './public/img/users/';
 
   // resize photo - default fit is "cover"
-  await sharp(req.file.buffer).resize(800, 800).png().toFile(`${path}temp_${filename}`);
+  await sharp(userPhoto.buffer).resize(800, 800).png().toFile(`${path}${filename}`);
 
   // save where the files are stored. If needed, can be removed when something goes wrong by db update
-  req.tempFiles = [{ path, filename }];
+  userPhoto.path = path;
+  userPhoto.filename = filename;
   next();
 });
 
@@ -44,18 +46,13 @@ exports.saveProjectImages = catchAsync(async (req, res) => {
   const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
   const path = './public/img/projects/content/';
 
-  // init for the temporary file names
-  req.tempFiles = [];
-
   // where and how the files should be stored
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, path);
     },
     filename: function (req, file, cb) {
-      const filename = `${mainFilename}_${file.fieldname}`;
-      req.tempFiles.push({ path, filename });
-      cb(null, `temp_${filename}`);
+      cb(null, `${mainFilename}_${file.fieldname}`);
     },
   });
 
