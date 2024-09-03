@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
+const { removeImages } = require('../controller/staticFilesystem/staticFileController');
+const AppError = require('../utils/appError');
 
 const projectSchema = new mongoose.Schema(
   {
@@ -96,6 +98,16 @@ projectSchema.methods.rearrangeMilestones = function () {
   this.milestones = sortedMilestones;
   this.save();
 };
+
+// Hooks (Middlewares)
+////
+projectSchema.pre('findOneAndDelete', async function (next) {
+  const images = await this.clone().findOne().select('coverImg resultImg -_id');
+
+  images && removeImages(`./public/img/projects/content/`, Object.values(images.toObject()));
+
+  next();
+});
 
 const Project = mongoose.model('Project', projectSchema);
 

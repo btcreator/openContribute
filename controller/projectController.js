@@ -5,25 +5,29 @@ const RefineQuery = require('./../utils/refineQuery');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
+const { updateImages } = require('./staticFilesystem/staticFileController');
 
-// Update project 
-const updateProjectById = async function(id, body) {
+// Update project
+const updateProjectById = async function (id, body) {
   // update the project with the new data
   const _id = new ObjectId(`${id}`);
   const updateLog = await Project.updateOne({ _id }, ...fieldsToUpdateObj(body));
 
   // no project found
-  if (!updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
+  if (updateLog.acknowledged && !updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
 
   // if milestones was changed, rearrange those
   const project = await Project.findOne({ _id });
-  if(body.milestones) project.rearrangeMilestones();
+  if (body.milestones) project.rearrangeMilestones();
+
+  // when no data was sent, the update log acknowledge is false. That do not mean, no project exists with that id. So we need to check it
+  if (!project) throw new AppError(404, 'No project found with that id.');
 
   return project;
 };
 
-// Convert the body to update object and when array fields are updated too, then set the arrayFilters option too for mongo/mongoose updateOne method
-const fieldsToUpdateObj = function(body) {
+// Convert the body to update object and when array fields are updated, then set the arrayFilters option too for mongo/mongoose updateOne method
+const fieldsToUpdateObj = function (body) {
   const set = {};
   const arrayFilters = [];
 
@@ -50,7 +54,27 @@ const fieldsToUpdateObj = function(body) {
   });
 
   return [{ $set: set }, { arrayFilters }];
-}
+};
+
+// Public operations
+////
+// For convenient search results
+exports.getSearchResults = catchAsync(async (req, res) => {
+  const selector = 'name summary leader type resources resultImg isDone';
+
+  const projectsQuery = Project.find({}).select(selector).populate('leader', 'name');
+
+  const query = new RefineQuery(projectsQuery, req.query).refine();
+  const projects = await query;
+
+  res.status(200).json({
+    status: 'success',
+    results: projects.length,
+    data: {
+      projects,
+    },
+  });
+});
 
 // Project "MY" operations
 ////
@@ -72,6 +96,12 @@ exports.createMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone');
   bodyCl.leader = req.user._id;
 
+  const images = req.files;
+  if (images) {
+    bodyCl.coverImg = images.cover?.filename;
+    bodyCl.resultImg = images.result?.filename;
+  }
+
   const project = await Project.create(bodyCl);
 
   res.status(200).json({
@@ -84,6 +114,11 @@ exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
 
   const project = await updateProjectById(req.params.id, bodyCl);
+
+  if (req.files) {
+    const imageNames = { cover: project.coverImg, result: project.resultImg };
+    await updateImages(req.files, imageNames);
+  }
 
   res.status(200).json({
     status: 'success',
@@ -102,7 +137,7 @@ exports.deleteMyProject = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.getProject = catchAsync(async (req, res) => {
-  const project = await Project.findById(req.params.id).populate("leader");
+  const project = await Project.findById(req.params.id).populate('leader');
 
   res.status(200).json({
     status: 'success',
@@ -114,9 +149,15 @@ exports.getProject = catchAsync(async (req, res) => {
 
 exports.createProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body);
+  const images = req.files;
 
   if (bodyCl.leader && !(await User.findById(bodyCl.leader, { name: 1 }).exists('name')))
     throw new AppError(400, 'To be a leader of a project, we need the leaders name. Please update it first.');
+
+  if (images) {
+    bodyCl.coverImg = images.cover?.filename;
+    bodyCl.resultImg = images.result?.filename;
+  }
 
   const project = await Project.create(bodyCl);
 
@@ -130,8 +171,13 @@ exports.createProject = catchAsync(async (req, res) => {
 
 exports.updateProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'leader');
-  
+
   const project = await updateProjectById(req.params.id, bodyCl);
+
+  if (req.files) {
+    const imageNames = { cover: project.coverImg, result: project.resultImg };
+    await updateImages(req.files, imageNames);
+  }
 
   res.status(200).json({
     status: 'success',
@@ -149,22 +195,13 @@ exports.deleteProject = catchAsync(async (req, res) => {
 
 // get all projects - serach with query
 exports.getAllProjects = catchAsync(async (req, res) => {
-  // users cant search or query for inactive projects, just admins
-  const queryObj = {};
-  let selector = '';
-  if (req.user?.role !== 'admin') {
-    queryObj.isActive = true;
-    delete req.query.isActive;
-  } else {
-    selector = '+isActive';
-  }
-
-  const projectsQuery = Project.find(queryObj).select(selector);
+  const projectsQuery = Project.find({}).select('+isActive');
 
   const query = new RefineQuery(projectsQuery, req.query).refine();
   const projects = await query;
   res.status(200).json({
     status: 'success',
+    results: projects.length,
     data: {
       projects,
     },

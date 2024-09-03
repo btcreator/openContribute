@@ -35,12 +35,12 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   await sharp(userPhoto.buffer).resize(800, 800).png().toFile(`${path}${filename}`);
 
   // save where the files are stored. If needed, can be removed when something goes wrong by db update
-  userPhoto.path = path;
+  userPhoto.destination = path;
   userPhoto.filename = filename;
   next();
 });
 
-exports.saveProjectImages = catchAsync(async (req, res) => {
+exports.saveProjectImages = catchAsync(async (req, res, next) => {
   // set uploaded images storage and filename
   const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
   const path = './public/img/projects/content/';
@@ -51,7 +51,8 @@ exports.saveProjectImages = catchAsync(async (req, res) => {
       cb(null, path);
     },
     filename: function (req, file, cb) {
-      cb(null, `${mainFilename}_${file.fieldname}`);
+      const ext = file.originalname.substring(file.originalname.lastIndexOf('.'));
+      cb(null, `${mainFilename}_${file.fieldname}${ext}`);
     },
   });
 

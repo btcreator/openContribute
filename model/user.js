@@ -161,10 +161,10 @@ userSchema.pre('save', function (next) {
 // Delete photo of the user when gets permanently removed
 userSchema.pre('findOneAndDelete', async function (next) {
   // query photo
-  const photo = (await this.clone().findOne().select('photo')).photo;
-  // the default.jpg should not get removed just when it was modified
+  const photo = (await this.clone().findOne().select('photo -_id')).photo;
+  // the photo with default.jpg should not get removed just when it was modified
   if (photo === 'default.jpg') return next();
-  removeImage('./public/img/users/', photo);
+  photo && removeImage('./public/img/users/', photo);
 
   next();
 });
