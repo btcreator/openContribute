@@ -12,9 +12,11 @@ router.route('/:id').get(checkId, projectController.getProject);
 // After this point an authentication is needed
 router.use(authenticate);
 
-router.route('/myProjects').get(projectController.myProjects).post(projectController.createMyProject);
+router.route('/myProjects').get(projectController.myProjects);
+
+router.route('/myProject').post(projectController.createMyProject);
 router
-  .route('/myProjects/:id')
+  .route('/myProject/:id')
   .all(checkId)
   .patch(projectController.updateMyProject)
   .delete(projectController.deleteMyProject);
