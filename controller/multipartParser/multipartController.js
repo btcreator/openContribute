@@ -2,7 +2,7 @@ const catchAsync = require('../../utils/catchAsync');
 const multer = require('multer');
 const sharp = require('sharp');
 
-// Parse multipart incoming data
+// Parse multipart incoming data to memory
 exports.bufferImage = (image) => (req, res, next) => {
   // save uploaded image in memory
   const storage = multer.memoryStorage();
@@ -23,7 +23,7 @@ exports.bufferImage = (image) => (req, res, next) => {
 
 // Edit uploaded image to a frendly format
 exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
-  // check if file exists, and if its loaded to memory
+  // check if file exists
   if (!req.files) return next();
 
   // set path and a temporary file name
@@ -40,6 +40,7 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   next();
 });
 
+// Parse and save to disk incoming multipart data
 exports.saveProjectImages = catchAsync(async (req, res, next) => {
   // set uploaded images storage and filename
   const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
