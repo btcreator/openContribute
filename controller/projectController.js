@@ -16,12 +16,14 @@ const updateProjectById = async function (id, body) {
   // no project found
   if (updateLog.acknowledged && !updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
 
-  // if milestones was changed, rearrange those
+  // get the updated project
   const project = await Project.findOne({ _id });
-  if (body.milestones) project.rearrangeMilestones();
 
   // when no data was sent, the update log acknowledge is false. That do not mean, no project exists with that id. So we need to check it
   if (!project) throw new AppError(404, 'No project found with that id.');
+
+  // if milestones was changed, rearrange those
+  if (body.milestones) project.rearrangeMilestones();
 
   return project;
 };
