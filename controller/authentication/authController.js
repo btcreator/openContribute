@@ -131,6 +131,7 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
 exports.resetPassword = catchAsync(async (req, res) => {
   // get token - from query or body - allowing both for API implementor
   const token = req.body.token || req.query.token;
+  if (!token) throw new AppError(400, 'No token provided');
 
   // get the rest of the data...
   const { password, confirmPassword } = req.body;
