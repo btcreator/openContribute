@@ -5,6 +5,7 @@ const projectController = require('../controller/projectController');
 
 const router = express.Router();
 
+router.route('/resources/info').get(projectController.resourceInfo);
 router.route('/search').get(projectController.getSearchResults);
 router.route('/:id').get(checkId, projectController.getProject);
 

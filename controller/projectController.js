@@ -6,6 +6,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
 const { updateImages } = require('./staticFilesystem/staticFileController');
+const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 
 // Update project
 const updateProjectById = async function (id, body) {
@@ -77,6 +78,16 @@ exports.getSearchResults = catchAsync(async (req, res) => {
     },
   });
 });
+
+// Resource info and description
+exports.rsourceInfo = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      description,
+    },
+  });
+};
 
 // Project "MY" operations
 ////
