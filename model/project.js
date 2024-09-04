@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
 const { removeImages } = require('../controller/staticFilesystem/staticFileController');
-const AppError = require('../utils/appError');
+const { resources } = require('./resourceDescriptions/resourceDescriptions');
 
 const projectSchema = new mongoose.Schema(
   {
@@ -45,7 +45,7 @@ const projectSchema = new mongoose.Schema(
     ],
     resources: [
       {
-        name: { type: String, unique: true, required: true },
+        name: { type: String, unique: true, required: true, enum: resources },
         priority: {
           type: Number,
           required: true,
