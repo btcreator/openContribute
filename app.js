@@ -1,10 +1,11 @@
 const projectRouter = require('./routers/projectRouter');
 const userRouter = require('./routers/userRouter');
+const contributionRouter = require('./routers/contributionRouter');
 const exception = require('./controller/exception/exceptionHandler');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const multiparter = require("./routers/multiparter/multipartRouter");
+const multiparter = require('./routers/multiparter/multipartRouter');
 const app = express();
 const security = require('./security');
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Route incoming requests to corresponding router
 app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/contribution', contributionRouter);
 
 // Routes, that are not implemented - 404
 app.use(exception.globalRouteHandler);
