@@ -80,7 +80,7 @@ exports.getSearchResults = catchAsync(async (req, res) => {
 });
 
 // Resource info and description
-exports.rsourceInfo = (req, res) => {
+exports.resourceInfo = (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
