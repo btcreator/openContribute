@@ -112,8 +112,8 @@ exports.createMyProject = catchAsync(async (req, res) => {
 
   const images = req.files;
   if (images) {
-    bodyCl.coverImg = images.cover?.filename;
-    bodyCl.resultImg = images.result?.filename;
+    bodyCl.coverImg = images.cover?.[0].filename;
+    bodyCl.resultImg = images.result?.[0].filename;
   }
 
   const project = await Project.create(bodyCl);
