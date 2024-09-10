@@ -96,6 +96,7 @@ exports.myProjects = catchAsync(async (req, res) => {
 
   res.status(200).json({
     status: 'success',
+    results: projects.length,
     data: {
       projects,
     },
@@ -183,7 +184,7 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.updateProject = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'leader');
+  const bodyCl = cleanBody(req.body);
 
   const project = await updateProjectById(req.params.id, bodyCl);
 
