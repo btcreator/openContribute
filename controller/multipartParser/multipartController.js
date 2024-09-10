@@ -74,3 +74,16 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
 
   return upload(req, res, next);
 });
+
+// multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
+exports.reparseMultipartBody = function (req, res, next) {
+  const regex = new RegExp(/^[\[,\{].*[\],\}]$/);
+
+  Object.keys(req.body).forEach((key) => {
+    const value = req.body[key];
+    if (regex.test(value)) {
+      req.body[key] = JSON.parse(value);
+    }
+  });
+  next();
+};
