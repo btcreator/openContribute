@@ -19,7 +19,14 @@ exports.cleanBody = function (body, ...except) {
   const cleaned = { ...body };
 
   // these are excluded essentially - not even for admins are allowed to rewrite
-  const exclusions = ['resetTokenExpire', 'passwordResetToken', 'setInactiveAt', 'passwordChangedAt'];
+  const exclusions = [
+    'resetTokenExpire',
+    'passwordResetToken',
+    'setInactiveAt',
+    'passwordChangedAt',
+    'contributedAt',
+    'guestPassToken',
+  ];
 
   // add any additional exclusions
   if (except.length) exclusions.push(...except);
