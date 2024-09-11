@@ -4,8 +4,8 @@ class RefineQuery {
     this.queryString = queryString;
   }
 
-  filter() {
-    const queryObj = { ...this.queryString };
+  filter(searchFilter) {
+    const queryObj = Object.assign({ ...this.queryString }, searchFilter);
     const exclusions = ['fields', 'sort', 'limit', 'page'];
 
     exclusions.forEach((filed) => delete queryObj[filed]);
@@ -48,8 +48,8 @@ class RefineQuery {
     return this;
   }
 
-  refine() {
-    this.filter().sort().project().paginate();
+  refine(searchFilter) {
+    this.filter(searchFilter).sort().project().paginate();
     return this.query;
   }
 }
