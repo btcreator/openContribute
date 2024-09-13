@@ -77,6 +77,7 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
 
 // multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
 exports.reparseMultipartBody = function (req, res, next) {
+  if (!req.headers['content-type'].startsWith('multipart/form-data')) return next();
   const regex = new RegExp(/^[\[,\{].*[\],\}]$/);
 
   Object.keys(req.body).forEach((key) => {
