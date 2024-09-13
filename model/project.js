@@ -3,6 +3,17 @@ const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
 const { removeImages } = require('../controller/staticFilesystem/staticFileController');
 const { resources } = require('./resourceDescriptions/resourceDescriptions');
 
+// In mongoose a uniqe index is valid on the collection level, not on subdocuments for example in an array.
+// So a custom validator of uniqueness of name fileds are deployed
+const uniqueName = function (val) {
+  if (!Array.isArray(val)) return false;
+
+  for (let seen = {}, i = 0; i < val.length; ++i) {
+    if (seen[val[i].name]) return false;
+    seen[val[i].name] = true;
+  }
+};
+
 const projectSchema = new mongoose.Schema(
   {
     name: { type: String, unique: true, required: true },
@@ -14,53 +25,62 @@ const projectSchema = new mongoose.Schema(
       maxLength: [160, 'Summary should be not longer than 160 characters. We got {VALUE}.'],
     },
     description: { type: String, required: true },
-    locations: [
-      {
-        type: {
-          type: String,
-          enum: ['Point', 'Just GeoJSON Points are accepted'],
-          required: true,
-          default: 'Point',
-        },
-        coordinates: {
-          type: [Number],
-          required: true,
-          validate: {
-            validator: function (val) {
-              return val.length === 2;
-            },
-            message: 'False coordinates in location.',
+    locations: {
+      type: [
+        {
+          type: {
+            type: String,
+            enum: ['Point', 'Just GeoJSON Points are accepted'],
+            required: true,
+            default: 'Point',
           },
+          coordinates: {
+            type: [Number],
+            required: true,
+            validate: {
+              validator: function (val) {
+                return val.length === 2;
+              },
+              message: 'False coordinates in location.',
+            },
+          },
+          name: { type: String, required: true },
+          _id: false,
         },
-        name: { type: String, unique: true, required: true },
-        _id: false,
-      },
-    ],
-    milestones: [
-      {
-        name: { type: String, unique: true, required: true },
-        isDone: { type: Boolean, default: false },
-        _id: false,
-      },
-    ],
-    resources: [
-      {
-        name: { type: String, unique: true, required: true, enum: resources },
-        priority: {
-          type: Number,
-          required: true,
-          min: [1, 'The lowest priority is 1. Got {VALUE}'],
-          max: [5, 'The highest priority is 5. Got {VALUE}'],
+      ],
+      validate: [uniqueName, 'Duplicate locations are not allowed.'],
+    },
+    milestones: {
+      type: [
+        {
+          name: { type: String, required: true },
+          isDone: { type: Boolean, default: false },
+          _id: false,
         },
-        auth: { type: Boolean, default: true },
-        limit: {
-          min: Number,
-          max: Number,
+      ],
+      validate: [uniqueName, 'Duplicate milestones are not allowed.'],
+    },
+    resources: {
+      type: [
+        {
+          name: { type: String, lowercase: true, required: true, enum: resources },
+          priority: {
+            type: Number,
+            required: true,
+            min: [1, 'The lowest priority is 1. Got {VALUE}'],
+            max: [5, 'The highest priority is 5. Got {VALUE}'],
+          },
+          auth: { type: Boolean, default: true },
+          limit: {
+            min: Number,
+            max: Number,
+          },
+          description: String,
+          _id: false,
         },
-        description: String,
-        _id: false,
-      },
-    ],
+      ],
+      validate: [uniqueName, 'Duplicate resources are not allowed.'],
+    },
     deadline: { type: Date, default: null },
     coverImg: { type: String, required: true },
     resultImg: { type: String, required: true },
