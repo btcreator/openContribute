@@ -37,7 +37,10 @@ const fieldsToUpdateObj = function (body) {
   const fields = Object.keys(body);
   fields.forEach((field) => {
     // plain fields are just set with they value
-    if (!Array.isArray(body[field])) return (set[field] = body[field]);
+    if (typeof body[field] !== 'object') return (set[field] = body[field]);
+
+    // there are no object fields, so what is not an Array, but an Object, needs to be wrapped in an Array
+    if (!Array.isArray(body[field])) body[field] = [body[field]];
 
     // array fields contains objects
     body[field].forEach((obj, i) => {
@@ -65,9 +68,9 @@ const fieldsToUpdateObj = function (body) {
 exports.getSearchResults = catchAsync(async (req, res) => {
   const selector = 'name summary leader type resources resultImg isDone';
 
-  const projectsQuery = Project.find({}).select(selector).populate('leader', 'name');
+  const projectsQuery = Project.find().select(selector).populate('leader', 'name');
 
-  const query = new RefineQuery(projectsQuery, req.query).refine();
+  const query = new RefineQuery(projectsQuery, req.query).refine({ isActive: true });
   const projects = await query;
 
   res.status(200).json({
@@ -92,7 +95,7 @@ exports.resourceInfo = (req, res) => {
 // Project "MY" operations
 ////
 exports.myProjects = catchAsync(async (req, res) => {
-  const projects = await Project.find({ leader: req.user.id, isActive: true }).populate('leader');
+  const projects = await Project.find({ leader: req.user.id, isActive: true });
 
   res.status(200).json({
     status: 'success',
