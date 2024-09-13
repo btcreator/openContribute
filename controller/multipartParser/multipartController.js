@@ -78,13 +78,21 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
 // multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
 exports.reparseMultipartBody = function (req, res, next) {
   if (!req.headers['content-type'].startsWith('multipart/form-data')) return next();
-  const regex = new RegExp(/^[\[,\{].*[\],\}]$/);
+  const regex = new RegExp(/^[\[,\{].*[\],\}]$/s);
 
   Object.keys(req.body).forEach((key) => {
-    const value = req.body[key];
+    const value = req.body[key].trim();
     if (regex.test(value)) {
       req.body[key] = JSON.parse(value);
     }
   });
   next();
+};
+
+// guard middlewares. Just the specified methodes are allowed to call the next middlewares
+exports.passMethods = function (...methods) {
+  return function (req, res, next) {
+    if (!methods.includes(req.method.toLowerCase())) return next('route');
+    next();
+  };
 };
