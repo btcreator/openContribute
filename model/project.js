@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
 const { removeImages } = require('../controller/staticFilesystem/staticFileController');
 const { resources } = require('./resourceDescriptions/resourceDescriptions');
@@ -16,7 +17,8 @@ const uniqueName = function (val) {
 
 const projectSchema = new mongoose.Schema(
   {
-    name: { type: String, unique: true, required: true },
+    name: { type: String, required: true },
+    slug: { type: String, unique: true },
     leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     type: { type: String, lowercase: true, required: true },
     summary: {
@@ -121,6 +123,15 @@ projectSchema.methods.rearrangeMilestones = function () {
 
 // Hooks (Middlewares)
 ////
+projectSchema.pre(/.*update.*|save/i, function (next) {
+  if (this.isModified) this.isModified('name') && (this.slug = slugify(this.name, { lower: true }));
+  else {
+    const prName = this.getUpdate()?.$set?.name;
+    prName && this.set('slug', slugify(prName, { lower: true }));
+  }
+  next();
+});
+
 projectSchema.pre('findOneAndDelete', async function (next) {
   const images = await this.clone().findOne().select('coverImg resultImg -_id');
 
