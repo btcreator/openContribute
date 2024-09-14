@@ -110,7 +110,7 @@ exports.createMyProject = catchAsync(async (req, res) => {
   if (!req.user.name)
     throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
 
-  const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone');
+  const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone', 'coverImg', 'resultImg');
   bodyCl.leader = req.user._id;
 
   const images = req.files;
