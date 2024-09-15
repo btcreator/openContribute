@@ -154,7 +154,11 @@ exports.deleteMyProject = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.getProject = catchAsync(async (req, res) => {
-  const project = await Project.findById(req.params.id).populate('leader');
+  let project = {};
+
+  // get project is bound to one of params: id or slug.
+  if (req.params.id) project = await Project.findById(req.params.id).populate('leader', 'name email');
+  if (req.params.slug) project = await Project.findOne({ slug: req.params.slug }).populate('leader', 'name email');
 
   res.status(200).json({
     status: 'success',

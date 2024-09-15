@@ -8,6 +8,7 @@ const router = express.Router();
 router.route('/resources/info').get(projectController.resourceInfo);
 router.route('/search').get(projectController.getSearchResults);
 router.route('/:id').get(checkId, projectController.getProject);
+router.route('/:slug').get(projectController.getProject);
 
 // After this point an authentication is needed
 router.use(authenticate);
