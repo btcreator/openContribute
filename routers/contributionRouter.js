@@ -1,6 +1,7 @@
 const express = require('express');
 const { authenticate, restrictedTo } = require('./../controller/authentication/authController');
 const contiController = require('./../controller/contributionController');
+const { checkId } = require('../utils/helpers');
 
 const router = express.Router();
 
@@ -9,7 +10,8 @@ router.route('/stat').get(contiController.getStats);
 
 // For guests / public
 router
-  .route('/guest')
+  .route('/myContribution')
+  .all(contiController.isGuest)
   .get(contiController.getGuestContribution)
   .post(contiController.createGuestContribution)
   .patch(contiController.updateGuestContribution)
@@ -18,10 +20,12 @@ router
 // After this point an authentication is needed
 router.use(authenticate);
 
-router.route('/myContribution').get(contiController.myContributions).post(contiController.createMyContribution);
+router.route('/myContributions').get(contiController.myContributions);
+router.route('/myContribution').post(contiController.createMyContribution);
 
 router
   .route('/myContribution/:id')
+  .all(checkId)
   .get(contiController.getMyContribution)
   .patch(contiController.updateMyContribution)
   .delete(contiController.deleteMyContribution);
@@ -33,6 +37,7 @@ router.route('/').get(contiController.getAllContributions).post(contiController.
 
 router
   .route('/:id')
+  .all(checkId)
   .get(contiController.getContribution)
   .patch(contiController.updateContribution)
   .delete(contiController.deleteContribution);

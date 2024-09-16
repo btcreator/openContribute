@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
+const { resources } = require('./resourceDescriptions/resourceDescriptions');
 
 const contributionSchema = new mongoose.Schema({
   user: {
@@ -14,6 +16,7 @@ const contributionSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
     required: [true, 'Please provide with which resource you want to contribute.'],
+    enum: resources,
   },
   amount: {
     type: Number,
@@ -24,11 +27,23 @@ const contributionSchema = new mongoose.Schema({
   },
   guestPassToken: {
     type: String,
+    select: false,
+    unique: true,
     validate: {
-      validator: (token) => token.length === 36,
+      validator: (token) => token.length === 32,
       message: 'Invalid pass token.',
     },
   },
+});
+
+// Hooks (Middlewares)
+////
+contributionSchema.pre('save', function (next) {
+  if (!this.isNew || this.user) return next();
+
+  this.guestPassToken = crypto.randomBytes(32).toString('hex');
+
+  next();
 });
 
 const contribution = mongoose.model('Contribution', contributionSchema);
