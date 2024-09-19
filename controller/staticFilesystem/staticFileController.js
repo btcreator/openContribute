@@ -1,7 +1,7 @@
 const fsP = require('fs/promises');
 const { serverLog } = require('../../utils/helpers');
 
-const forceRemoveOpt = {
+const _forceRemoveOpt = {
   force: true,
   maxRetries: 2,
   retryDelay: 100,
@@ -23,7 +23,7 @@ exports.removeImage = async function (path, filename) {
 
 // Mass removal of images/files
 exports.removeImages = function (path, filenames) {
-  filenames.forEach((fname) => fsP.rm(`${path}${fname}`, forceRemoveOpt));
+  filenames.forEach((fname) => fsP.rm(`${path}${fname}`, _forceRemoveOpt));
 };
 
 // On UPDATE
@@ -56,7 +56,7 @@ exports.clearImages = function (files) {
   // the rm is a promise based method, and it gets not awaited on purpose - its not get throw an error, because of force option. Remove the files in background.
   Object.keys(files).forEach((key) => {
     files[key].forEach((fileObj) => {
-      fsP.rm(`${fileObj.destination}${fileObj.filename}`, forceRemoveOpt);
+      fsP.rm(`${fileObj.destination}${fileObj.filename}`, _forceRemoveOpt);
     });
   });
 };

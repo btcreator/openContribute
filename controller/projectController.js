@@ -9,10 +9,10 @@ const { updateImages } = require('./staticFilesystem/staticFileController');
 const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 
 // Update project
-const updateProjectById = async function (id, body) {
+const _updateProjectById = async function (id, body) {
   // update the project with the new data
   const _id = new ObjectId(`${id}`);
-  const updateLog = await Project.updateOne({ _id }, ...fieldsToUpdateObj(body));
+  const updateLog = await Project.updateOne({ _id }, ..._fieldsToUpdateObj(body));
 
   // no project found
   if (updateLog.acknowledged && !updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
@@ -30,7 +30,7 @@ const updateProjectById = async function (id, body) {
 };
 
 // Convert the body to update object and when array fields are updated, then set the arrayFilters option too for mongo/mongoose updateOne method
-const fieldsToUpdateObj = function (body) {
+const _fieldsToUpdateObj = function (body) {
   const set = {};
   const arrayFilters = [];
 
@@ -130,7 +130,7 @@ exports.createMyProject = catchAsync(async (req, res) => {
 exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
 
-  const project = await updateProjectById(req.params.id, bodyCl);
+  const project = await _updateProjectById(req.params.id, bodyCl);
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
@@ -193,7 +193,7 @@ exports.createProject = catchAsync(async (req, res) => {
 exports.updateProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body);
 
-  const project = await updateProjectById(req.params.id, bodyCl);
+  const project = await _updateProjectById(req.params.id, bodyCl);
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };

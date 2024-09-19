@@ -6,7 +6,7 @@ const { resources } = require('./resourceDescriptions/resourceDescriptions');
 
 // In mongoose a uniqe index is valid on the collection level, not on subdocuments for example in an array.
 // So a custom validator of uniqueness of name fileds are deployed
-const uniqueName = function (val) {
+const _uniqueName = function (val) {
   if (!Array.isArray(val)) return false;
 
   for (let seen = {}, i = 0; i < val.length; ++i) {
@@ -50,7 +50,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: [uniqueName, 'Duplicate locations are not allowed.'],
+      validate: [_uniqueName, 'Duplicate locations are not allowed.'],
     },
     milestones: {
       type: [
@@ -60,7 +60,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: [uniqueName, 'Duplicate milestones are not allowed.'],
+      validate: [_uniqueName, 'Duplicate milestones are not allowed.'],
     },
     resources: {
       type: [
@@ -81,7 +81,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: [uniqueName, 'Duplicate resources are not allowed.'],
+      validate: [_uniqueName, 'Duplicate resources are not allowed.'],
     },
     deadline: { type: Date, default: null },
     coverImg: { type: String, required: true },

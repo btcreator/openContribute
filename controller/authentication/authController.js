@@ -9,7 +9,7 @@ const { promisify } = require('util');
 const emailMarkup = require('../../utils/emailMarkup');
 const { ObjectId } = require('mongoose').Types;
 
-const cookieOptions = {
+const _cookieOptions = {
   expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
   httpOnly: true,
   secure: true,
@@ -18,7 +18,7 @@ const cookieOptions = {
 // Token related functions
 ////
 // Generate jwt token
-const signJWT = (jwtPayload) => {
+const _signJWT = (jwtPayload) => {
   jwtPayload.iat = Date.now() / 1000;
   return promisify(jwt.sign)(jwtPayload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -26,7 +26,7 @@ const signJWT = (jwtPayload) => {
 };
 
 // Verify jwt token
-const verifyJWT = (token) =>
+const _verifyJWT = (token) =>
   promisify(jwt.verify)(token, process.env.JWT_SECRET).catch((err) => {
     serverLog(`Security log: ${err.name} - ${err.message}`);
     throw new AppError(401, 'Invalid token. Please log in again.');
@@ -36,7 +36,7 @@ const verifyJWT = (token) =>
 ////
 // Log out the user after a delete operation - reset cookie
 exports.logDeletedMeOutAndSend = async (res) => {
-  res.clearCookie('jwt', cookieOptions);
+  res.clearCookie('jwt', _cookieOptions);
   res.status(204).end();
 };
 
@@ -50,8 +50,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   const user = await User.create({ email, password, confirmPassword });
 
   // create jwt token and set cookie
-  const token = await signJWT({ id: user._id, aud: req.get('origin') });
-  res.cookie('jwt', token, cookieOptions);
+  const token = await _signJWT({ id: user._id, aud: req.get('origin') });
+  res.cookie('jwt', token, _cookieOptions);
 
   res.status(201).json({
     status: 'success',
@@ -75,8 +75,8 @@ exports.login = catchAsync(async (req, res) => {
     throw new AppError(401, 'Wrong email or password.');
 
   // create jwt token and set cookie
-  const token = await signJWT({ id: user._id, aud: req.get('origin') });
-  res.cookie('jwt', token, cookieOptions);
+  const token = await _signJWT({ id: user._id, aud: req.get('origin') });
+  res.cookie('jwt', token, _cookieOptions);
 
   res.status(200).json({
     status: 'success',
@@ -87,7 +87,7 @@ exports.login = catchAsync(async (req, res) => {
 });
 
 exports.logout = catchAsync(async (req, res) => {
-  res.clearCookie('jwt', cookieOptions);
+  res.clearCookie('jwt', _cookieOptions);
 
   res.status(200).json({
     status: 'success',
@@ -117,8 +117,8 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
   await user.save();
 
   // create jwt token and set cookie
-  const token = await signJWT({ id: user._id });
-  res.cookie('jwt', token, cookieOptions);
+  const token = await _signJWT({ id: user._id });
+  res.cookie('jwt', token, _cookieOptions);
 
   res.status(200).json({
     status: 'success',
@@ -218,7 +218,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   if (!token) throw new AppError(403, 'You need to be logged in to access.');
 
   // verify token
-  const tokenData = await verifyJWT(token);
+  const tokenData = await _verifyJWT(token);
 
   // check if user still exists
   const _id = new ObjectId(`${tokenData.id}`);
