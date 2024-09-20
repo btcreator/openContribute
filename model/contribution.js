@@ -5,11 +5,11 @@ const { resources } = require('./resourceDescriptions/resourceDescriptions');
 const contributionSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
   },
   project: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'project',
+    ref: 'Project',
     required: [true, 'Need a project to which the resource is contributed.'],
   },
   resource: {
