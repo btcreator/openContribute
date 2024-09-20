@@ -35,7 +35,7 @@ class RefineQuery {
       this.query.select(fields);
     }
 
-    this.query.select('-__v');
+    !this.query.selectedInclusively() && this.query.select('-__v');
     return this;
   }
 
