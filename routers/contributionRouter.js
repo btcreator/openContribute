@@ -5,9 +5,6 @@ const { checkId } = require('../utils/helpers');
 
 const router = express.Router();
 
-// Public routes
-router.route('/stat').get(contriController.getStats);
-
 // For guests / public
 router
   .route('/myContribution')
