@@ -82,12 +82,6 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
   });
 };
 
-// Public operations
-////
-exports.getStats = catchAsync(async (req, res) => {
-  //
-});
-
 // Contribution GUEST operations
 ////
 exports.getGuestContribution = catchAsync(async (req, res) => {
@@ -229,7 +223,8 @@ exports.getAllMyContributions = catchAsync(async (req, res) => {
 });
 
 exports.getMyContribution = catchAsync(async (req, res) => {
-  const contribution = await Contribution.findById(req.params.id).populate('project', 'name');
+  const _id = new ObjectId(`${req.params.id}`);
+  const contribution = await Contribution.findOne({ _id, user: req.user._id }).populate('project', 'name');
 
   res.status(200).json({
     status: 'success',
@@ -250,7 +245,7 @@ exports.createMyContribution = catchAsync(async (req, res) => {
 exports.updateMyContribution = catchAsync(async (req, res) => {
   const isGuest = false;
   const _id = new ObjectId(`${req.params.id}`);
-  const contribution = await Contribution.findOne({ _id, resource: { $ne: 'funds' } });
+  const contribution = await Contribution.findOne({ _id, user: req.user._id, resource: { $ne: 'funds' } });
   if (!contribution) throw new AppError(404, 'No contribution eligible to update is found.');
 
   await _updateContributionAndSend(res, contribution, req.body.amount, isGuest);
@@ -258,7 +253,7 @@ exports.updateMyContribution = catchAsync(async (req, res) => {
 
 exports.deleteMyContribution = catchAsync(async (req, res) => {
   const _id = new ObjectId(`${req.params.id}`);
-  await Contribution.deleteOne({ _id, resource: { $ne: 'funds' } });
+  await Contribution.deleteOne({ _id, user: req.user._id, resource: { $ne: 'funds' } });
 
   res.status(204).end();
 });
