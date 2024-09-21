@@ -30,7 +30,7 @@ const contributionSchema = new mongoose.Schema({
     select: false,
     unique: true,
     validate: {
-      validator: (token) => token.length === 32,
+      validator: (token) => token.length === 64,
       message: 'Invalid pass token.',
     },
   },
