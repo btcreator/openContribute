@@ -1,14 +1,17 @@
+const express = require('express');
 const projectRouter = require('./routers/projectRouter');
 const userRouter = require('./routers/userRouter');
 const contributionRouter = require('./routers/contributionRouter');
+const { stats } = require('./controller/statisticsController');
 const exception = require('./controller/exception/exceptionHandler');
-const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const multiparter = require('./routers/multiparter/multipartRouter');
-const app = express();
 const security = require('./security');
 const cors = require('cors');
+const path = require('path');
+
+// Create app
+const app = express();
 
 // For barrier-free connections
 ////
@@ -33,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/contribution', contributionRouter);
+app.get('/api/v1/stats', stats);
 
 // Routes, that are not implemented - 404
 app.use(exception.globalRouteHandler);
