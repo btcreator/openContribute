@@ -17,8 +17,8 @@ router
 // After this point an authentication is needed
 router.use(authenticate);
 
-router.route('/myContributions/summary').get(contriController.myContributions);
 router.route('/myContributions').get(contriController.getAllMyContributions);
+router.route('/myContributions/summary').get(contriController.myContributionsSummary);
 
 router.route('/myContribution').post(contriController.createMyContribution);
 router
