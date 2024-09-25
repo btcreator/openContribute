@@ -5,12 +5,13 @@ const Project = require('./../model/project');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
 const { ObjectId } = require('mongoose').Types;
+const { summaryPipeline, resourcePipeline } = require('./aggregationPipelines/contributionPipelines');
 
 // Check if the resource is needed for the project and if the limit is not exceeded
 const _clarifyResourceAndLimit = async function (projectId, resourceName, amountChange, guest) {
   // search for project to which the contribution belongs
-  const _id = new ObjectId(`${projectId}`);
-  const project = await Project.findOne({ _id, 'resources.name': resourceName }).select('resources');
+  const projIdObj = new ObjectId(`${projectId}`);
+  const project = await Project.findOne({ _id: projIdObj, 'resources.name': resourceName }).select('resources');
 
   // check project presence - project not exists or the resource does not need for that project
   if (!project) throw new AppError(404, 'Project resource to contribute to, is not found.');
@@ -21,22 +22,7 @@ const _clarifyResourceAndLimit = async function (projectId, resourceName, amount
     throw new AppError(401, 'You need to be logged in to contribute with this resource.');
 
   // get the total amount contributed to the resource
-  const resource = await Contribution.aggregate([
-    {
-      $match: {
-        project: _id,
-        resource: resourceName,
-      },
-    },
-    {
-      $group: {
-        _id: '$project',
-        amount: {
-          $sum: '$amount',
-        },
-      },
-    },
-  ]);
+  const resource = await Contribution.aggregate(resourcePipeline(projIdObj, resourceName));
 
   // deny contribution if the maximal limit would be exceeded with this contribution
   const totalAmount = resource[0]?.amount ?? 0;
@@ -74,7 +60,7 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
 
   const contribution = await Contribution.create(payload);
 
-  res.status(200).json({
+  res.status(201).json({
     status: 'success',
     data: {
       contribution,
@@ -130,73 +116,8 @@ exports.isGuest = (req, res, next) => {
 
 // Contribution "MY" operations
 ////
-exports.myContributions = catchAsync(async (req, res) => {
-  const contributions = await Contribution.aggregate([
-    // stage 1 - match all contributions from the logged in user
-    {
-      $match: { user: req.user._id },
-    },
-    // stage 2 - build a group by project and resource corresponding to the project and sum the contributed amount
-    {
-      $group: {
-        _id: {
-          project: '$project',
-          resource: '$resource',
-        },
-        totalAmount: {
-          $sum: '$amount',
-        },
-      },
-    },
-    // stage 3 - now regroup just by projects and collect the resources in an array with key value pair
-    {
-      $group: {
-        _id: '$_id.project',
-        resources: {
-          $push: {
-            k: '$_id.resource',
-            v: '$totalAmount',
-          },
-        },
-      },
-    },
-    // stage 4 - convert array to object
-    {
-      $project: {
-        _id: 1,
-        resources: {
-          $arrayToObject: '$resources',
-        },
-      },
-    },
-    // stage 5 - populate the projects id and select just the name
-    {
-      $lookup: {
-        from: 'projects',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'project',
-        pipeline: [
-          {
-            $project: {
-              name: 1,
-              _id: 0,
-            },
-          },
-        ],
-      },
-    },
-    // stage 6 - the populated project is an array, so unwind it (to objects)
-    {
-      $unwind: '$project',
-    },
-    // stage 7 - replace project's value with the project name.
-    {
-      $addFields: {
-        project: '$project.name',
-      },
-    },
-  ]);
+exports.myContributionsSummary = catchAsync(async (req, res) => {
+  const contributions = await Contribution.aggregate(summaryPipeline(req.user._id));
 
   res.status(200).json({
     status: 'success',
