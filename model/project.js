@@ -124,6 +124,7 @@ projectSchema.methods.rearrangeMilestones = function () {
 // Hooks (Middlewares)
 ////
 projectSchema.pre(/.*update.*|save/i, function (next) {
+  // add slug or update slug. This middleware gets called with document or query. When isModified method exists, its a document and the slug is added. Else the slug must be set to update query.
   if (this.isModified) this.isModified('name') && (this.slug = slugify(this.name, { lower: true }));
   else {
     const prName = this.getUpdate()?.$set?.name;
