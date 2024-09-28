@@ -232,11 +232,37 @@ exports.authenticate = catchAsync(async (req, res, next) => {
 
   // token is from the same audience
   if (req.get('origin') !== tokenData.aud) {
-    serverLog(`Security log: Trying log in form ${req.get('origin')} where audience was ${tokenData.aud}`);
+    serverLog(`Security log: Trying log in from ${req.get('origin')} where audience was ${tokenData.aud}`);
     throw new AppError(401, 'Invalid token. Please login again.');
   }
 
   // access granted
+  delete user.passwordChangedAt;
+  req.user = user;
+  next();
+});
+
+// Identificate user
+exports.identificateUser = catchAsync(async (req, res, next) => {
+  // get the token
+  const token = req.cookies.jwt;
+  if (!token) return next();
+
+  // verify token
+  const tokenData = await _verifyJWT(token);
+
+  // check if user still exists and if the password changed after token issue date
+  const _id = new ObjectId(`${tokenData._id}`);
+  const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
+  if (!user && user.passwordChangedAt > tokenData.iat * 1000) return next();
+
+  // token is from the same audience
+  if (req.get('origin') !== tokenData.aud) {
+    serverLog(`Security log: Trying log in from ${req.get('origin')} where audience was ${tokenData.aud}`);
+    return next();
+  }
+
+  // user is identified
   delete user.passwordChangedAt;
   req.user = user;
   next();
