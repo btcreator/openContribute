@@ -1,18 +1,22 @@
 const express = require('express');
-const { authenticate, restrictedTo } = require('./../controller/authentication/authController');
+const { authenticate, identificateUser, restrictedTo } = require('./../controller/authentication/authController');
 const contriController = require('./../controller/contributionController');
 const { checkId } = require('../utils/helpers');
 
 const router = express.Router();
 
 // For guests / public
+router.route('/project/:id').get(checkId, contriController.getProjectsContributors);
+
 router
   .route('/myContribution')
   .all(contriController.isGuest)
   .get(contriController.getGuestContribution)
-  .post(contriController.createGuestContribution)
   .patch(contriController.updateGuestContribution)
   .delete(contriController.deleteGuestContribution);
+
+// POST for guests and users
+router.route('/myContribution').post(identificateUser, contriController.createContribution);
 
 // After this point an authentication is needed
 router.use(authenticate);
@@ -20,7 +24,6 @@ router.use(authenticate);
 router.route('/myContributions').get(contriController.getAllMyContributions);
 router.route('/myContributions/summary').get(contriController.myContributionsSummary);
 
-router.route('/myContribution').post(contriController.createMyContribution);
 router
   .route('/myContribution/:id')
   .all(checkId)
