@@ -40,12 +40,7 @@ exports.updateImages = async function (from, to) {
 
     // copy (overwrite when exists), then remove the source file
     await fsP.copyFile(source, target);
-    fsP.rm(source, {
-      force: true,
-      maxRetries: 2,
-      retryDelay: 100,
-      recursive: true,
-    });
+    fsP.rm(source, _forceRemoveOpt);
   });
 };
 
