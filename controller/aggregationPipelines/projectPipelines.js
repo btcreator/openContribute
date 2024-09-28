@@ -13,7 +13,7 @@ exports.populateContributionsToProjectPipeline = (match) => [
       as: 'leader',
       pipeline: [
         {
-          $project: { name: 1, _id: 0 },
+          $project: { name: 1, photo: 1, _id: 0 },
         },
       ],
     },
@@ -71,51 +71,24 @@ exports.populateContributionsToProjectPipeline = (match) => [
         },
       ],
     },
-  }, // stage 5 - populate contributors with they names as "populatedContributors" / guests (null) gets here excluded
+  },
+  // stage 5 - populated fields are arrays, so unwind it.
+  {
+    $unwind: '$contributions',
+  },
+  // stage 6 - populate 5 contributors with they names. Guests (null) and users without names gets here excluded.
   {
     $lookup: {
       from: 'users',
       localField: 'contributions.contributors',
       foreignField: '_id',
-      as: 'populatedContributors',
-      pipeline: [{ $project: { _id: 0, name: 1 } }],
+      as: 'contributions.contributors',
+      pipeline: [{ $match: { name: { $exists: true } } }, { $limit: 5 }, { $project: { _id: 0, name: 1, photo: 1 } }],
     },
   },
-  // stage 6 - populated fields are arrays, so unwind it.
-  {
-    $unwind: '$contributions',
-  },
-  // stage 7 - add contributors names to the populatedContributors array
-  {
-    $addFields: {
-      populatedContributors: {
-        $map: {
-          input: '$populatedContributors',
-          as: 'user',
-          in: '$$user.name',
-        },
-      },
-      leader: '$leader.name',
-    },
-  },
-  // stage 8 - add contributors names to the contributions.contributors array and add guest when needed
-  {
-    $addFields: {
-      'contributions.contributors': {
-        $cond: {
-          if: {
-            $lt: [{ $size: '$populatedContributors' }, { $size: '$contributions.contributors' }],
-          },
-          then: { $concatArrays: ['$populatedContributors', ['guest']] },
-          else: '$populatedContributors',
-        },
-      },
-    },
-  },
-  // stage 9 - remove unnecessary fields
+  // stage 7 - remove unnecessary fields
   {
     $project: {
-      populatedContributors: 0,
       _id: 0,
       'contributions._id': 0,
     },
