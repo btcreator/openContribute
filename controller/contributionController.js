@@ -5,7 +5,11 @@ const Project = require('./../model/project');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
 const { ObjectId } = require('mongoose').Types;
-const { summaryPipeline, resourcePipeline } = require('./aggregationPipelines/contributionPipelines');
+const {
+  summaryPipeline,
+  resourcePipeline,
+  projectsContributorsPipeline,
+} = require('./aggregationPipelines/contributionPipelines');
 
 // Check if the resource is needed for the project and if the limit is not exceeded
 const _clarifyResourceAndLimit = async function (projectId, resourceName, amountChange, guest) {
@@ -68,6 +72,20 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
   });
 };
 
+// Public operations
+////
+exports.getProjectsContributors = catchAsync(async (req, res) => {
+  const projectId = new ObjectId(`${req.params.id}`);
+  const contributors = await Contribution.aggregate(projectsContributorsPipeline(projectId));
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      contributors,
+    },
+  });
+});
+
 // Contribution GUEST operations
 ////
 exports.getGuestContribution = catchAsync(async (req, res) => {
@@ -80,13 +98,6 @@ exports.getGuestContribution = catchAsync(async (req, res) => {
       contribution,
     },
   });
-});
-
-exports.createGuestContribution = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'user');
-  const isGuest = true;
-
-  await _createContributionAndSend(res, bodyCl, isGuest);
 });
 
 exports.updateGuestContribution = catchAsync(async (req, res) => {
@@ -155,14 +166,6 @@ exports.getMyContribution = catchAsync(async (req, res) => {
   });
 });
 
-exports.createMyContribution = catchAsync(async (req, res) => {
-  const isGuest = false;
-  const bodyCl = cleanBody(req.body);
-  bodyCl.user = req.user._id;
-
-  await _createContributionAndSend(res, bodyCl, isGuest);
-});
-
 exports.updateMyContribution = catchAsync(async (req, res) => {
   const isGuest = false;
   const _id = new ObjectId(`${req.params.id}`);
@@ -181,6 +184,29 @@ exports.deleteMyContribution = catchAsync(async (req, res) => {
 
 // CRUD operations
 ////
+exports.createContribution = catchAsync(async (req, res) => {
+  // initiate most secure values
+  let isGuest = true;
+  let bodyCl = {};
+
+  // if its an authorized user
+  if (req.user) {
+    bodyCl = cleanBody(req.body);
+
+    // not an admin
+    if (req.user.role !== 'admin') {
+      isGuest = false;
+      bodyCl.user = req.user._id;
+    }
+    // when an admin
+    else isGuest = !bodyCl.user;
+  }
+  // if its a guest...
+  else bodyCl = cleanBody(req.body, 'user');
+
+  await _createContributionAndSend(res, bodyCl, isGuest);
+});
+
 exports.getContribution = catchAsync(async (req, res) => {
   const contribution = await Contribution.findById(req.params.id).populate('user', 'name').populate('project', 'name');
 
@@ -190,13 +216,6 @@ exports.getContribution = catchAsync(async (req, res) => {
       contribution,
     },
   });
-});
-
-exports.createContribution = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body);
-  const isGuest = !bodyCl.user;
-
-  await _createContributionAndSend(res, bodyCl, isGuest);
 });
 
 exports.updateContribution = catchAsync(async (req, res) => {

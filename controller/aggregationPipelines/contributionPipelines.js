@@ -83,3 +83,52 @@ exports.resourcePipeline = (project, resource) => [
     },
   },
 ];
+
+exports.projectsContributorsPipeline = (project) => [
+  {
+    $match: { project },
+  },
+  {
+    $group: {
+      _id: { $ifNull: ['$user', null] },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      users: { $push: '$_id' },
+    },
+  },
+  {
+    $lookup: {
+      from: 'users',
+      localField: 'users',
+      foreignField: '_id',
+      as: 'contributors',
+      pipeline: [
+        {
+          $project: { name: { $ifNull: ['$name', 'Anonymous'] }, photo: 1, _id: 0 },
+        },
+      ],
+    },
+  },
+  {
+    $addFields: {
+      contributors: {
+        $cond: {
+          if: {
+            $lt: [{ $size: '$contributors' }, { $size: '$users' }],
+          },
+          then: { $concatArrays: ['$contributors', [{ name: 'Guest', photo: 'default.jpg' }]] },
+          else: '$contributors',
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      users: 0,
+      _id: 0,
+    },
+  },
+];
