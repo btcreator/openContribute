@@ -23,8 +23,11 @@ exports.bufferImage = (image) => (req, res, next) => {
 
 // Edit uploaded image to a frendly format
 exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
-  // check if file exists
-  if (!req.files?.userPhoto?.[0]) return next();
+  // check if file exists, when not, remove the empty/wrong uploaded files object
+  if (!req.files?.userPhoto?.[0]) {
+    delete req.files;
+    return next();
+  }
 
   // set path and a temporary file name
   const userPhoto = req.files.userPhoto[0];
@@ -108,5 +111,5 @@ exports.passMethods = function (...methods) {
 
 // Only multipart/form-data is allowed
 exports.checkContetType = function (req, res, next) {
-  return !req.headers['content-type'].startsWith('multipart/form-data') ? next('route') : next();
+  return !req.headers['content-type']?.startsWith('multipart/form-data') ? next('route') : next();
 };
