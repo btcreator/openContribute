@@ -131,6 +131,10 @@ exports.createMyProject = catchAsync(async (req, res) => {
 exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
 
+  const _id = new ObjectId(`${req.params.id}`);
+  if (!(await Project.exists({ _id, leader: req.user._id })))
+    throw new AppError(403, 'You are not the leader of this project.');
+
   const project = await _updateProjectById(req.params.id, bodyCl);
 
   if (req.files) {
