@@ -24,7 +24,7 @@ exports.bufferImage = (image) => (req, res, next) => {
 // Edit uploaded image to a frendly format
 exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   // check if file exists
-  if (!req.files) return next();
+  if (!req.files?.userPhoto?.[0]) return next();
 
   // set path and a temporary file name
   const userPhoto = req.files.userPhoto[0];
@@ -75,7 +75,7 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
   return upload(req, res, next);
 });
 
-// multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
+// Multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
 exports.reparseMultipartBody = function (req, res, next) {
   if (!req.headers['content-type'].startsWith('multipart/form-data')) return next();
   const regex = new RegExp(/^[\[,\{].*[\],\}]$/s);
@@ -89,7 +89,10 @@ exports.reparseMultipartBody = function (req, res, next) {
   next();
 };
 
-// guard middlewares. Just the specified methodes are allowed to call the next middlewares
+// Handle uploaded images and videos
+exports.uploadFeedMultimedia = function (req, res, next) {};
+
+// Guard middlewares. Just the specified methodes are allowed to call the next middlewares
 exports.passMethods = function (...methods) {
   return function (req, res, next) {
     if (!methods.includes(req.method.toLowerCase())) return next('route');
