@@ -89,7 +89,6 @@ exports.populateContributionsToProjectPipeline = (match) => [
   // stage 7 - remove unnecessary fields
   {
     $project: {
-      _id: 0,
       'contributions._id': 0,
     },
   },
