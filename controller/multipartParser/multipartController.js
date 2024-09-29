@@ -75,9 +75,13 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
   return upload(req, res, next);
 });
 
+// Parse text-only multipart/form-data
+exports.parseTextOnlyMultipartBody = function () {
+  return multer().none();
+};
+
 // Multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
 exports.reparseMultipartBody = function (req, res, next) {
-  if (!req.headers['content-type'].startsWith('multipart/form-data')) return next();
   const regex = new RegExp(/^[\[,\{].*[\],\}]$/s);
 
   Object.keys(req.body).forEach((key) => {
@@ -92,10 +96,17 @@ exports.reparseMultipartBody = function (req, res, next) {
 // Handle uploaded images and videos
 exports.uploadFeedMultimedia = function (req, res, next) {};
 
-// Guard middlewares. Just the specified methodes are allowed to call the next middlewares
+// Guard middlewares
+////
+// Just the specified methodes are allowed to call the next middlewares
 exports.passMethods = function (...methods) {
   return function (req, res, next) {
     if (!methods.includes(req.method.toLowerCase())) return next('route');
     next();
   };
+};
+
+// Only multipart/form-data is allowed
+exports.checkContetType = function (req, res, next) {
+  return !req.headers['content-type'].startsWith('multipart/form-data') ? next('route') : next();
 };
