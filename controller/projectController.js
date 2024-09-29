@@ -69,7 +69,7 @@ const _fieldsToUpdateObj = function (body) {
 exports.getSearchResults = catchAsync(async (req, res) => {
   const selector = 'name slug summary leader type resources resultImg isDone';
 
-  const projectsQuery = Project.find().select(selector).populate('leader', 'name');
+  const projectsQuery = Project.find().select(selector).populate('leader', 'name -_id');
 
   const query = new RefineQuery(projectsQuery, req.query).refine({ isActive: true });
   const projects = await query;
