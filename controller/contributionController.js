@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const Contribution = require('./../model/contribution');
 const Project = require('./../model/project');
+const User = require('./../model/user');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
 const { ObjectId } = require('mongoose').Types;
@@ -15,7 +16,9 @@ const {
 const _clarifyResourceAndLimit = async function (projectId, resourceName, amountChange, guest) {
   // search for project to which the contribution belongs
   const projIdObj = new ObjectId(`${projectId}`);
-  const project = await Project.findOne({ _id: projIdObj, 'resources.name': resourceName }).select('resources');
+  const project = await Project.findOne({ _id: projIdObj, 'resources.name': resourceName, isActive: true }).select(
+    'resources'
+  );
 
   // check project presence - project not exists or the resource does not need for that project
   if (!project) throw new AppError(404, 'Project resource to contribute to, is not found.');
@@ -157,6 +160,7 @@ exports.getAllMyContributions = catchAsync(async (req, res) => {
 exports.getMyContribution = catchAsync(async (req, res) => {
   const _id = new ObjectId(`${req.params.id}`);
   const contribution = await Contribution.findOne({ _id, user: req.user._id }).populate('project', 'name');
+  if (!contribution) throw new AppError(404, 'No contribution found.');
 
   res.status(200).json({
     status: 'success',
@@ -192,14 +196,12 @@ exports.createContribution = catchAsync(async (req, res) => {
   // if its an authorized user
   if (req.user) {
     bodyCl = cleanBody(req.body);
+    isGuest = false;
 
-    // not an admin
-    if (req.user.role !== 'admin') {
-      isGuest = false;
-      bodyCl.user = req.user._id;
-    }
-    // when an admin
-    else isGuest = !bodyCl.user;
+    // not an admin or when an admin, but not provide a user id (contribute self as user)
+    if (req.user.role !== 'admin' || !bodyCl.user) bodyCl.user = req.user._id;
+    // when an admin and provide a user id (entry for other user), check if the user exists
+    else if (!(await User.exists({ _id: bodyCl.user }))) throw new AppError(400, 'False user id provided.');
   }
   // if its a guest...
   else bodyCl = cleanBody(req.body, 'user');
@@ -209,6 +211,7 @@ exports.createContribution = catchAsync(async (req, res) => {
 
 exports.getContribution = catchAsync(async (req, res) => {
   const contribution = await Contribution.findById(req.params.id).populate('user', 'name').populate('project', 'name');
+  if (!contribution) throw new AppError(404, 'No contribution found.');
 
   res.status(200).json({
     status: 'success',

@@ -214,7 +214,7 @@ exports.passwordRecoveryProcess = catchAsync(async (req, res) => {
 ////
 exports.authenticate = catchAsync(async (req, res, next) => {
   // get the token
-  const token = req.cookies.jwt;
+  const token = req.cookies?.jwt;
   if (!token) throw new AppError(403, 'You need to be logged in to access.');
 
   // verify token
@@ -252,7 +252,7 @@ exports.identificateUser = catchAsync(async (req, res, next) => {
   const tokenData = await _verifyJWT(token);
 
   // check if user still exists and if the password changed after token issue date
-  const _id = new ObjectId(`${tokenData._id}`);
+  const _id = new ObjectId(`${tokenData.id}`);
   const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
   if (!user && user.passwordChangedAt > tokenData.iat * 1000) return next();
 

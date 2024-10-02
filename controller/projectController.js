@@ -96,7 +96,7 @@ exports.resourceInfo = (req, res) => {
 // Project "MY" operations
 ////
 exports.myProjects = catchAsync(async (req, res) => {
-  const projects = await Project.find({ leader: req.user.id, isActive: true });
+  const projects = await Project.find({ leader: req.user._id, isActive: true });
 
   res.status(200).json({
     status: 'success',
@@ -151,6 +151,10 @@ exports.updateMyProject = catchAsync(async (req, res) => {
 });
 
 exports.deleteMyProject = catchAsync(async (req, res) => {
+  const _id = new ObjectId(`${req.params.id}`);
+  if (!(await Project.exists({ _id, leader: req.user._id })))
+    throw new AppError(403, 'You are not the leader of this project.');
+
   await Project.findByIdAndUpdate(req.params.id, { isActive: false, setInactiveAt: Date.now() });
 
   res.status(204).end();

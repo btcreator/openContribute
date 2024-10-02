@@ -119,7 +119,7 @@ exports.projectsContributorsPipeline = (project) => [
           if: {
             $lt: [{ $size: '$contributors' }, { $size: '$users' }],
           },
-          then: { $concatArrays: ['$contributors', [{ name: 'Guest', photo: 'default.jpg' }]] },
+          then: { $concatArrays: ['$contributors', [{ photo: 'default.jpg', name: 'Guest' }]] },
           else: '$contributors',
         },
       },
