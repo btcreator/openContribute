@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const { excludeSensitiveFields } = require('./../utils/cleanIOdata');
-const { removeImages } = require('../controller/staticFilesystem/staticFileController');
+const { removeFiles } = require('../controller/staticFilesystem/staticFileController');
 const { resources } = require('./resourceDescriptions/resourceDescriptions');
 
 // In mongoose a uniqe index is valid on the collection level, not on subdocuments for example in an array.
@@ -136,7 +136,7 @@ projectSchema.pre(/.*update.*|save/i, function (next) {
 projectSchema.pre('findOneAndDelete', async function (next) {
   const images = await this.clone().findOne().select('coverImg resultImg -_id');
 
-  images && removeImages(`./public/img/projects/content/`, Object.values(images.toObject()));
+  images && removeFiles(`./public/img/projects/content/`, Object.values(images.toObject()));
 
   next();
 });

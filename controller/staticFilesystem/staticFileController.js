@@ -22,7 +22,7 @@ exports.removeImage = async function (path, filename) {
 };
 
 // Mass removal of images/files
-exports.removeImages = function (path, filenames) {
+exports.removeFiles = function (path, filenames) {
   filenames.forEach((fname) => fsP.rm(`${path}${fname}`, _forceRemoveOpt));
 };
 
