@@ -18,7 +18,7 @@ exports.myProfile = catchAsync(async (req, res) => {
 });
 
 exports.updateMyProfile = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'photo', 'role', 'isActive');
+  const bodyCl = cleanBody(req.body, 'role', 'isActive');
 
   if (bodyCl.password) throw new AppError(400, 'For password updates use the corresponding route.');
 

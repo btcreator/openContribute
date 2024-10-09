@@ -24,9 +24,12 @@ exports.cleanBody = function (body, ...except) {
     'passwordResetToken',
     'setInactiveAt',
     'passwordChangedAt',
+    'photo',
     'contributedAt',
     'guestPassToken',
     'slug',
+    'coverImg',
+    'resultImg',
     'createdAt',
   ];
 
