@@ -1,6 +1,7 @@
 const express = require('express');
 const projectRouter = require('./routers/projectRouter');
 const userRouter = require('./routers/userRouter');
+const feedRouter = require('./routers/feedRouter');
 const contributionRouter = require('./routers/contributionRouter');
 const { stats } = require('./controller/statisticsController');
 const exception = require('./controller/exception/exceptionHandler');
@@ -33,9 +34,10 @@ app.use(security);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Route incoming requests to corresponding router
-app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/contribution', contributionRouter);
+app.use('/api/v1/feed', feedRouter);
 app.get('/api/v1/stats', stats);
 
 // Routes, that are not implemented - 404
