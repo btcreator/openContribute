@@ -5,7 +5,7 @@ const RefineQuery = require('./../utils/refineQuery');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
-const { updateImages } = require('./staticFilesystem/staticFileController');
+const { updateFilesOnDisk } = require('./staticFilesystem/staticFileController');
 const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
 
@@ -139,7 +139,7 @@ exports.updateMyProject = catchAsync(async (req, res) => {
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
-    await updateImages(req.files, imageNames);
+    await updateFilesOnDisk(req.files, imageNames);
   }
 
   res.status(200).json({
@@ -208,7 +208,7 @@ exports.updateProject = catchAsync(async (req, res) => {
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
-    await updateImages(req.files, imageNames);
+    await updateFilesOnDisk(req.files, imageNames);
   }
 
   res.status(200).json({

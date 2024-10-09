@@ -4,7 +4,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cleanBody } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
-const { updateImages } = require('./staticFilesystem/staticFileController');
+const { updateFilesOnDisk } = require('./staticFilesystem/staticFileController');
 
 // User "MY" operations
 ////
@@ -25,7 +25,7 @@ exports.updateMyProfile = catchAsync(async (req, res) => {
   // user photo update sequence
   if (req.files) {
     if (req.user.photo === 'default.jpg') bodyCl.photo = req.files.userPhoto[0].filename;
-    else await updateImages(req.files, { userPhoto: req.user.photo });
+    else await updateFilesOnDisk(req.files, { userPhoto: req.user.photo });
   }
 
   Object.assign(req.user, bodyCl);
@@ -79,7 +79,7 @@ exports.updateUser = catchAsync(async (req, res) => {
     if (user.photo === 'default.jpg') {
       user.photo = req.files.userPhoto[0].filename;
       await user.save();
-    } else await updateImages(req.files, { userPhoto: user.photo });
+    } else await updateFilesOnDisk(req.files, { userPhoto: user.photo });
   }
 
   res.status(200).json({
