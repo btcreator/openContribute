@@ -98,7 +98,56 @@ exports.reparseMultipartBody = function (req, res, next) {
 };
 
 // Handle uploaded images and videos
-exports.uploadFeedMultimedia = function (req, res, next) {};
+exports.uploadFeedMultimedia = function (req, res, next) {
+  // set uploaded images storage and filename
+  const imgPath = './public/feed/img';
+  const vidPath = './public/feed/vid';
+
+  // where and how the files should be stored
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      if (file.mimetype.split('/')[0] === 'image') {
+        cb(null, imgPath);
+      } else if (file.mimetype === 'video/mp4') {
+        cb(null, vidPath);
+      } else {
+        cb(new AppError(415, 'Unsupported media type.'));
+      }
+    },
+    filename: function (req, file, cb) {
+      const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
+      const ext = file.originalname.substring(file.originalname.lastIndexOf('.'));
+      cb(null, `${mainFilename}${ext}`);
+    },
+  });
+
+  // images and videos should appear in the right fields. Else they are ignored
+  const fileFilter = function (req, file, cb) {
+    if (file.fieldname === 'images' && file.mimetype.split('/')[0] === 'image') {
+      return cb(null, true);
+    } else if (file.fieldname === 'videos' && file.mimetype === 'video/mp4') {
+      return cb(null, true);
+    }
+    cb(null, false);
+  };
+
+  // set limits for each field separately. When malicious upload fileds are present (DoS) for sure set limit to 0 (for this feature see _customBusboy_multipart.js in utils folder)
+  const limits = {
+    fileSize: {
+      images: _IMAGE_FILE_SIZE_LIMIT,
+      videos: _VIDEO_FILE_SIZE_LIMIT,
+      REST_MAX_LIMIT: 0,
+    },
+  };
+
+  // save the media
+  const upload = multer({ storage, fileFilter, limits }).fields([
+    { name: 'images', maxCount: process.env.FEED_MAX_IMAGE_ALLOWED },
+    { name: 'videos', maxCount: process.env.FEED_MAX_VIDEO_ALLOWED },
+  ]);
+
+  return upload(req, res, next);
+};
 
 // Guard middlewares
 ////
