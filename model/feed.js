@@ -15,8 +15,12 @@ const feedSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+    trim: true,
   },
-  message: String,
+  message: {
+    type: String,
+    trim: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

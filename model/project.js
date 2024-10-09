@@ -17,16 +17,17 @@ const _uniqueName = function (val) {
 
 const projectSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, trim: true },
     slug: { type: String, unique: true },
     leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, lowercase: true, required: true },
+    type: { type: String, lowercase: true, required: true, trim: true },
     summary: {
       type: String,
       required: true,
       maxLength: [160, 'Summary should be not longer than 160 characters. We got {VALUE}.'],
+      trim: true,
     },
-    description: { type: String, required: true },
+    description: { type: String, required: true, trim: true },
     locations: {
       type: [
         {
@@ -46,7 +47,7 @@ const projectSchema = new mongoose.Schema(
               message: 'False coordinates in location.',
             },
           },
-          name: { type: String, required: true },
+          name: { type: String, required: true, trim: true },
           _id: false,
         },
       ],
@@ -55,7 +56,7 @@ const projectSchema = new mongoose.Schema(
     milestones: {
       type: [
         {
-          name: { type: String, required: true },
+          name: { type: String, required: true, trim: true },
           isDone: { type: Boolean, default: false },
           _id: false,
         },
@@ -77,7 +78,10 @@ const projectSchema = new mongoose.Schema(
             min: Number,
             max: Number,
           },
-          description: String,
+          description: {
+            type: String,
+            trim: true,
+          },
           _id: false,
         },
       ],

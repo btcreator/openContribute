@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please enter an email address.'],
       unique: true,
       lowercase: true,
+      trim: true,
       validate: {
         validator: function (email) {
           const reg =
@@ -26,9 +27,13 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please enter a password.'],
       minlength: 8,
     },
-    alias: String,
+    alias: {
+      type: String,
+      trim: true,
+    },
     name: {
       type: String,
+      trim: true,
       validate: {
         validator: function (name) {
           return name.indexOf(' ') > 1;
