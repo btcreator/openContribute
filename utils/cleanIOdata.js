@@ -27,6 +27,7 @@ exports.cleanBody = function (body, ...except) {
     'contributedAt',
     'guestPassToken',
     'slug',
+    'createdAt',
   ];
 
   // add any additional exclusions
