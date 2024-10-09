@@ -28,7 +28,7 @@ exports.updateMyProfile = catchAsync(async (req, res) => {
     else await updateFilesOnDisk(req.files, { userPhoto: req.user.photo });
   }
 
-  Object.assign(req.user, bodyCl);
+  req.user.set(bodyCl);
 
   const updatedUser = await req.user.save();
 
