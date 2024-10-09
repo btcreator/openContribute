@@ -1,6 +1,9 @@
 const catchAsync = require('../../utils/catchAsync');
+const AppError = require('../../utils/appError');
 const multer = require('multer');
 const sharp = require('sharp');
+const _IMAGE_FILE_SIZE_LIMIT = 5e6;
+const _VIDEO_FILE_SIZE_LIMIT = 50e6;
 
 // Parse multipart incoming data to memory
 exports.bufferImage = (image) => (req, res, next) => {
@@ -11,13 +14,15 @@ exports.bufferImage = (image) => (req, res, next) => {
   const fileFilter = function (req, file, cb) {
     const type = file.mimetype.split('/')[0];
     if (type !== 'image') {
-      cb(new AppError(415, 'Unsupported media type.'));
+      return cb(new AppError(415, 'Unsupported media type.'));
     }
     cb(null, true);
   };
 
   // upload the image to memory
-  const upload = multer({ storage, fileFilter, limits: { fileSize: 5e6 } }).fields([{ name: image, maxCount: 1 }]);
+  const upload = multer({ storage, fileFilter, limits: { fileSize: _IMAGE_FILE_SIZE_LIMIT } }).fields([
+    { name: image, maxCount: 1 },
+  ]);
   return upload(req, res, next);
 };
 
@@ -52,6 +57,11 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
   // where and how the files should be stored
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+      // just images are allowed
+      const type = file.mimetype.split('/')[0];
+      if (type !== 'image') {
+        return cb(new AppError(415, 'Unsupported media type.'));
+      }
       cb(null, path);
     },
     filename: function (req, file, cb) {
@@ -60,17 +70,8 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
     },
   });
 
-  // just images are allowed
-  const fileFilter = function (req, file, cb) {
-    const type = file.mimetype.split('/')[0];
-    if (type !== 'image') {
-      cb(new AppError(415, 'Unsupported media type.'));
-    }
-    cb(null, true);
-  };
-
   // save the images
-  const upload = multer({ storage, fileFilter, limits: { fileSize: 5e6 } }).fields([
+  const upload = multer({ storage, limits: { fileSize: _IMAGE_FILE_SIZE_LIMIT } }).fields([
     { name: 'cover', maxCount: 1 },
     { name: 'result', maxCount: 1 },
   ]);
