@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { removeFiles } = require('./../controller/staticFilesystem/staticFileController');
 
 const feedSchema = new mongoose.Schema({
   project: {
@@ -45,6 +46,17 @@ const feedSchema = new mongoose.Schema({
       message: 'Link provided is not a vlaid youtube link.',
     },
   },
+});
+
+// Hooks (Middlewares)
+////
+feedSchema.pre('findOneAndDelete', async function (next) {
+  const files = await this.clone().findOne().select('images videos -_id');
+
+  files?.images && removeFiles(`./public/feed/img/`, files.images);
+  files?.videos && removeFiles(`./public/feed/vid/`, files.videos);
+
+  next();
 });
 
 const Feed = mongoose.model('Feed', feedSchema);
