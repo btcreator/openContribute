@@ -11,6 +11,8 @@ router.use(authenticate);
 router.route('/myFeed').post(feedController.createMyFeed);
 router.route('/myFeed/:id').patch(feedController.updateMyFeed).delete(feedController.deleteMyFeed);
 
+router.route('/remove-files-from/:id').delete(feedController.removeFiles);
+
 router.use(restrictedTo('admin'));
 router.route('/').post(feedController.createFeed).get(feedController.getAllFeed);
 router.route('/:id').patch(feedController.updateFeed).delete(feedController.deleteFeed);
