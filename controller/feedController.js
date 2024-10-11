@@ -96,7 +96,7 @@ exports.updateMyFeed = catchAsync(async (req, res) => {
 
 exports.deleteMyFeed = catchAsync(async (req, res) => {
   const _id = new ObjectId(`${req.params.id}`);
-  await Feed.deleteOne({ _id, leader: req.user._id });
+  await Feed.findOneAndDelete({ _id, leader: req.user._id });
 
   res.status(204).end();
 });
@@ -188,4 +188,41 @@ exports.getAllFeed = catchAsync(async (req, res) => {
   });
 });
 
-// Remove Image / remove video route
+// Remove Image(s) / remove video(s) route
+exports.removeFiles = catchAsync(async (req, res) => {
+  // when one file was passed as string, wrap it in Array, when more files are passed, copy reference. Else empty Array
+  const images =
+    typeof req.body?.images === 'string' ? [req.body.images] : Array.isArray(req.body?.images) ? req.body.images : [];
+  const videos =
+    typeof req.body?.videos === 'string' ? [req.body.videos] : Array.isArray(req.body?.videos) ? req.body.videos : [];
+  const removed = {
+    images: [],
+    videos: [],
+  };
+
+  // need user id to check if the leader who try to remove - after authenticate
+  // get the feed  - need id - :id
+  const _id = new ObjectId(`${req.params.id}`);
+  const feed = await Feed.findOne({ _id, leader: req.user._id }).select('images videos');
+  if (!feed) throw new AppError(403, "You are not the leader. Can't perform file removal.");
+
+  // look in the feed if the files are there, then remove them
+  if (images.length > 0 && feed.images) {
+    images.forEach((file) => {
+      const index = feed.images.indexOf(file);
+      index > -1 && (feed.images.splice(index, 1), removed.images.push(file));
+    });
+  }
+  if (videos.length > 0 && feed.videos) {
+    videos.forEach((file) => {
+      const index = feed.videos.indexOf(file);
+      index > -1 && (feed.videos.splice(index, 1), removed.videos.push(file));
+    });
+  }
+
+  // just the found filenames gets removed from the disk
+  feed.$locals.filesRemoved = removed;
+  await feed.save();
+
+  res.status(204).end();
+});
