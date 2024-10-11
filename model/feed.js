@@ -58,6 +58,20 @@ feedSchema.pre('findOneAndDelete', async function (next) {
 
   next();
 });
+feedSchema.pre('save', function (next) {
+  if (this.isModified('images videos')) this.$locals.filesModified = true;
+
+  next();
+});
+
+feedSchema.post('save', function (doc, next) {
+  if (doc.$locals.filesModified && doc.$locals?.filesRemoved) {
+    removeFiles(`./public/feed/img/`, doc.$locals.filesRemoved.images);
+    removeFiles(`./public/feed/vid/`, doc.$locals.filesRemoved.videos);
+  }
+
+  next();
+});
 
 const Feed = mongoose.model('Feed', feedSchema);
 module.exports = Feed;
