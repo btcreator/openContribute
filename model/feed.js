@@ -58,12 +58,15 @@ feedSchema.pre('findOneAndDelete', async function (next) {
 
   next();
 });
+
+// save the state of modification for post hook
 feedSchema.pre('save', function (next) {
   if (this.isModified('images videos')) this.$locals.filesModified = true;
 
   next();
 });
 
+// when modification was made, and files was removed, then the hook is triggered from file removal route
 feedSchema.post('save', function (doc, next) {
   if (doc.$locals.filesModified && doc.$locals?.filesRemoved) {
     removeFiles(`./public/feed/img/`, doc.$locals.filesRemoved.images);
