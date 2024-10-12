@@ -68,12 +68,14 @@ exports.summaryPipeline = (user) => [
 
 // Return the contributions to the resource
 exports.resourcePipeline = (project, resource) => [
+  // stage 1 - match contributions to the project with that one resource
   {
     $match: {
       project,
       resource,
     },
   },
+  // stage 2 - group them together and sum all amounts
   {
     $group: {
       _id: '$project',
@@ -84,21 +86,26 @@ exports.resourcePipeline = (project, resource) => [
   },
 ];
 
+// Gather all contributors of one project
 exports.projectsContributorsPipeline = (project) => [
+  // stage 1 - find all contributions to the project
   {
     $match: { project },
   },
+  // stage 2 - group them based on user (for guest contributions use null)
   {
     $group: {
       _id: { $ifNull: ['$user', null] },
     },
   },
+  // stage 3 - put the users id's in one array
   {
     $group: {
       _id: null,
       users: { $push: '$_id' },
     },
   },
+  // stage 4 - populate each user id with they names and photo. Users who dont provided they names are Anonymous. Guests are here ignored.
   {
     $lookup: {
       from: 'users',
@@ -112,6 +119,7 @@ exports.projectsContributorsPipeline = (project) => [
       ],
     },
   },
+  // stage 5 - when before lookup(users) and after lookup(contributors) arrays are not the same length, then there was guest contributors too, so add them back to contributors.
   {
     $addFields: {
       contributors: {
@@ -125,6 +133,7 @@ exports.projectsContributorsPipeline = (project) => [
       },
     },
   },
+  // stage 6 - remove unnecessary fields
   {
     $project: {
       users: 0,
