@@ -3,6 +3,7 @@ const projectRouter = require('./routers/projectRouter');
 const userRouter = require('./routers/userRouter');
 const feedRouter = require('./routers/feedRouter');
 const contributionRouter = require('./routers/contributionRouter');
+const reviewRouter = require('./routers/reviewRouter');
 const { stats } = require('./controller/statisticsController');
 const exception = require('./controller/exception/exceptionHandler');
 const cookieParser = require('cookie-parser');
@@ -38,6 +39,7 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/contribution', contributionRouter);
 app.use('/api/v1/feed', feedRouter);
+app.use('/api/v1/reviews', reviewRouter);
 app.get('/api/v1/stats', stats);
 
 // Routes, that are not implemented - 404
