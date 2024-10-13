@@ -50,6 +50,15 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    review: {
+      type: String,
+      trim: true,
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+    },
 
     // fields that not get selected, so as defult, dont get to the output - setInactiveAt is not selected, because then the user is inactive "deleted"
     passwordChangedAt: {
