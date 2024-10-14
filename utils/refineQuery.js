@@ -29,12 +29,53 @@ class RefineQuery {
     return this;
   }
 
-  project() {
-    if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join(' ');
-      this.query.select(fields);
+  project(selector) {
+    // guard clause
+    if (!this.queryString.fields) return this;
+
+    // just in developement to warn developer that when project is used, dont use select before on the query.
+    if (process.env.NODE_ENV === 'development')
+      if (this.query.selectedInclusively() || this.query.selectedExclusively())
+        throw new Error(`No select before query project ${this.query.constructor.name}`);
+
+    // initial conditions
+    const selectFields = [];
+    const allowedFields = selector?.split(' ') ?? [];
+
+    // from exclusion in an include selection is just the _id is an exception, so add it to the selected fields wehn present
+    if (allowedFields.includes('-_id')) {
+      allowedFields.splice(allowedFields.indexOf('-_id'), 1);
+      selectFields.push('-_id');
     }
 
+    // separate user selections
+    // prettier-ignore
+    const requestInclusionFields = this.queryString.fields?.split(',').join(' ').match(/(?<![+-])\b\S+\b/g) ?? []; // photo email ...
+    // prettier-ignore
+    const requestExclusionFields = this.queryString.fields?.split(',').join(' ').match(/-\S+/g) ?? []; // -photo -email ...
+
+    // add the fields to selected ones based on restriction and user selection
+    if (allowedFields.length > 0) {
+      // add user selected, which are allowed fields
+      // else add all allowed fields, except user excluded ones
+      if (requestInclusionFields.length > 0) {
+        allowedFields.forEach((field) => requestInclusionFields.includes(field) && selectFields.push(field));
+      } else {
+        allowedFields.forEach((field) => requestExclusionFields.includes(`-${field}`) || selectFields.push(field));
+      }
+    } else {
+      // all fields are allowed which user selected - !!the query needs to be cleaned from sensitive fileds beforehand
+      // else add all fields, except user excluded ones
+      if (requestInclusionFields.length > 0) {
+        selectFields.push(...requestInclusionFields);
+      } else {
+        selectFields.push(...requestExclusionFields);
+      }
+    }
+
+    // select those fields
+    this.query.select(selectFields.join(' '));
+    // when possible remove mongo version field
     !this.query.selectedInclusively() && this.query.select('-__v');
     return this;
   }
@@ -48,8 +89,8 @@ class RefineQuery {
     return this;
   }
 
-  refine(searchFilter) {
-    this.filter(searchFilter).sort().project().paginate();
+  refine(searchFilter, selector) {
+    this.filter(searchFilter).sort().project(selector).paginate();
     return this.query;
   }
 }
