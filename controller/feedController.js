@@ -56,7 +56,7 @@ exports.createMyFeed = catchAsync(async (req, res) => {
 });
 
 exports.updateMyFeed = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'leader', 'project', 'images', 'videos');
+  const bodyCl = cleanBody(req.body, 'leader', 'project');
   const _id = new ObjectId(`${req.params.id}`);
   const maxImg = process.env.FEED_MAX_IMAGE_ALLOWED;
   const maxVid = process.env.FEED_MAX_VIDEO_ALLOWED;
@@ -129,7 +129,7 @@ exports.createFeed = catchAsync(async (req, res) => {
 });
 
 exports.updateFeed = catchAsync(async (req, res) => {
-  const bodyCl = cleanBody(req.body, 'leader', 'project', 'images', 'videos');
+  const bodyCl = cleanBody(req.body, 'leader', 'project');
   const maxImg = process.env.FEED_MAX_IMAGE_ALLOWED;
   const maxVid = process.env.FEED_MAX_VIDEO_ALLOWED;
 
