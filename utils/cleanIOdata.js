@@ -40,3 +40,13 @@ exports.cleanBody = function (body, ...except) {
 
   return cleaned;
 };
+
+exports.cleanQueryFields = function (queryFields, ...except) {
+  const fields = queryFields.match(/-?\w+/g) ?? [];
+  const exclusions = ['password', 'resetTokenExpire', 'passwordResetToken'];
+
+  // add any additional exclusions
+  if (except.length) exclusions.push(...except);
+
+  return fields.filter((field) => !exclusions.includes(field)).join(',');
+};
