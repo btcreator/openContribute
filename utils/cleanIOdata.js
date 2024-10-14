@@ -31,6 +31,8 @@ exports.cleanBody = function (body, ...except) {
     'coverImg',
     'resultImg',
     'createdAt',
+    'images',
+    'videos',
   ];
 
   // add any additional exclusions
