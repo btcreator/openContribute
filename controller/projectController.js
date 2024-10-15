@@ -67,11 +67,10 @@ const _fieldsToUpdateObj = function (body) {
 ////
 // For convenient search results
 exports.getSearchResults = catchAsync(async (req, res) => {
-  const selector = 'name slug summary leader type resources resultImg isDone';
+  const selector = 'name slug leader summary type resources resultImg isDone';
+  const projectsQuery = Project.find().populate('leader', 'name -_id');
 
-  const projectsQuery = Project.find().select(selector).populate('leader', 'name -_id');
-
-  const query = new RefineQuery(projectsQuery, req.query).refine({ isActive: true });
+  const query = new RefineQuery(projectsQuery, req.query).refine({ isActive: true }, selector);
   const projects = await query;
 
   res.status(200).json({
