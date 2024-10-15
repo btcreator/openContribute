@@ -16,10 +16,10 @@ exports.getLatestTenReviews = catchAsync(async (req, res) => {
 });
 
 exports.getAllReviews = catchAsync(async (req, res) => {
-  const revQuery = User.find({ review: { $exists: true } });
+  const revQuery = User.find({ isActive: true, review: { $exists: true } });
   if (req.query.fields) req.query.fields = cleanQueryFields(req.query.fields);
 
-  const query = new refineQuery(revQuery, req.query).project('-_id review rating name photo').sort().paginate().query;
+  const query = new refineQuery(revQuery, req.query).project('-_id review name photo').sort().paginate().query;
 
   const reviews = await query;
 
