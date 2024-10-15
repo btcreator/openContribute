@@ -50,13 +50,11 @@ const feedSchema = new mongoose.Schema({
 
 // Hooks (Middlewares)
 ////
-feedSchema.pre('findOneAndDelete', async function (next) {
+feedSchema.pre('findOneAndDelete', async function () {
   const files = await this.clone().findOne().select('images videos -_id');
 
   files?.images && removeFiles(`./public/feed/img/`, files.images);
   files?.videos && removeFiles(`./public/feed/vid/`, files.videos);
-
-  next();
 });
 
 // save the state of modification for post hook

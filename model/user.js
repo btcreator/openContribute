@@ -121,7 +121,7 @@ userSchema.methods.isResetTokenExpired = function () {
 // Hooks (Middlewares)
 ////
 // Check if the user is inactive (deleted)
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   if (!this.isNew) return next();
 
   // look first if inactive user exists with that email.
@@ -135,12 +135,10 @@ userSchema.pre('save', async function (next) {
       'Your profile is set to inactive at the moment. Use the appropriate route to reactivate it.'
     );
   }
-
-  next();
 });
 
 // Confirm password check, and hash new password
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   // if the password is modified, created, changed
   if (this.isModified('password')) {
     // there must be a confirmation of the validity of the password
@@ -157,7 +155,6 @@ userSchema.pre('save', async function (next) {
 
   // set local property to know if the document is new (signup / createUser)
   this.$locals.isNew = this.isNew;
-  next();
 });
 
 // User remove or reactivate
@@ -173,14 +170,12 @@ userSchema.pre('save', function (next) {
 });
 
 // Delete photo of the user when gets permanently removed
-userSchema.pre('findOneAndDelete', async function (next) {
+userSchema.pre('findOneAndDelete', async function () {
   // query photo
   const photo = (await this.clone().findOne().select('photo -_id')).photo;
   // the photo with default.jpg should not get removed just when it was modified
   if (photo === 'default.jpg') return next();
   photo && removeImage('./public/img/users/', photo);
-
-  next();
 });
 
 const User = mongoose.model('User', userSchema);

@@ -137,12 +137,10 @@ projectSchema.pre(/.*update.*|save/i, function (next) {
   next();
 });
 
-projectSchema.pre('findOneAndDelete', async function (next) {
+projectSchema.pre('findOneAndDelete', async function () {
   const images = await this.clone().findOne().select('coverImg resultImg -_id');
 
   images && removeFiles(`./public/img/projects/content/`, Object.values(images.toObject()));
-
-  next();
 });
 
 const Project = mongoose.model('Project', projectSchema);
