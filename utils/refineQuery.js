@@ -30,10 +30,7 @@ class RefineQuery {
   }
 
   project(selector) {
-    // guard clause
-    if (!this.queryString.fields) return this;
-
-    // just in developement to warn developer that when project is used, dont use select before on the query.
+    // just in developement to warn developer that when project is used, dont use select before on the query (except +field - dont count in mongo as "selection").
     if (process.env.NODE_ENV === 'development')
       if (this.query.selectedInclusively() || this.query.selectedExclusively())
         throw new Error(`No select before query project ${this.query.constructor.name}`);
