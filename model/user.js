@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const reviewSubdoc = require('./review_subUser');
 const AppError = require('./../utils/appError');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
@@ -51,13 +52,7 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
     review: {
-      type: String,
-      trim: true,
-    },
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
+      type: reviewSubdoc,
     },
 
     // fields that not get selected, so as defult, dont get to the output - setInactiveAt is not selected, because then the user is inactive "deleted"
@@ -172,9 +167,9 @@ userSchema.pre('save', function (next) {
 // Delete photo of the user when gets permanently removed
 userSchema.pre('findOneAndDelete', async function () {
   // query photo
-  const photo = (await this.clone().findOne().select('photo -_id')).photo;
+  const photo = (await this.clone().findOne().select('photo -_id'))?.photo;
   // the photo with default.jpg should not get removed just when it was modified
-  if (photo === 'default.jpg') return next();
+  if (photo === 'default.jpg') return;
   photo && removeImage('./public/img/users/', photo);
 });
 
