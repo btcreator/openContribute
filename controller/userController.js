@@ -110,6 +110,7 @@ exports.deleteUser = catchAsync(async (req, res) => {
 // Get all users
 exports.findAllUsers = catchAsync(async (req, res) => {
   const usersQuery = User.find({}).select('+isActive');
+  if (req.query.fields) req.query.fields = cleanQueryFields(req.query.fields);
 
   // filter, sort, project and pageing the query before execute
   const query = new RefineQuery(usersQuery, req.query).refine();
