@@ -174,7 +174,7 @@ exports.deleteFeed = catchAsync(async (req, res) => {
 });
 
 exports.getAllFeed = catchAsync(async (req, res) => {
-  const feedQuery = Feed.find({});
+  const feedQuery = Feed.find({}).select('+project');
 
   const query = new RefineQuery(feedQuery, req.query).refine();
   const feeds = await query;
