@@ -22,6 +22,10 @@ exports.updateMyProfile = catchAsync(async (req, res) => {
 
   if (bodyCl.password) throw new AppError(400, 'For password updates use the corresponding route.');
 
+  if (typeof bodyCl.review === 'object' && !Array.isArray(bodyCl.review))
+    req.user.review && req.user.review.set(bodyCl.review);
+  else delete bodyCl.review;
+
   // user photo update sequence
   if (req.files) {
     if (req.user.photo === 'default.jpg') bodyCl.photo = req.files.userPhoto[0].filename;
@@ -29,7 +33,6 @@ exports.updateMyProfile = catchAsync(async (req, res) => {
   }
 
   req.user.set(bodyCl);
-
   const updatedUser = await req.user.save();
 
   res.status(200).json({
@@ -69,23 +72,28 @@ exports.createUser = catchAsync(async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'password');
 
-  const user = await User.findByIdAndUpdate(req.params.id, bodyCl, {
-    runValidators: true,
-    returnOriginal: false,
-  }).select('+isActive');
+  const user = await User.findById(req.params.id).select('+isActive');
+  if (!user) throw new AppError(404, 'User not found');
+
+  // convert review object to update fileds
+  if (typeof bodyCl.review === 'object' && !Array.isArray(bodyCl.review)) user.review && user.review.set(bodyCl.review);
+  else delete bodyCl.review;
 
   // user photo update sequence
   if (req.files) {
-    if (user.photo === 'default.jpg') {
-      user.photo = req.files.userPhoto[0].filename;
-      await user.save();
-    } else await updateFilesOnDisk(req.files, { userPhoto: user.photo });
+    if (user.photo === 'default.jpg') user.photo = req.files.userPhoto[0].filename;
+    else await updateFilesOnDisk(req.files, { userPhoto: user.photo });
   }
+
+  user.set(bodyCl);
+
+  // save doc (update process dont work in mongoose on subdocuments with upsert, thats why find-save is used)
+  const updatedUser = await user.save();
 
   res.status(200).json({
     status: 'success',
     data: {
-      user,
+      user: updatedUser,
     },
   });
 });
