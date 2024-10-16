@@ -117,7 +117,7 @@ userSchema.methods.isResetTokenExpired = function () {
 ////
 // Check if the user is inactive (deleted)
 userSchema.pre('save', async function () {
-  if (!this.isNew) return next();
+  if (!this.isNew) return;
 
   // look first if inactive user exists with that email.
   const inactiveUser = await this.constructor.findOne({
@@ -141,7 +141,7 @@ userSchema.pre('save', async function () {
       const msg = this.confirmPassword
         ? 'Your password does not match with confirm password'
         : 'Please confirm your password';
-      return next(new AppError(401, msg));
+      throw new AppError(401, msg);
     }
 
     this.password = await bcrypt.hash(this.password, 12);
