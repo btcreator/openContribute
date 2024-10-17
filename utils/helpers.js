@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongoose').Types;
+const { isObjectIdOrHexString } = require('mongoose');
 
 // Logging on server console with date
 exports.serverLog = (message, ...args) => {
@@ -10,10 +10,5 @@ exports.serverLog = (message, ...args) => {
 ////
 // check if ID in params has right length
 exports.checkId = (req, res, next) => {
-  try {
-    new ObjectId(`${req.params.id}`);
-  } catch {
-    return next('route');
-  }
-  next();
+  return isObjectIdOrHexString(req.params.id) ? next() : next('route');
 };
