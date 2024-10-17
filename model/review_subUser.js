@@ -16,8 +16,8 @@ const reviewSchema = new mongoose.Schema(
   },
   {
     timestamps: {
-      createdAt: true,
-      updatedAt: false,
+      createdAt: false,
+      updatedAt: true,
     },
   }
 );
