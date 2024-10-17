@@ -4,7 +4,10 @@ const catchAsync = require('./../utils/catchAsync');
 const refineQuery = require('./../utils/refineQuery');
 
 exports.getLatestTenReviews = catchAsync(async (req, res) => {
-  const reviews = await User.aggregate();
+  const reviews = await User.find({ isActive: true, 'review.review': { $exists: true } })
+    .sort('-review.updatedAt')
+    .limit(10)
+    .select('-_id name photo review');
 
   res.status(200).json({
     status: 'success',
