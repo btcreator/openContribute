@@ -69,8 +69,23 @@ const _fieldsToUpdateObj = function (body) {
 exports.getSearchResults = catchAsync(async (req, res) => {
   const selector = 'name slug leader summary type resources resultImg isDone';
   const projectsQuery = Project.find().populate('leader', 'name -_id');
+  const filter = { isActive: true };
 
-  const query = new RefineQuery(projectsQuery, req.query).refine({ isActive: true }, selector);
+  // geo-localization
+  const { distance, center, unit } = req.query;
+  if (distance && center) {
+    const [lat, lng] = center.split(',');
+    const radius = unit === 'mi' ? distance / 3958.8 : distance / 6378.1;
+
+    Object.assign(filter, { 'locations.coordinates': { $geoWithin: { $centerSphere: [[1 * lng, 1 * lat], radius] } } });
+  }
+
+  // remove geo location query elements or the search gets filtered based on them too and no entry ets found
+  delete req.query.distance;
+  delete req.query.center;
+  delete req.query.unit;
+
+  const query = new RefineQuery(projectsQuery, req.query).refine(filter, selector);
   const projects = await query;
 
   res.status(200).json({
