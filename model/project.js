@@ -108,6 +108,11 @@ const projectSchema = new mongoose.Schema(
   }
 );
 
+// Indexing
+////
+projectSchema.index({ locations: '2dsphere' });
+projectSchema.index({ slug: 1 });
+
 // Instance methods
 ////
 projectSchema.methods.rearrangeMilestones = function () {
