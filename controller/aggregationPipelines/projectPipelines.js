@@ -74,7 +74,10 @@ exports.populateContributionsToProjectPipeline = (match) => [
   },
   // stage 5 - populated fields are arrays, so unwind it.
   {
-    $unwind: '$contributions',
+    $unwind: {
+      path: '$contributions',
+      preserveNullAndEmptyArrays: true,
+    },
   },
   // stage 6 - populate 5 contributors with they names. Guests (null) and users without names gets here excluded.
   {
