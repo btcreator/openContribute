@@ -48,6 +48,10 @@ const feedSchema = new mongoose.Schema({
   },
 });
 
+// Indexing
+////
+feedSchema.index({ project: 1 });
+
 // Hooks (Middlewares)
 ////
 feedSchema.pre('findOneAndDelete', async function () {

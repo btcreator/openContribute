@@ -112,6 +112,7 @@ const projectSchema = new mongoose.Schema(
 ////
 projectSchema.index({ locations: '2dsphere' });
 projectSchema.index({ slug: 1 });
+projectSchema.index({ 'resources.name': 1 });
 
 // Instance methods
 ////

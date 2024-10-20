@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const { resources } = require('./resourceDescriptions/resourceDescriptions');
+const { projectsContributorsPipeline } = require('../controller/aggregationPipelines/contributionPipelines');
 
 const contributionSchema = new mongoose.Schema({
   user: {
@@ -35,6 +36,12 @@ const contributionSchema = new mongoose.Schema({
     },
   },
 });
+
+// Indexing
+////
+contributionSchema.index({ user: 1 });
+contributionSchema.index({ project: 1 });
+contributionSchema.index({ project: 1, resource: 1 });
 
 // Hooks (Middlewares)
 ////
