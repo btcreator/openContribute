@@ -4,6 +4,7 @@ const userRouter = require('./routers/userRouter');
 const feedRouter = require('./routers/feedRouter');
 const contributionRouter = require('./routers/contributionRouter');
 const reviewRouter = require('./routers/reviewRouter');
+const viewRouter = require('./routers/viewRouter');
 const { stats } = require('./controller/statisticsController');
 const exception = require('./controller/exception/exceptionHandler');
 const cookieParser = require('cookie-parser');
@@ -31,10 +32,15 @@ app.use(cookieParser());
 // Implement security - prevent attack procedures
 app.use(security);
 
+// Setup view
+app.set('view engine', 'pug');
+app.set('view', path.join(__dirname, 'views'));
+
 // Serve the static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Route incoming requests to corresponding router
+app.use('/', viewRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/contribution', contributionRouter);
