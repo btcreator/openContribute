@@ -1,8 +1,10 @@
 const express = require('express');
+const { identificateUser, authenticate } = require('./../controller/authentication/authController');
+const viewController = require('./../controller/viewController');
 
 const router = express.Router();
 
-router.get('/');
+router.get('/', identificateUser, viewController.getHome);
 router.get('/login');
 router.get('/signup');
 router.get('/search');
