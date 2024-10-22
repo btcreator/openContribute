@@ -34,7 +34,7 @@ app.use(security);
 
 // Setup view
 app.set('view engine', 'pug');
-app.set('view', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views/pages'));
 
 // Serve the static files
 app.use(express.static(path.join(__dirname, 'public')));
