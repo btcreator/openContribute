@@ -2,8 +2,12 @@ const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const multer = require('multer');
 const sharp = require('sharp');
+const path = require('path');
 const _IMAGE_FILE_SIZE_LIMIT = 5e6;
 const _VIDEO_FILE_SIZE_LIMIT = 50e6;
+
+// Return the absolute path
+const _absPath = (relPath) => path.join(__dirname, relPath);
 
 // Parse multipart incoming data to memory
 exports.bufferImage = (image) => (req, res, next) => {
@@ -37,7 +41,7 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   // set path and a temporary file name
   const userPhoto = req.files.userPhoto[0];
   const filename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
-  const path = './public/img/users/';
+  const path = _absPath('/public/media/users/');
 
   // resize photo - default fit is "cover"
   await sharp(userPhoto.buffer).resize(800, 800).png().toFile(`${path}${filename}`);
@@ -52,7 +56,7 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
 exports.saveProjectImages = catchAsync(async (req, res, next) => {
   // set uploaded images storage and filename
   const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
-  const path = './public/img/projects/content/';
+  const path = _absPath('/public/projects/content/');
 
   // where and how the files should be stored
   const storage = multer.diskStorage({
@@ -100,8 +104,8 @@ exports.reparseMultipartBody = function (req, res, next) {
 // Handle uploaded images and videos
 exports.uploadFeedMultimedia = function (req, res, next) {
   // set uploaded images storage and filename
-  const imgPath = './public/feed/img';
-  const vidPath = './public/feed/vid';
+  const imgPath = _absPath('/public/media/feed/img');
+  const vidPath = _absPath('/public/media/feed/vid');
 
   // where and how the files should be stored
   const storage = multer.diskStorage({
