@@ -22,7 +22,7 @@ router
     reparseMultipartBody
   );
 router.route(/.*project.*/).all(passMethods('patch', 'post'), checkContetType, saveProjectImages, reparseMultipartBody);
-router.route(/.*contribution.*/).all(passMethods('patch', 'post'), checkContetType, parseTextOnlyMultipartBody());
+router.route(/.*contribution.*/).all(passMethods('patch', 'post'), checkContetType, parseTextOnlyMultipartBody);
 router.route(/.*feed.*/).all(passMethods('patch', 'post'), checkContetType, uploadFeedMultimedia);
 
 module.exports = router;
