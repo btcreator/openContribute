@@ -57,6 +57,7 @@ const projectSchema = new mongoose.Schema(
       type: [
         {
           name: { type: String, required: true, trim: true },
+          img: { type: String, default: 'default.jpg' },
           isDone: { type: Boolean, default: false },
           _id: false,
         },
@@ -144,9 +145,19 @@ projectSchema.pre(/.*update.*|save/i, function (next) {
 });
 
 projectSchema.pre('findOneAndDelete', async function () {
-  const images = await this.clone().findOne().select('coverImg resultImg -_id');
+  const projectMedia = await this.clone().findOne().select('coverImg resultImg milestones -_id');
 
-  images && removeFiles(`./public/img/projects/content/`, Object.values(images.toObject()));
+  if (projectMedia) {
+    let images = projectMedia?.milestones.reduce((acc, milestone) => {
+      if (milestone.img === 'default.jpg') return acc;
+      acc.push(milestone.img);
+      return acc;
+    }, []);
+    if (!images) images = [];
+    delete projectMedia.milestones;
+
+    removeFiles(`./public/media/projects/content/`, Object.values(projectMedia.toObject()).concat(images));
+  }
 });
 
 const Project = mongoose.model('Project', projectSchema);
