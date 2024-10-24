@@ -57,8 +57,8 @@ feedSchema.index({ project: 1 });
 feedSchema.pre('findOneAndDelete', async function () {
   const files = await this.clone().findOne().select('images videos -_id');
 
-  files?.images && removeFiles(`./public/feed/img/`, files.images);
-  files?.videos && removeFiles(`./public/feed/vid/`, files.videos);
+  files?.images && removeFiles(`./public/media/feed/img/`, files.images);
+  files?.videos && removeFiles(`./public/media/feed/vid/`, files.videos);
 });
 
 // save the state of modification for post hook
@@ -71,8 +71,8 @@ feedSchema.pre('save', function (next) {
 // when modification was made, and files was removed, then the hook is triggered from file removal route
 feedSchema.post('save', function (doc, next) {
   if (doc.$locals.filesModified && doc.$locals?.filesRemoved) {
-    removeFiles(`./public/feed/img/`, doc.$locals.filesRemoved.images);
-    removeFiles(`./public/feed/vid/`, doc.$locals.filesRemoved.videos);
+    removeFiles(`./public/media/feed/img/`, doc.$locals.filesRemoved.images);
+    removeFiles(`./public/media/feed/vid/`, doc.$locals.filesRemoved.videos);
   }
 
   next();

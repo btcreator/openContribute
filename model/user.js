@@ -170,7 +170,7 @@ userSchema.pre('findOneAndDelete', async function () {
   const photo = (await this.clone().findOne().select('photo -_id'))?.photo;
   // the photo with default.jpg should not get removed just when it was modified
   if (photo === 'default.jpg') return;
-  photo && removeImage('./public/img/users/', photo);
+  photo && removeImage('./public/media/users/', photo);
 });
 
 const User = mongoose.model('User', userSchema);
