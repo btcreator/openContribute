@@ -2,12 +2,9 @@ const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const multer = require('multer');
 const sharp = require('sharp');
-const path = require('path');
-const _IMAGE_FILE_SIZE_LIMIT = 5e6;
-const _VIDEO_FILE_SIZE_LIMIT = 50e6;
-
-// Return the absolute path
-const _absPath = (relPath) => path.join(__dirname, relPath);
+const _IMAGE_FILE_BIG_SIZE_LIMIT = 5e6; // 5MB
+const _IMAGE_FILE_SMALL_SIZE_LIMIT = 1e5; // 100KB
+const _VIDEO_FILE_SIZE_LIMIT = 50e6; // 50MB
 
 // Parse multipart incoming data to memory
 exports.bufferImage = (image) => (req, res, next) => {
@@ -24,7 +21,7 @@ exports.bufferImage = (image) => (req, res, next) => {
   };
 
   // upload the image to memory
-  const upload = multer({ storage, fileFilter, limits: { fileSize: _IMAGE_FILE_SIZE_LIMIT } }).fields([
+  const upload = multer({ storage, fileFilter, limits: { fileSize: _IMAGE_FILE_BIG_SIZE_LIMIT } }).fields([
     { name: image, maxCount: 1 },
   ]);
   return upload(req, res, next);
@@ -41,7 +38,7 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
   // set path and a temporary file name
   const userPhoto = req.files.userPhoto[0];
   const filename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}.png`;
-  const path = _absPath('/public/media/users/');
+  const path = './public/media/users/';
 
   // resize photo - default fit is "cover"
   await sharp(userPhoto.buffer).resize(800, 800).png().toFile(`${path}${filename}`);
@@ -55,8 +52,10 @@ exports.editAndSaveUserImage = catchAsync(async (req, res, next) => {
 // Parse and save to disk incoming multipart data
 exports.saveProjectImages = catchAsync(async (req, res, next) => {
   // set uploaded images storage and filename
-  const mainFilename = `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
-  const path = _absPath('/public/projects/content/');
+  const uFilename = () => `${Date.now()}_${Math.floor(Math.random() * 1e9)}`;
+  const contentFilename = uFilename();
+  const pathContent = './public/media/projects/content/';
+  const pathMilestone = './public/media/projects/milestones/';
 
   // where and how the files should be stored
   const storage = multer.diskStorage({
@@ -66,27 +65,38 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
       if (type !== 'image') {
         return cb(new AppError(415, 'Unsupported media type.'));
       }
-      cb(null, path);
+      cb(null, file.fieldname === 'milestones_img' ? pathMilestone : pathContent);
     },
     filename: function (req, file, cb) {
       const ext = file.originalname.substring(file.originalname.lastIndexOf('.'));
-      cb(null, `${mainFilename}_${file.fieldname}${ext}`);
+
+      if (file.fieldname === 'milestones_img') return cb(null, `${uFilename()}${ext}`);
+      cb(null, `${contentFilename}_${file.fieldname}${ext}`);
     },
   });
 
-  // save the images
-  const upload = multer({ storage, limits: { fileSize: _IMAGE_FILE_SIZE_LIMIT } }).fields([
+  // set limits for each field
+  const limits = {
+    fileSize: {
+      cover: _IMAGE_FILE_BIG_SIZE_LIMIT,
+      result: _VIDEO_FILE_SIZE_LIMIT,
+      milestones_img: _IMAGE_FILE_SMALL_SIZE_LIMIT,
+      REST_MAX_LIMIT: 0,
+    },
+  };
+
+  // save the images (milestones set to 100 which is probably over the common amount of milestones, but blocks a user with CoS attack)
+  const upload = multer({ storage, limits }).fields([
     { name: 'cover', maxCount: 1 },
     { name: 'result', maxCount: 1 },
+    { name: 'milestones_img', maxCount: 100 },
   ]);
 
   return upload(req, res, next);
 });
 
 // Parse text-only multipart/form-data
-exports.parseTextOnlyMultipartBody = function () {
-  return multer().none();
-};
+exports.parseTextOnlyMultipartBody = multer().none;
 
 // Multer parse the body, but filelds like array or objects are handled as string. So we need to reparse
 exports.reparseMultipartBody = function (req, res, next) {
@@ -104,8 +114,8 @@ exports.reparseMultipartBody = function (req, res, next) {
 // Handle uploaded images and videos
 exports.uploadFeedMultimedia = function (req, res, next) {
   // set uploaded images storage and filename
-  const imgPath = _absPath('/public/media/feed/img');
-  const vidPath = _absPath('/public/media/feed/vid');
+  const imgPath = './public/media/feed/img';
+  const vidPath = './public/media/feed/vid';
 
   // where and how the files should be stored
   const storage = multer.diskStorage({
@@ -138,7 +148,7 @@ exports.uploadFeedMultimedia = function (req, res, next) {
   // set limits for each field separately. When malicious upload fileds are present (DoS) for sure set limit to 0 (for this feature see _customBusboy_multipart.js in utils folder)
   const limits = {
     fileSize: {
-      images: _IMAGE_FILE_SIZE_LIMIT,
+      images: _IMAGE_FILE_BIG_SIZE_LIMIT,
       videos: _VIDEO_FILE_SIZE_LIMIT,
       REST_MAX_LIMIT: 0,
     },
