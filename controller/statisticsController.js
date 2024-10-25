@@ -1,23 +1,30 @@
 const catchAsync = require('../utils/catchAsync');
 const Contribution = require('./../model/contribution');
 const Project = require('./../model/project');
-const { projectStatsPipeline, resourceStatsPipeline } = require('./aggregationPipelines/statsPipelines');
+const {
+  projectStatsPipeline,
+  resourceStatsPipeline,
+  contributorsStatPipeline,
+} = require('./aggregationPipelines/statsPipelines');
 
 // Basic stats of the projects
 exports.stats = catchAsync(async (req, res) => {
-  // projects stats aggregation
-  const projects = await Project.aggregate(projectStatsPipeline());
+  // projects stats aggregation - about open / already done projects and amount of leaders
+  const projects = await Project.aggregate(projectStatsPipeline);
 
-  // resource stats aggregation
-  const resList = await Contribution.aggregate(resourceStatsPipeline());
+  // resource stats aggregation - about how many of each resources was contributed
+  const resList = await Contribution.aggregate(resourceStatsPipeline);
+
+  // contributors stat aggregation - about how many people contributed to all projects
+  const contributors = await Contribution.aggregate(contributorsStatPipeline);
 
   // the output as stat
   const stats = {
-    projects: {
-      open: projects[0].proj.open || 0,
-      done: projects[0].proj.done || 0,
+    projects: projects[0],
+    contributions: {
+      contributors: contributors[0].contributors,
+      resources: resList[0].resources,
     },
-    resources: resList[0].resources,
   };
 
   res.status(200).json({
