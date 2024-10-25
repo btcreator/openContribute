@@ -148,15 +148,16 @@ projectSchema.pre('findOneAndDelete', async function () {
   const projectMedia = await this.clone().findOne().select('coverImg resultImg milestones -_id');
 
   if (projectMedia) {
-    let images = projectMedia?.milestones.reduce((acc, milestone) => {
+    let images = projectMedia.milestones?.reduce((acc, milestone) => {
       if (milestone.img === 'default.jpg') return acc;
       acc.push(milestone.img);
       return acc;
     }, []);
-    if (!images) images = [];
-    delete projectMedia.milestones;
 
-    removeFiles(`./public/media/projects/content/`, Object.values(projectMedia.toObject()).concat(images));
+    if (images?.length > 0) removeFiles(`./public/media/projects/milestones/`, images);
+
+    delete projectMedia.milestones;
+    removeFiles(`./public/media/projects/content/`, Object.values(projectMedia.toObject()));
   }
 });
 
