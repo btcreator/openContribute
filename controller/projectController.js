@@ -5,62 +5,63 @@ const RefineQuery = require('./../utils/refineQuery');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const { cleanBody } = require('./../utils/cleanIOdata');
-const { updateFilesOnDisk } = require('./staticFilesystem/staticFileController');
+const { updateFilesOnDisk, removeFiles } = require('./staticFilesystem/staticFileController');
 const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
 
-// Update project
-const _updateProjectById = async function (id, body) {
-  // update the project with the new data
-  const _id = new ObjectId(`${id}`);
-  const updateLog = await Project.updateOne({ _id }, ..._fieldsToUpdateObj(body));
+const _updateProject = async function (queryStr, body, files) {
+  const project = await Project.findOne(queryStr);
 
-  // no project found
-  if (updateLog.acknowledged && !updateLog.matchedCount) throw new AppError(404, 'No project found with that id.');
+  if (!project) return project;
 
-  // get the updated project
-  const project = await Project.findOne({ _id });
+  const filesRenameFrom = {};
+  const filesRenameTo = {};
 
-  // when no data was sent, the update log acknowledge is false. That do not mean, no project exists with that id. So we need to check it
-  if (!project) throw new AppError(404, 'No project found with that id.');
-
-  // if milestones was changed, rearrange those
-  if (body.milestones) project.rearrangeMilestones();
-
-  return project;
-};
-
-// Convert the body to update object and when array fields are updated, then set the arrayFilters option too for mongo/mongoose updateOne method
-const _fieldsToUpdateObj = function (body) {
-  const set = {};
-  const arrayFilters = [];
+  const milest = {};
+  if (files?.milestones_img) files.milestones_img.forEach((file) => (milest[file.originalname] = file));
 
   const fields = Object.keys(body);
   fields.forEach((field) => {
     // plain fields are just set with they value
-    if (typeof body[field] !== 'object') return (set[field] = body[field]);
+    if (typeof body[field] !== 'object') return project.set(field, body[field]);
 
     // there are no object fields, so what is not an Array, but an Object, needs to be wrapped in an Array
     if (!Array.isArray(body[field])) body[field] = [body[field]];
 
-    // array fields contains objects
-    body[field].forEach((obj, i) => {
-      // in those objects the properties/keys gets updated
-      Object.keys(obj).forEach((key) => {
-        // the "name" is the unique key identifier
-        if (key !== 'name')
-          // the to-update keys are set with the "$[${field}${i}]" identifier which would be the unique filter for each object
-          set[`${field}.$[${field}${i}].${key}`] = body[field][i][key];
-        // the name property is used to filter out which properties should be updated in that ONE particular object. One, because name is unique, so no property in other objects get updated.
-        else
-          arrayFilters.push({
-            [`${field}${i}.${key}`]: body[field][i][key],
-          });
-      });
+    // convert obj
+    const bField = body[field].reduce((acc, obj) => {
+      acc[obj.name] = obj;
+      return acc;
+    }, {});
+
+    project[field]?.forEach((obj) => {
+      // {name: ..., isDone: ..., img: ... }
+      if (bField[obj.name]) {
+        const toUpd = bField[obj.name];
+        Object.keys(toUpd).forEach((key, i) => {
+          // name, isDone, img
+          if (key === 'img' && field === 'milestones') {
+            if (obj[key] === 'default.jpg') obj[key] = milest[toUpd[key]].filename;
+            else {
+              filesRenameFrom[`${field}${i}`] = milest[toUpd[key]];
+              filesRenameTo[`${field}${i}`] = obj[key];
+            }
+            delete milest[toUpd[key]];
+          } else obj[key] = toUpd[key];
+        });
+      }
     });
   });
 
-  return [{ $set: set }, { arrayFilters }];
+  if (files?.milestones_img)
+    removeFiles(
+      './public/media/projects/milestones/',
+      Object.values(milest).map((file) => file.filename)
+    );
+
+  await updateFilesOnDisk(filesRenameFrom, filesRenameTo);
+
+  return project.save();
 };
 
 // Public operations
@@ -80,7 +81,7 @@ exports.getSearchResults = catchAsync(async (req, res) => {
     Object.assign(filter, { 'locations.coordinates': { $geoWithin: { $centerSphere: [[1 * lng, 1 * lat], radius] } } });
   }
 
-  // remove geo location query elements or the search gets filtered based on them too and no entry ets found
+  // remove geo location query elements or the search gets filtered based on them too and no entry gets found
   delete req.query.distance;
   delete req.query.center;
   delete req.query.unit;
@@ -129,10 +130,27 @@ exports.createMyProject = catchAsync(async (req, res) => {
   bodyCl.leader = req.user._id;
 
   const images = req.files;
+  const milest = {};
   if (images) {
     bodyCl.coverImg = images.cover?.[0].filename;
     bodyCl.resultImg = images.result?.[0].filename;
+
+    // convert file names for better performance
+    if (images.milestones_img) images.milestones_img.forEach((file) => (milest[file.originalname] = file.filename));
   }
+
+  // when user set a name for the milestone, it gets the uploaded name, when no file can be identified with the original name, the default is used (undefined removes the field)
+  bodyCl.milestones?.forEach((milestone) => {
+    if (milestone.img) {
+      const oldName = milestone.img;
+      milestone.img = milest[milestone.img];
+      delete milest[oldName];
+    }
+  });
+
+  // Make sure no unwanted files are left on server
+  const restFiles = Object.values(milest);
+  if (restFiles.length > 0) removeFiles('./public/media/projects/milestones/', restFiles);
 
   const project = await Project.create(bodyCl);
 
@@ -144,12 +162,11 @@ exports.createMyProject = catchAsync(async (req, res) => {
 
 exports.updateMyProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'isActive', 'isDone', 'leader');
-
   const _id = new ObjectId(`${req.params.id}`);
-  if (!(await Project.exists({ _id, leader: req.user._id })))
-    throw new AppError(403, 'You are not the leader of this project.');
+  const leader = new ObjectId(`${req.user._id}`);
+  const project = await _updateProject({ _id, leader }, bodyCl, req.files);
 
-  const project = await _updateProjectById(req.params.id, bodyCl);
+  if (!project) throw new AppError(404, 'No Project found with your lead');
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
@@ -196,14 +213,31 @@ exports.getProject = catchAsync(async (req, res) => {
 exports.createProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body);
   const images = req.files;
+  const milest = {};
 
   if (bodyCl.leader && !(await User.findById(bodyCl.leader, { name: 1 }).exists('name')))
     throw new AppError(400, 'To be a leader of a project, we need the leaders name. Please update it first.');
 
   if (images) {
-    bodyCl.coverImg = images.cover?.filename;
-    bodyCl.resultImg = images.result?.filename;
+    bodyCl.coverImg = images.cover?.[0].filename;
+    bodyCl.resultImg = images.result?.[0].filename;
+
+    // convert file names for better performance
+    if (images.milestones_img) images.milestones_img.forEach((file) => (milest[file.originalname] = file.filename));
   }
+
+  // when user set a name for the milestone, it gets the uploaded name, when no file can be identified with the original name, the default is used (undefined removes the field)
+  bodyCl.milestones?.forEach((milestone) => {
+    if (milestone.img) {
+      const oldName = milestone.img;
+      milestone.img = milest[milestone.img];
+      delete milest[oldName];
+    }
+  });
+
+  // Make sure no unwanted files are left on server
+  const restFiles = Object.values(milest);
+  if (restFiles.length > 0) removeFiles('./public/media/projects/milestones/', restFiles);
 
   const project = await Project.create(bodyCl);
 
@@ -217,8 +251,8 @@ exports.createProject = catchAsync(async (req, res) => {
 
 exports.updateProject = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body);
-
-  const project = await _updateProjectById(req.params.id, bodyCl);
+  const _id = new ObjectId(`${req.params.id}`);
+  const project = await _updateProject({ _id }, bodyCl, req.files);
 
   if (req.files) {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
