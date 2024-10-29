@@ -5,8 +5,7 @@ const viewController = require('./../controller/viewController');
 const router = express.Router();
 
 router.get('/', identificateUser, viewController.getHome);
-router.get('/login');
-router.get('/signup');
+router.get('/login', identificateUser, viewController.login);
 router.get('/search');
 router.get('/profile');
 
