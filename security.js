@@ -16,6 +16,13 @@ const limit = rateLimit({
 
 // Set security HTTP headers
 router.use(helmet());
+router.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      'script-src': ['unpkg.com', 'http://localhost:3000'],
+    },
+  })
+);
 // Rate limiting - small protection agianst brute force
 router.use('/api', limit);
 
