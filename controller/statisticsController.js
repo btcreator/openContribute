@@ -11,6 +11,8 @@ const {
 exports.stats = catchAsync(async (req, res) => {
   // projects stats aggregation - about open / already done projects and amount of leaders
   const projects = await Project.aggregate(projectStatsPipeline);
+  const leaders = projects.leaders;
+  delete projects.leaders;
 
   // resource stats aggregation - about how many of each resources was contributed
   const resList = await Contribution.aggregate(resourceStatsPipeline);
@@ -21,9 +23,10 @@ exports.stats = catchAsync(async (req, res) => {
   // the output as stat
   const stats = {
     projects: projects[0],
-    contributions: {
-      contributors: contributors[0].contributors,
-      resources: resList[0].resources,
+    resources: resList[0].resources,
+    members: {
+      contributors,
+      leaders,
     },
   };
 
