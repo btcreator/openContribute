@@ -1,0 +1,16 @@
+.header-top
+      .content-stripe
+        .logo
+          a(href='/')
+            img(src='static/img/logo_svg.svg' alt='OpenConTRIBUTE logo')
+        .user-nav
+          if user
+            nav
+              li
+                img(src=`img/users/${user.photo}` alt=`User photo`)
+              li
+                a(href='/logout') LogOut
+          else 
+            nav 
+              li
+                a(href='/login') Sign In

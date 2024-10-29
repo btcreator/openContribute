@@ -1,0 +1,48 @@
+extends base
+
+block append head
+  link(rel='stylesheet' href='../../public/css/profile.css')
+
+block content
+  main
+    .content-stripe
+      .user-window
+        .user-menu
+          .user-photo
+            .photo-frame
+              img(src='/public/img/users/test_user_04.jpg' alt='user photo')
+            button.change-photo
+              img(src='../../public/img/icons/edit_photo.png' alt='Change Photo')
+          .user-nav-items
+            nav
+              li
+                a.active(href='./user_profile.html') Profile
+              li
+                a(href='./user_contributions.html') Contributions
+              li
+                a(href='./user_projects.html') Projects
+        .settings.settings-profile
+          section.profile
+            article.profile-account
+              h2 Account
+              form
+                label.hidden(for='alias') Alias
+                input#alias(name='alias' type='text' placeholder='Alias')
+            article.profile-personal
+              h2 Personal
+              form
+                label.hidden(for='fullname') Full name
+                input#fullname(name='fullName' type='text' placeholder='Full Name')
+                button Save
+          hr.delimiter
+          section.password-change
+            h2 Passord change
+            form
+              label.hidden(for='password') Password
+              input#password(name='password' type='password' placeholder='password' required='')
+              label.hidden(for='new-password') New password
+              input#new-password(name='newPassword' type='password' placeholder='new password' required='')
+              label.hidden(for='confirm-password') Confirm password
+              input#confirm-password(name='confirmPassword' type='password' placeholder='confirm new password' required='')
+              button Save
+ 

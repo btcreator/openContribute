@@ -1,0 +1,150 @@
+extends base
+
+block append head 
+  script(src='static/js/hero.js' defer='')
+
+mixin stat(title, statObj)
+   article.stat-table
+    .stat-table-bg
+      .stat-table-bg-img
+      .stat-table-bg-shadow
+    h3= title
+    ul.stat-1-box.stat-list
+      - for(const [key, val] of Object.entries(statObj))
+        li
+          span= key
+          span= val || 0
+
+mixin reviewBox(user)
+  - const offset = 315 - 315 * user.review.rating / 5
+  - const colors = ["darkred", "gold", "yellowgreen", "forestgreen", "darkgreen"]
+  .review-box
+    .review-box-head
+      svg(viewbox='0 0 112 112' xmlns='http://www.w3.org/2000/svg')
+        circle(cx='56' cy='56' r='50' fill='transparent' stroke-width='10' stroke-dasharray='315' stroke-dashoffset=offset stroke=colors[user.review.rating - 1])
+      img(src=`/media/users/${user.photo}` alt='user-photo')
+    .review-box-name= user.name || "Anonymus"
+    q.review-box-review= user.review.review
+
+block hero
+  .hero
+    .content-stripe
+      .hero-message
+        p
+          | Con
+          span.tail-text Tribute
+      .hero-searchbar
+        label.hidden(for='search') Searchfield
+        input#search(type='text' name='search')
+        button.btn-search Find Project
+
+block content
+  main
+    section.welcome
+      .content-stripe
+        article
+          h1 Why
+          p
+            | Build something. Build it together with someone or help someone else to build it. 
+            br
+            | No matter what, just build.
+            br
+            br
+            | Imagine how you or the other person might talk, think, and feel when it's done. 
+            br
+            | At that moment, it’s no longer just "something" — it's 
+            i your work.
+            br
+            | Perfect or not, you’re proud of it! You talk about it with excitement! You are thrilled about it!
+            br
+            | It’s different when you just give something to help build something and never know the outcome. Then it just stays - 
+            i "something."
+            br
+            | -------
+            br
+            | When your vision serves a common cause, there are plenty of people who stay behind you. 
+            br
+            | Just need to turn around! They’re here!
+            br
+            | Spread your vision, spread your word, and they will find you.
+            br
+            | -------
+            br
+            | Sometimes we want to help each other, yet we also want to feel, see, and understand the impact of what we give. 
+            br
+            | It’s fulfilling to contribute toward a cause and witness its effect. 
+            br
+            | We give you the chance to feel that fulfillment. Just listen, seek, and connect with the shared vision.
+            br
+            br
+            b Visionairs, dreamers and contributors.
+            br
+            b We bring them together, to progress in common cause.
+            br
+            br
+            | "The most valuable gift that you can give to someone is your TIME."
+            i — Theophrastus
+    section.cta
+      .cta-bg-contribute.cta-bg
+      .cta-bg-leader.cta-bg
+      .content-stripe
+        article.contribute.cta-box
+          .cta-description
+            h2 Contributors
+            p
+              | "I want to help!" - you say.
+              br
+              | You want to help others, but you don’t want to just give? You want something more, something indescribable?
+              br
+              | Then feel that you are part of something real and see the fruits of your sacrifice...
+          .cta-action
+            button Contribute
+        article.leader.cta-box
+          .cta-description
+            h2 Leaders
+            p
+              | "I have a dream!" - you say.
+              br
+              | You have a dream that could help others, but do you lack the resources to achieve that dream?
+              br
+              | Then bring your vision to life with the help of others and be the leader of your dreams...
+          .cta-action
+            button Create
+    section.impact
+      .impact-bg
+      .content-stripe
+        .impact-description
+          h2 How your contribution impacts?
+          p
+            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
+            | quis. Est voluptas illum ratione odit animi cumque consequuntur
+            | velit eius ad beatae quod dignissimos corporis maiores, ipsa
+            | voluptatem. 
+            br
+            |                 Natus, nesciunt? Lorem ipsum dolor sit amet consectetur
+            |                 adipisicing elit. Laudantium accusamus itaque obcaecati totam
+            |                 dolores explicabo tenetur qui earum iusto recusandae, incidunt,
+            |                 excepturi illo eveniet? Magni voluptas numquam nesciunt hic
+            |                 odio? Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            |                 Reiciendis necessitatibus laudantium quibusdam neque nisi cum
+            |                 suscipit voluptatibus quo natus magni! Soluta culpa illo aperiam
+            |                 autem reprehenderit voluptates eum assumenda ipsam.
+        .impact-interaction
+          button More successful stories
+
+    section.stat
+      .stat-bg
+      .content-stripe
+        .stat-content
+          h2 Statistics
+          p Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          .stat-table-holder
+            +stat("resources", stats.resources)
+            +stat("members", stats.members)
+            +stat("projects", stats.projects)
+
+    section.review
+      .content-stripe
+        .review-slider
+          each _user in reviews
+            +reviewBox(_user)
