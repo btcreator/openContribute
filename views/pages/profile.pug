@@ -1,7 +1,7 @@
 extends base
 
 block append head
-  link(rel='stylesheet' href='../../public/css/profile.css')
+  link(rel='stylesheet' href='/static/css/profile.css')
 
 block content
   main
@@ -10,29 +10,29 @@ block content
         .user-menu
           .user-photo
             .photo-frame
-              img(src='/public/img/users/test_user_04.jpg' alt='user photo')
+              img(src=`/media/users/${user.photo}` alt='user photo')
             button.change-photo
-              img(src='../../public/img/icons/edit_photo.png' alt='Change Photo')
+              img(src='/static/img/icons/edit_photo.png' alt='Change Photo')
           .user-nav-items
             nav
               li
-                a.active(href='./user_profile.html') Profile
+                a.active(href='/myProfile') Profile
               li
-                a(href='./user_contributions.html') Contributions
+                a(href='/myContributions') Contributions
               li
-                a(href='./user_projects.html') Projects
+                a(href='/myProjects') Projects
         .settings.settings-profile
           section.profile
             article.profile-account
               h2 Account
               form
                 label.hidden(for='alias') Alias
-                input#alias(name='alias' type='text' placeholder='Alias')
+                input#alias(name='alias' type='text' placeholder='Alias' value=user.alias)
             article.profile-personal
               h2 Personal
               form
                 label.hidden(for='fullname') Full name
-                input#fullname(name='fullName' type='text' placeholder='Full Name')
+                input#fullname(name='fullName' type='text' placeholder='Full Name' value=user.name)
                 button Save
           hr.delimiter
           section.password-change
@@ -45,4 +45,3 @@ block content
               label.hidden(for='confirm-password') Confirm password
               input#confirm-password(name='confirmPassword' type='password' placeholder='confirm new password' required='')
               button Save
- 
