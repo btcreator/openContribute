@@ -7,7 +7,11 @@ const router = express.Router();
 router.get('/', identificateUser, viewController.getHome);
 router.get('/login', identificateUser, viewController.login);
 router.get('/search');
-router.get('/profile');
+
+router.use(authenticate);
+router.get('/myProfile', viewController.myProfile);
+router.get('/myContributions', viewController.myContributions);
+router.get('/myProjects', viewController.myContributions);
 
 // router.get('/project/:slug');
 // router.get('/project-create');
