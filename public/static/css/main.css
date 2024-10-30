@@ -122,13 +122,22 @@ textarea {
 .user-nav img {
   width: 60px;
   border-radius: 50%;
+  border: 2px solid #ffffff;
+  outline: 3px solid gray;
 }
 
 .user-nav a {
   display: inline-block;
+  line-height: 0;
+}
+
+.user-nav .profile {
+  border-radius: 50%;
+}
+
+.user-nav .access-btn {
   padding: 15px 20px;
   border-block: 2px solid black;
-  line-height: 0;
 }
 
 /*HERO*/
