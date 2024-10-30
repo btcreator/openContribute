@@ -7,10 +7,11 @@
           if user
             nav
               li
-                img(src=`img/users/${user.photo}` alt=`User photo`)
+                a.profile(href="/myProfile")
+                  img(src=`/media/users/${user.photo}` alt=`User photo`)
               li
-                a(href='/logout') LogOut
+                a.access-btn(href='/logout') LogOut
           else 
             nav 
               li
-                a(href='/login') Sign In
+                a.access-btn(href='/login') Sign In
