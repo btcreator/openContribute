@@ -52,7 +52,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const user = await User.create({ email, password, confirmPassword });
 
   // create jwt token and set cookie
-  const token = await _signJWT({ id: user._id, aud: req.get('origin') });
+  const token = await _signJWT({ id: user._id });
   res.cookie('jwt', token, _cookieOptions);
 
   res.status(201).json({
@@ -232,12 +232,6 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   if (user.passwordChangedAt > tokenData.iat * 1000)
     throw new AppError(401, 'The user recently changed his/her password. Please log in again.');
 
-  // token is from the same audience
-  if (req.get('origin') !== tokenData.aud) {
-    serverLog(`Security log: Trying log in from ${req.get('origin')} where audience was ${tokenData.aud}`);
-    throw new AppError(401, 'Invalid token. Please login again.');
-  }
-
   // access granted
   delete user.passwordChangedAt;
   req.user = user;
@@ -257,12 +251,6 @@ exports.identificateUser = catchAsync(async (req, res, next) => {
   const _id = new ObjectId(`${tokenData.id}`);
   const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
   if (!user && user.passwordChangedAt > tokenData.iat * 1000) return next();
-
-  // token is from the same audience
-  if (req.get('origin') !== tokenData.aud) {
-    serverLog(`Security log: Trying log in from ${req.get('origin')} where audience was ${tokenData.aud}`);
-    return next();
-  }
 
   // user is identified
   delete user.passwordChangedAt;
