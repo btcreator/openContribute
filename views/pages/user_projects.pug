@@ -1,0 +1,37 @@
+extends base
+
+mixin projectCard(project)
+  .project-box(data-id=project._id)
+    .project-image
+        img(src=`/media/projects/content/${project.resultImg}` alt='Project image')
+    h3= project.name
+    svg.delimiter(viewbox='0 0 100 1' xmlns='http://www.w3.org/2000/svg' stroke-width='2')
+        line(x1='0' y1='0' x2='100' y2='0' stroke='lightgrey')
+        line(x1='0' y1='0' x2='100' y2='0' stroke-dasharray='100' stroke-dashoffset='80' stroke='green')
+
+block append head 
+  link(rel='stylesheet' href='../../public/css/profile.css')
+  script(src="/static/js/profile.js" defer="") 
+
+block content
+  main
+    .content-stripe
+      .user-window
+        .user-menu
+          .user-photo
+            .photo-frame
+              img(src=`/medie/users/${user.photo}` alt='user photo')
+          .user-nav-items
+            nav
+              li
+                a(href='/myProfile') Profile
+              li
+                a(href='/myContributions') Contributions
+              li
+                a.active(href='/myProjects') Projects
+        .settings.settings-contribution
+          section.project-pres
+            h2 My projects:
+            .project-thumbs
+                each project in projects 
+                  +projectCard(project)
