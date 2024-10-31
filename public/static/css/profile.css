@@ -105,7 +105,7 @@ nav {
 
 /*SETTINGS - CONTRIBUTION & PROJECTS*/
 
-li > svg {
+li > img {
   width: 24px;
   height: 24px;
 }
@@ -137,7 +137,7 @@ li > svg {
 }
 
 .project-box.done .project-image:after {
-  content: "";
+  content: '';
   position: absolute;
   width: 10px;
   height: 10px;
