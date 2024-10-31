@@ -11,7 +11,7 @@ router.get('/search');
 router.use(authenticate);
 router.get('/myProfile', viewController.myProfile);
 router.get('/myContributions', viewController.myContributions);
-router.get('/myProjects', viewController.myContributions);
+router.get('/myProjects', viewController.myProjects);
 
 // router.get('/project/:slug');
 // router.get('/project-create');
