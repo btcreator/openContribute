@@ -1,6 +1,7 @@
 const User = require('./../model/user');
 const Project = require('./../model/project');
 const Contribution = require('./../model/contribution');
+const { summaryPipeline } = require('./aggregationPipelines/contributionPipelines');
 const {
   projectStatsPipeline,
   resourceStatsPipeline,
@@ -44,3 +45,22 @@ exports.login = (req, res) => {
     user: req.user,
   });
 };
+
+exports.myProfile = (req, res) => {
+  res.status(200).render('user_profile', {
+    title: 'My Profile',
+    user: req.user,
+  });
+};
+
+exports.myContributions = catchAsync(async (req, res) => {
+  const contributions = await Contribution.aggregate(summaryPipeline(req.user._id));
+
+  res.status(200).render('user_contributions', {
+    title: 'My Contributions',
+    user: req.user,
+    contributions,
+  });
+});
+
+exports.myProjects = catchAsync(async (req, res) => {});
