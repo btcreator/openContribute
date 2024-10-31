@@ -48,6 +48,8 @@ exports.summaryPipeline = (user) => [
         {
           $project: {
             name: 1,
+            resultImg: 1,
+            isDone: 1,
             _id: 0,
           },
         },
@@ -56,12 +58,23 @@ exports.summaryPipeline = (user) => [
   },
   // stage 6 - the populated project is an array, so unwind it (to objects)
   {
-    $unwind: '$project',
+    $unwind: {
+      path: '$project',
+      preserveNullAndEmptyArrays: true,
+    },
   },
-  // stage 7 - replace project's value with the project name.
+  // stage 7 - add projects fields direct to the result object - removed projects are threated as removed.
   {
     $addFields: {
-      project: '$project.name',
+      name: { $ifNull: ['$project.name', 'Removed Project'] },
+      resultImg: { $ifNull: ['$project.resultImg', 'default_result.jpg'] },
+      isDone: { $ifNull: ['$project.isDone', false] },
+    },
+  },
+  // stage 8 - remove project field
+  {
+    $project: {
+      project: 0,
     },
   },
 ];
