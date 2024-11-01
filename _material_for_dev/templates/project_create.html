@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Karla:wght@200&family=Roboto:wght@300;400&display=swap");
+    </style>
+    <link rel="stylesheet" href="../../public/css/main.css" />
+    <link rel="stylesheet" href="../../public/css/create.css" />
+    <title>OpenConTRIBUTE</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-top">
+          <div class="content-stripe">
+            <div class="logo">
+              <a href="/">
+                <img
+                  src="../../public/img/static/logo_svg.svg"
+                  alt="OpenConTRIBUTE logo"
+                />
+              </a>
+            </div>
+            <div class="user-nav">
+              <nav>
+                <a href="/login">LogIn</a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="intension">
+          <div class="content-stripe">
+            <div class="project-name">
+              <label for="name" class="hidden">Your projects name</label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Your projects name"
+              />
+
+              <p>Lead by <span>Jamie Winkler</span></p>
+            </div>
+
+            <div class="project-summary">
+              <div>
+                <label for="summary">Summary</label>
+                <textarea
+                  name="summary"
+                  id="summary"
+                  rows="5"
+                  placeholder="Be short, but expressive (for search results)"
+                  maxlength="160"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="project-description">
+              <label for="description">Description</label>
+              <textarea
+                name="description"
+                id="description"
+                rows="10"
+                placeholder="Tooooo long texts get rarely read to the end..."
+              ></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="type">
+          <div class="content-stripe">
+            <h2>Which type represents at best your project?</h2>
+
+            <div class="type-card-container">
+              <ul>
+                <li class="type-card">
+                  <input
+                    type="radio"
+                    class="hidden"
+                    name="type"
+                    id="developement"
+                    value="developement"
+                  />
+                  <label for="developement" class="img-holder"
+                    ><img
+                      src="../../public/img/static/project-types/developement.jpg"
+                      alt="developement"
+                  /></label>
+
+                  <p>Developement</p>
+                </li>
+
+                <li class="type-card">
+                  <input
+                    type="radio"
+                    class="hidden"
+                    name="type"
+                    id="rebuild"
+                    value="rebuild"
+                  />
+                  <label for="rebuild" class="img-holder"
+                    ><img
+                      src="../../public/img/static/project-types/rebuild.jpg"
+                      alt="rebuild"
+                  /></label>
+
+                  <p>Rebuild / Renovation</p>
+                </li>
+
+                <li class="type-card">
+                  <input
+                    type="radio"
+                    class="hidden"
+                    name="type"
+                    id="rescue"
+                    value="rescue"
+                  />
+                  <label for="rescue" class="img-holder"
+                    ><img
+                      src="../../public/img/static/project-types/rescue.jpg"
+                      alt="rescue"
+                  /></label>
+
+                  <p>Rescue</p>
+                </li>
+
+                <li class="type-card">
+                  <input
+                    type="radio"
+                    class="hidden"
+                    name="type"
+                    id="social"
+                    value="social"
+                  />
+                  <label for="social" class="img-holder"
+                    ><img
+                      src="../../public/img/static/project-types/social.jpg"
+                      alt="social"
+                  /></label>
+
+                  <p>Social</p>
+                </li>
+
+                <li class="type-card">
+                  <input
+                    type="radio"
+                    class="hidden"
+                    name="type"
+                    id="other"
+                    value="other"
+                  />
+                  <label for="other" class="img-holder"
+                    ><img
+                      src="../../public/img/static/project-types/other.jpg"
+                      alt="other"
+                  /></label>
+
+                  <p>Other</p>
+
+                  <label for="custom-type" class="hidden">Provide type</label>
+                  <input
+                    type="text"
+                    class="hidden"
+                    name="other-type-name"
+                    id="custom-type"
+                    placeholder="........."
+                  />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="location">
+          <div class="content-stripe">
+            <div class="location-descriptor">
+              <h2>Location</h2>
+
+              <p>
+                Please point on the map where the location of your project takes
+                place. <br /><br />Or you can give the exact coordinates.
+                (Latitude, Longitude)
+              </p>
+
+              <div class="location-input">
+                <label for="location-point" class="hidden"
+                  >Location Point</label
+                >
+                <input
+                  type="text"
+                  name="location-point"
+                  id="location-point"
+                  placeholder="68.085135, 18.301253"
+                />
+                <button>></button>
+              </div>
+            </div>
+            <div id="map"></div>
+          </div>
+        </section>
+
+        <section class="milestones">
+          <div class="content-stripe">
+            <h2>Milestones</h2>
+
+            <div class="milestone-bubbles">
+              <ul>
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_01.jpg"
+                    alt="milestone photo"
+                  />
+                </li>
+
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_02.jpg"
+                    alt="milestone photo"
+                  />
+                </li>
+
+                <li>
+                  <img
+                    src="../../public/img/projects/milestones/test_project_05_milestone_03.jpg"
+                    alt="milestone photo"
+                  />
+                </li>
+              </ul>
+            </div>
+
+            <div class="milestone-inputs">
+              <label for="add-photo"
+                ><img src="../../public/img/icons/add.png" alt="add-photo"
+              /></label>
+              <input
+                type="file"
+                class="hidden"
+                name="milestone-photo"
+                id="add-photo"
+              />
+
+              <div class="milestone-name-input">
+                <label for="milestone-name" class="hidden"
+                  >Milestone name</label
+                >
+                <input
+                  type="text"
+                  name="milestone-name"
+                  id="milestone-name"
+                  placeholder="Name of the milestone"
+                />
+                <button>ADD</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="resources">
+          <div class="content-stripe">
+            <h2>Resources</h2>
+
+            <ul class="resources-icons">
+              <li>
+                <input
+                  class="hidden"
+                  type="checkbox"
+                  name="resource"
+                  id="finantial"
+                  value="finantial"
+                />
+                <label for="finantial">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+
+              <li>
+                <input
+                  class="hidden"
+                  type="checkbox"
+                  name="resource"
+                  id="human-power"
+                  value="human-power"
+                />
+                <label for="human-power">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+
+              <li>
+                <input
+                  class="hidden actual"
+                  type="checkbox"
+                  name="resource"
+                  id="technology"
+                  value="technology"
+                />
+                <label for="technology">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+
+              <li>
+                <input
+                  class="hidden"
+                  type="checkbox"
+                  name="resource"
+                  id="knowledge"
+                  value="knowledge"
+                />
+                <label for="knowledge">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+
+              <li>
+                <input
+                  class="hidden"
+                  type="checkbox"
+                  name="resource"
+                  id="material"
+                  value="material"
+                />
+                <label for="material">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+
+              <li>
+                <input
+                  class="hidden"
+                  type="checkbox"
+                  name="resource"
+                  id="special"
+                  value="special"
+                />
+                <label for="special">
+                  <svg>
+                    <path
+                      d="M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z"
+                    ></path>
+                  </svg>
+                </label>
+              </li>
+            </ul>
+
+            <div class="resources-details">
+              <div class="settings">
+                <div class="priority option">
+                  <span>Priority</span>
+
+                  <div class="selection-bar">
+                    <label>
+                      <input
+                        class="hidden"
+                        type="radio"
+                        name="priority"
+                        value="1"
+                        checked
+                      />
+                    </label>
+                    <label>
+                      <input
+                        class="hidden"
+                        type="radio"
+                        name="priority"
+                        value="2"
+                      />
+                    </label>
+                    <label>
+                      <input
+                        class="hidden"
+                        type="radio"
+                        name="priority"
+                        value="3"
+                      />
+                    </label>
+                    <label>
+                      <input
+                        class="hidden"
+                        type="radio"
+                        name="priority"
+                        value="4"
+                      />
+                    </label>
+                    <label>
+                      <input
+                        class="hidden"
+                        type="radio"
+                        name="priority"
+                        value="5"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div class="limit option">
+                  <span>Limit</span>
+
+                  <div>
+                    <label for="limit-min" class="hidden">Minimum value</label>
+                    <input
+                      type="text"
+                      name="limit-min-value"
+                      id="limit-min"
+                      placeholder="Min"
+                    />
+
+                    <label for="limit-max" class="hidden">Maximum value</label>
+                    <input
+                      type="text"
+                      name="limit-max-value"
+                      id="limit-max"
+                      placeholder="Max"
+                    />
+                  </div>
+                </div>
+
+                <div class="authenticate option">
+                  <label for="auth-req">Authentication required</label>
+                  <input type="checkbox" name="authenticate" id="auth-req" />
+                </div>
+              </div>
+
+              <div class="notes">
+                <label for="opt-notes" class="hidden">Notes</label>
+                <textarea
+                  name="notes"
+                  id="opt-notes"
+                  rows="10"
+                  placeholder="Some inportant notes for the required resource (its optional, but highly recommended!)"
+                ></textarea>
+              </div>
+            </div>
+            <button class="control-btn">Apply</button>
+          </div>
+        </section>
+
+        <section class="deadline">
+          <div class="deadline-bg"></div>
+          <div class="content-stripe">
+            <div class="header">
+              <h2>Deadline</h2>
+              <span>(optional)</span>
+            </div>
+
+            <label for="deadline-input" class="hidden"
+              >Time limit of project</label
+            >
+            <input type="date" id="deadline-input" name="deadline" />
+          </div>
+        </section>
+
+        <section class="media">
+          <div class="media-bg"></div>
+          <div class="content-stripe">
+            <div class="header">
+              <h2>Media</h2>
+              <span>Photos / Videos</span>
+            </div>
+
+            <div class="upload-panel">
+              <div class="upload-media-col">
+                <img
+                  class="icon"
+                  src="../../public/img/icons/photo.png"
+                  alt="photo icon"
+                />
+
+                <p>
+                  The first image gets the cover image, the second is for search
+                  results. Both are required.
+                </p>
+
+                <div class="media-container">
+                  <label class="media-frame">
+                    <input
+                      class="hidden"
+                      type="file"
+                      accept="image/*"
+                      name="cover-photo"
+                    />
+                    <img
+                      src="../../public/img/icons/add.png"
+                      alt="add cover image"
+                    />
+                  </label>
+                  <label class="media-frame">
+                    <input
+                      class="hidden"
+                      type="file"
+                      accept="image/*"
+                      name="result-photo"
+                    />
+                    <img
+                      src="../../public/img/icons/add.png"
+                      alt="add search result image"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div class="upload-media-col">
+                <img
+                  class="icon"
+                  src="../../public/img/icons/video.png"
+                  alt="video icon"
+                />
+
+                <p>
+                  Show your vision trough videos. They are
+                  <span class="express">optional</span> and gets uploaded to
+                  your projects feed.
+                </p>
+
+                <div class="media-container">
+                  <label class="media-frame">
+                    <input
+                      class="hidden"
+                      type="file"
+                      accept="video/*"
+                      name="video1"
+                    />
+                    <img
+                      src="../../public/img/icons/add.png"
+                      alt="add cover image"
+                    />
+                  </label>
+                  <label class="media-frame">
+                    <input
+                      class="hidden"
+                      type="file"
+                      accept="video/*"
+                      name="video2"
+                    />
+                    <img
+                      src="../../public/img/icons/add.png"
+                      alt="add search result image"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <p class="upload-info">
+              You can upload more pictures and <br />videos in your feed after
+              publishing.
+            </p>
+          </div>
+        </section>
+
+        <div class="publicate">
+          <div class="publicate-bg"></div>
+          <div class="content-stripe">
+            <button class="btn-publicate">Publish</button>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <div class="content-stripe">
+          <div class="reach-info">
+            <article>
+              <h2>OpenConTRIBUTE HQ</h2>
+              <p>
+                Examplestr. 11 <br />
+                00000 Examplecity
+              </p>
+              <p>
+                Examplestr. 12 <br />
+                11111 Examplecity
+              </p>
+            </article>
+            <ul>
+              <li>
+                E-mail:
+                <span class="reach-contact"
+                  ><a href="mailto:some@mailing.de">some@mailing.de</a></span
+                >
+              </li>
+              <li>
+                Tel.:
+                <span class="reach-contact">0123/456789</span>
+              </li>
+              <li>
+                Fax.:
+                <span class="reach-contact">0987/65432</span>
+              </li>
+            </ul>
+          </div>
+
+          <nav>
+            <li>
+              <a href="impressum.html" target="_self">Impressum</a>
+            </li>
+            <li>
+              <a href="contact.html" target="_self">Contact</a>
+            </li>
+            <li>
+              <a href="about.html" target="_self">About Us</a>
+            </li>
+            <li>
+              <a href="links.html" target="_self">Useful links</a>
+            </li>
+            <li>
+              <a href="story.html" target="_self">Our Story</a>
+            </li>
+          </nav>
+
+          <div class="copyright">
+            <p>OpenConTRIBUTE &copy; 2023</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
