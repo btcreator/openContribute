@@ -40,7 +40,7 @@ exports.getHome = catchAsync(async function (req, res) {
 });
 
 exports.login = (req, res) => {
-  res.status(200).render('login', {
+  res.status(200).render('signIn', {
     title: 'User Login / Signup',
     user: req.user,
   });
