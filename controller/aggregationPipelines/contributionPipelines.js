@@ -50,6 +50,7 @@ exports.summaryPipeline = (user) => [
             name: 1,
             resultImg: 1,
             isDone: 1,
+            progress: 1,
             _id: 0,
           },
         },
@@ -69,6 +70,7 @@ exports.summaryPipeline = (user) => [
       name: { $ifNull: ['$project.name', 'Removed Project'] },
       resultImg: { $ifNull: ['$project.resultImg', 'default_result.jpg'] },
       isDone: { $ifNull: ['$project.isDone', false] },
+      progress: { $ifNull: ['$project.progress', 0] },
     },
   },
   // stage 8 - remove project field
