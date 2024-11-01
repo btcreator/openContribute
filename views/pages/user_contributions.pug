@@ -1,13 +1,14 @@
 extends base
 
 mixin projectCard(project)
+  - const offset = 100 - Math.round(project.progress * 100);
   .project-box(class=`${project.isDone ? "done" : ""}` data-id=project._id)
     .project-image
         img(src=`/media/projects/content/${project.resultImg}` alt='Projects image')
     h3= project.name
     svg.delimiter(viewbox='0 0 100 1' xmlns='http://www.w3.org/2000/svg' stroke-width='2')
         line(x1='0' y1='0' x2='100' y2='0' stroke='lightgrey')
-        line(x1='0' y1='0' x2='100' y2='0' stroke-dasharray='100' stroke-dashoffset='80' stroke='green')
+        line(x1='0' y1='0' x2='100' y2='0' stroke-dasharray='100' stroke-dashoffset=offset stroke='green')
     ul.resources
       - for(const name in project.resources)
         li

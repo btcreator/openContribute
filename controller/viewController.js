@@ -63,4 +63,13 @@ exports.myContributions = catchAsync(async (req, res) => {
   });
 });
 
-exports.myProjects = catchAsync(async (req, res) => {});
+exports.myProjects = catchAsync(async (req, res) => {
+  const projects = await Project.find({ leader: req.user._id, isActive: true }).select(
+    'name resultImg progress isDone'
+  );
+
+  res.status(200).render('user_projects', {
+    user: req.user,
+    projects,
+  });
+});
