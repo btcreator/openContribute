@@ -88,6 +88,7 @@ const projectSchema = new mongoose.Schema(
       ],
       validate: [_uniqueName, 'Duplicate resources are not allowed.'],
     },
+    progress: { type: Number, default: 0, min: 0, max: 1 },
     deadline: { type: Date, default: null },
     coverImg: { type: String, required: true },
     resultImg: { type: String, required: true },
@@ -125,10 +126,12 @@ projectSchema.methods.rearrangeMilestones = function () {
     .filter((milest) => milest.isDone || (undone.push(milest), false))
     .concat(undone);
 
-  // when the last one is done, the project can be marked as done as whole
-  sortedMilestones.at(-1).isDone && (this.isDone = true);
+  // when there are no undone milestones, all of them is done. The whole project can be marked as done
+  undone.length === 0 && (this.isDone = true);
 
   this.milestones = sortedMilestones;
+  this.progress = Math.floor(1 - (undone.length / sortedMilestones.length) * 100) / 100;
+
   this.save();
 };
 

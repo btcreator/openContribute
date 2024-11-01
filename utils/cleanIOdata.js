@@ -30,6 +30,7 @@ exports.cleanBody = function (body, ...except) {
     'slug',
     'coverImg',
     'resultImg',
+    'progress',
     'createdAt',
     'images',
     'videos',
