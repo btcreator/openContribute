@@ -1,28 +1,27 @@
-// Select "boxes" to toggle
-const signupInters = document.querySelectorAll('.signup-inter');
-const loginInters = document.querySelectorAll('.login-inter');
+import { login, signup } from './_signIn_api_calls';
+import { toggleSignInWindowInit } from './_signInToggleWindow';
 
-// Select buttons
-const proceedLogin = document.querySelector('.to-login');
-const proceedSignup = document.querySelector('.to-signup');
+const loginForm = document.querySelector('#login-form');
+const signupForm = document.querySelector('#signup-form');
 
-// Signup background for bringing it on top or in back depending on in- / activity
-const backgroundSignup = document.querySelector('.signup-box svg');
-backgroundSignup.style.zIndex = getComputedStyle(backgroundSignup).zIndex;
+// Add listeners for toggle buttons to switch between signIn and LogIn window
+toggleSignInWindowInit();
 
-// Add listeners to click events on proceed buttons
-proceedLogin.addEventListener('click', toggleLoginSignup);
-proceedSignup.addEventListener('click', toggleLoginSignup);
+// log in
+loginForm.addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-// Switch between LogIn and SignUp
-function toggleLoginSignup(e) {
-  signupInters.forEach(toggleHidden);
-  loginInters.forEach(toggleHidden);
+  login(email, password);
+});
 
-  // move the background on front or back
-  backgroundSignup.style.zIndex = backgroundSignup.style.zIndex > -10 ? -10 : -5;
-}
+// Sign up
+signupForm.addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const email = document.getElementById('email-sign');
+  const password = document.getElementById('password-sign');
+  const confirmPassword = document.getElementById('confirm-password');
 
-function toggleHidden(el) {
-  el.classList.toggle('hidden');
-}
+  signup(email, password, confirmPassword);
+});
