@@ -200,7 +200,8 @@ exports.getProject = catchAsync(async (req, res) => {
   if (req.params.id) match._id = new ObjectId(`${req.params.id}`);
   if (req.params.slug) match.slug = req.params.slug;
 
-  const project = await Project.aggregate(populateContributionsToProjectPipeline(match));
+  const project = (await Project.aggregate(populateContributionsToProjectPipeline(match)))[0];
+  if (!project) throw new AppError(404, 'No project found.');
 
   res.status(200).json({
     status: 'success',
