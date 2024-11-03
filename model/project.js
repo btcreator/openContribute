@@ -107,6 +107,10 @@ const projectSchema = new mongoose.Schema(
     toJSON: {
       transform: excludeSensitiveFields,
     },
+    timestamps: {
+      createdAt: true,
+      updatedAt: false,
+    },
   }
 );
 
