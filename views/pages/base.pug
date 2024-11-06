@@ -8,11 +8,14 @@ html
       style.
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Karla:wght@200&family=Roboto:wght@300;400&display=swap");
       link(rel='stylesheet' href='/static/css/main.css')
-      link(rel="shortcut icon" href="/static/img/favicon.png")
+      link(rel="icon" href="/static/img/favicon.png" type="image/png icon")
+      script(type="module" src="https://unpkg.com/axios/dist/axios.min.js")
+      script(src="/static/js/alert.js" defer) 
       title OpenConTRIBUTE #{title}
 
   body
     .container
+        .alert-window.hidden 
         // HEADER
         header
             include ../partials/_header
