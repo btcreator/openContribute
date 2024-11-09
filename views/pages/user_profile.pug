@@ -2,6 +2,7 @@ extends base
 
 block append head
   link(rel='stylesheet' href='/static/css/profile.css')
+  script(type="module" src="/static/js/user_profile.js") 
 
 block content
   main
@@ -23,21 +24,22 @@ block content
                 a(href='/myProjects') Projects
         .settings.settings-profile
           section.profile
-            article.profile-account
-              h2 Account
-              form
-                label.hidden(for='alias') Alias
-                input#alias(name='alias' type='text' placeholder='Alias' value=user.alias)
-            article.profile-personal
-              h2 Personal
-              form
-                label.hidden(for='fullname') Full name
-                input#fullname(name='fullName' type='text' placeholder='Full Name' value=user.name)
-                button Save
+            form.profile-form
+              article.profile-account
+                h2 Account
+                div.profile-inputs
+                  label.hidden(for='alias') Alias
+                  input#alias(name='alias' type='text' placeholder='Alias' value=user.alias)
+              article.profile-personal
+                h2 Personal
+                div.profile-inputs
+                  label.hidden(for='fullname') Full name
+                  input#fullname(name='fullName' type='text' placeholder='Full Name' value=user.name)
+              button Save
           hr.delimiter
           section.password-change
             h2 Password change
-            form
+            form.password-change-form
               label.hidden(for='password') Password
               input#password(name='password' type='password' placeholder='password' required='')
               label.hidden(for='new-password') New password
