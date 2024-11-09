@@ -4,17 +4,17 @@ const loginInters = document.querySelectorAll('.login-inter');
 const proceedLogin = document.querySelector('.to-login');
 const proceedSignup = document.querySelector('.to-signup');
 
-// Signup background for bringing it on top or in back depending on in- / activity
-const backgroundSignup = document.querySelector('.signup-box svg');
-backgroundSignup.style.zIndex = getComputedStyle(backgroundSignup).zIndex;
+// Login box for bringing it on top or in back depending on in- / activity
+const loginBox = document.querySelector('.login-box');
+loginBox.style.zIndex = 5;
 
 // Switch between LogIn and SignUp
 function toggleLoginSignup(e) {
   signupInters.forEach(toggleHidden);
   loginInters.forEach(toggleHidden);
 
-  // move the background on front or back
-  backgroundSignup.style.zIndex = backgroundSignup.style.zIndex > -10 ? -10 : -5;
+  // move the loginBox on front or back
+  loginBox.style.zIndex = loginBox.style.zIndex >= 5 ? '' : 5;
 }
 
 function toggleHidden(el) {
