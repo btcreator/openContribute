@@ -87,6 +87,7 @@ nav {
 .settings h2 {
   font-weight: 400;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .settings form {
@@ -158,6 +159,7 @@ li > img {
   width: 100px;
   height: 100px;
   object-fit: cover;
+  transition: all 0.2s ease-out;
 }
 
 .project-box h3 {
@@ -182,8 +184,8 @@ li > img {
   justify-content: space-between;
 }
 
-.project-details > .project-box {
-  width: 30%;
+.project-details .project-box:hover .project-image img {
+  border-top-right-radius: 10px;
 }
 
 .project-description {
