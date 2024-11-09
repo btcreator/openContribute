@@ -118,15 +118,8 @@ exports.changeMyPassword = catchAsync(async (req, res) => {
 
   await user.save();
 
-  // create jwt token and set cookie
-  const token = await _signJWT({ id: user._id });
-  res.cookie('jwt', token, _cookieOptions);
-
   res.status(200).json({
     status: 'success',
-    data: {
-      user,
-    },
   });
 });
 
@@ -250,7 +243,7 @@ exports.identificateUser = catchAsync(async (req, res, next) => {
   // check if user still exists and if the password changed after token issue date
   const _id = new ObjectId(`${tokenData.id}`);
   const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
-  if (!user && user.passwordChangedAt > tokenData.iat * 1000) return next();
+  if (!user || user.passwordChangedAt > tokenData.iat * 1000) return next();
 
   // user is identified
   delete user.passwordChangedAt;
