@@ -2,17 +2,13 @@ const User = require('./../model/user');
 const Project = require('./../model/project');
 const Contribution = require('./../model/contribution');
 const { summaryPipeline } = require('./aggregationPipelines/contributionPipelines');
-const {
-  projectStatsPipeline,
-  resourceStatsPipeline,
-  contributorsStatPipeline,
-} = require('./aggregationPipelines/statsPipelines');
+const stat = require('./aggregationPipelines/statsPipelines');
 const catchAsync = require('./../utils/catchAsync');
 
 exports.getHome = catchAsync(async function (req, res) {
-  const projects = (await Project.aggregate(projectStatsPipeline))[0];
-  const resList = await Contribution.aggregate(resourceStatsPipeline);
-  const contributors = (await Contribution.aggregate(contributorsStatPipeline))[0].contributors;
+  const projects = (await Project.aggregate(stat.projectStatsPipeline))[0];
+  const resList = await Contribution.aggregate(stat.resourceStatsPipeline);
+  const contributors = (await Contribution.aggregate(stat.contributorsStatPipeline))[0].contributors;
   const reviews = await User.find({ isActive: true, 'review.review': { $exists: true } })
     .sort('-review.updatedAt')
     .limit(3)
@@ -36,6 +32,7 @@ exports.getHome = catchAsync(async function (req, res) {
     user: req.user,
     stats,
     reviews,
+    alert: req.query?.alert,
   });
 });
 
@@ -43,6 +40,7 @@ exports.login = (req, res) => {
   res.status(200).render('signIn', {
     title: 'User Login / Signup',
     user: req.user,
+    alert: req.query?.alert,
   });
 };
 
@@ -65,7 +63,7 @@ exports.myContributions = catchAsync(async (req, res) => {
 
 exports.myProjects = catchAsync(async (req, res) => {
   const projects = await Project.find({ leader: req.user._id, isActive: true }).select(
-    'name resultImg progress isDone'
+    'name resultImg progress isDone slug'
   );
 
   res.status(200).render('user_projects', {
