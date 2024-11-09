@@ -1,26 +1,24 @@
-import axios from 'axios';
+import { setAlert } from './_alert.js';
 
-export const login = async function (email, password) {
-  const res = await axios
+export const login = function (email, password) {
+  return axios
     .post('/api/v1/user/login', {
       email,
       password,
     })
     .catch((err) => {
-      console.log(err);
-      // show error for user
+      setAlert(err.response.data.message, 'error');
     });
 };
 
-export const signup = async function (email, password, confirmPassword) {
-  const res = await axios
+export const signup = function (email, password, confirmPassword) {
+  return axios
     .post('/api/v1/user/signup', {
       email,
       password,
       confirmPassword,
     })
     .catch((err) => {
-      console.log(err);
-      // show error for user
+      setAlert(err.response.data.message, 'error');
     });
 };
