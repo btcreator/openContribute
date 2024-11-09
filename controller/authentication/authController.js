@@ -77,7 +77,7 @@ exports.login = catchAsync(async (req, res) => {
     throw new AppError(401, 'Wrong email or password.');
 
   // create jwt token and set cookie
-  const token = await _signJWT({ id: user._id, aud: req.get('origin') });
+  const token = await _signJWT({ id: user._id });
   res.cookie('jwt', token, _cookieOptions);
 
   res.status(200).json({
