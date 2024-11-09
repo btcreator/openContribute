@@ -40,13 +40,13 @@ app.set('views', path.join(__dirname, 'views/pages'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Route incoming requests to corresponding router
-app.use('/', viewRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/project', projectRouter);
 app.use('/api/v1/contribution', contributionRouter);
 app.use('/api/v1/feed', feedRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.get('/api/v1/stats', stats);
+app.use('/', viewRouter);
 
 // Routes, that are not implemented - 404
 app.use(exception.globalRouteHandler);
