@@ -87,6 +87,23 @@ textarea {
   display: none;
 }
 
+.alert-window {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  width: 100vw;
+  padding: 20px;
+  color: white;
+  background-color: #5ea135;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.alert-window.error {
+  background-color: red;
+}
+
 /*HEADER*/
 .header-top {
   padding: 30px 0;
