@@ -2,8 +2,10 @@ const User = require('./../model/user');
 const Project = require('./../model/project');
 const Contribution = require('./../model/contribution');
 const { summaryPipeline } = require('./aggregationPipelines/contributionPipelines');
+const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
 const stat = require('./aggregationPipelines/statsPipelines');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.getHome = catchAsync(async function (req, res) {
   const projects = (await Project.aggregate(stat.projectStatsPipeline))[0];
@@ -41,6 +43,24 @@ exports.login = (req, res) => {
     title: 'User Login / Signup',
     user: req.user,
     alert: req.query?.alert,
+  });
+};
+
+exports.showProject = async (req, res) => {
+  const project = await Project.aggregate(
+    populateContributionsToProjectPipeline({ slug: req.params.slug, isActive: true })
+  );
+
+  if (!project)
+    throw new AppError(
+      404,
+      'This project was not found. When you are sure this project should exist, please try again or contact us.'
+    );
+
+  res.status(200).render('project_detail', {
+    title: project.name,
+    user: req.user,
+    project: project[0],
   });
 };
 
