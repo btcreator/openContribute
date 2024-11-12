@@ -134,9 +134,9 @@ projectSchema.methods.rearrangeMilestones = function () {
   undone.length === 0 && (this.isDone = true);
 
   this.milestones = sortedMilestones;
-  this.progress = Math.floor(1 - (undone.length / sortedMilestones.length) * 100) / 100;
+  this.progress = Math.floor((1 - undone.length / sortedMilestones.length) * 100) / 100;
 
-  this.save();
+  return this.save();
 };
 
 // Hooks (Middlewares)
