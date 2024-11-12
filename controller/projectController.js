@@ -153,6 +153,7 @@ exports.createMyProject = catchAsync(async (req, res) => {
   if (restFiles.length > 0) removeFiles('./public/media/projects/milestones/', restFiles);
 
   const project = await Project.create(bodyCl);
+  await project.rearrangeMilestones();
 
   res.status(200).json({
     status: 'success',
@@ -172,6 +173,8 @@ exports.updateMyProject = catchAsync(async (req, res) => {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
     await updateFilesOnDisk(req.files, imageNames);
   }
+
+  await project.rearrangeMilestones();
 
   res.status(200).json({
     status: 'success',
@@ -194,7 +197,7 @@ exports.deleteMyProject = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.getProject = catchAsync(async (req, res) => {
-  const match = {};
+  const match = { isActive: true };
 
   // get project is bound to one of params: id or slug.
   if (req.params.id) match._id = new ObjectId(`${req.params.id}`);
@@ -241,6 +244,7 @@ exports.createProject = catchAsync(async (req, res) => {
   if (restFiles.length > 0) removeFiles('./public/media/projects/milestones/', restFiles);
 
   const project = await Project.create(bodyCl);
+  await project.rearrangeMilestones();
 
   res.status(200).json({
     status: 'success',
@@ -259,6 +263,8 @@ exports.updateProject = catchAsync(async (req, res) => {
     const imageNames = { cover: project.coverImg, result: project.resultImg };
     await updateFilesOnDisk(req.files, imageNames);
   }
+
+  if (project) await project.rearrangeMilestones();
 
   res.status(200).json({
     status: 'success',
