@@ -19,7 +19,9 @@ router.use(helmet());
 router.use(
   helmet.contentSecurityPolicy({
     directives: {
-      'script-src': ['unpkg.com', 'http://localhost:3000'],
+      'script-src': ['unpkg.com', 'https://www.youtube.com/', 'http://localhost:3000'],
+      'img-src': ['https://tile.openstreetmap.org', 'http://localhost:3000'],
+      'frame-src': ['https://www.youtube.com/'],
     },
   })
 );
