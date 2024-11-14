@@ -43,6 +43,7 @@ formPasswordChange.addEventListener('submit', async function (ev) {
 // button for change photo is just a pseudo button for file input
 btnChangePhoto.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', async function (ev) {
+  fileInput.disabled = true;
   const form = new FormData();
   form.append('userPhoto', ev.target.files[0]);
 
@@ -51,4 +52,5 @@ fileInput.addEventListener('change', async function (ev) {
     setAlert('Profile photo updated.');
     userImage.src = userNavImg.src = `/media/users/${res.data.data.user.photo}?t=${new Date().getTime()}`;
   }
+  fileInput.disabled = false;
 });
