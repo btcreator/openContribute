@@ -292,6 +292,7 @@ input#payment-amount {
   position: absolute;
   left: -31px;
   top: 0;
+  z-index: 5;
   display: flex;
   font-size: 2em;
   justify-content: center;
@@ -319,6 +320,15 @@ input#contribution-ack {
   width: 100%;
   height: 600px;
   background: linear-gradient(330deg, rgb(233 233 233) 0%, rgb(173 173 173) 100%);
+  z-index: 0;
+}
+
+.leaflet-tile-pane {
+  filter: grayscale(1);
+}
+
+.leaflet-popup-content p {
+  font-weight: bold;
 }
 
 /*CONTRIBUTORS - (HALL OF FAME)*/
