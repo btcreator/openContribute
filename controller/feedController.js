@@ -18,10 +18,15 @@ exports.getProjectsFeed = catchAsync(async (req, res) => {
     if (req.user.role !== 'admin' && !(await aContributor()) && !(await aLeader())) match.isMilestone = true;
   } else match.isMilestone = true;
 
-  const feed = await Feed.find(match).sort('-createdAt');
+  req.query.sort = '-createdAt';
+  const feedQuery = Feed.find(match);
+  const query = new RefineQuery(feedQuery, req.query).paginate().sort().query;
+
+  const feed = await query;
 
   res.status(200).json({
     status: 'success',
+    results: feed.length,
     data: {
       feed,
     },
