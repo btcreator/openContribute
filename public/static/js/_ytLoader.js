@@ -1,7 +1,7 @@
-function onYouTubeIframeAPIReady() {
-    new YT.Player('player', {
-        height: '360',
-        width: '640',
-        videoId: 'M7lc1UVf-VE',
-    });
-}
+export const loadYTvideo = function (playerId, videoId) {
+  new YT.Player(playerId, {
+    height: '360',
+    width: '640',
+    videoId,
+  });
+};
