@@ -20,10 +20,9 @@ export const displayMap = function (locations) {
     iconAnchor: [10, 25],
     popupAnchor: [0, -25],
   });
-  const latLngs = [];
+ 
   locations.forEach((loc) => {
     const coord = loc.coordinates.reverse();
-    latLngs.push(coord);
     bounds.extend(coord);
     L.marker(coord, { icon }).bindPopup(`<p>${loc.name}</p>`).addTo(map);
   });
