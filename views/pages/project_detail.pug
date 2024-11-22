@@ -4,9 +4,9 @@ block append head
   link(rel='stylesheet' href='/static/css/detail.css')
   link(rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="")
   script(defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="")
-  script(src='https://www.youtube.com/iframe_api' defer='')
-  script(src='/static/js/_ytLoader.js' defer='')
   script(type="module" src='/static/js/project_detail.js')
+  script(src='https://www.youtube.com/iframe_api' defer='')
+
 
 block hero
     .project-hero
@@ -29,7 +29,7 @@ block hero
           p= project.description
 
 block content
-  main
+  main(data-id=project._id)
     script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources)}`}
     script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources)}`}
     script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations)}`}
@@ -55,64 +55,10 @@ block content
         h2.headline Resources needed
         .resources-elements
           ul.resources-icons
-            li
-              input#finantial.hidden(form='contribute' type='radio' name='resource' value='finantial' required='')
-              label(for='finantial')
-                svg
-                  path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-            li
-              input#human-power.hidden(form='contribute' type='radio' name='resource' value='human-power' required='')
-              label(for='human-power')
-                svg
-                  path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-            li
-              input#working-machine.hidden(form='contribute' type='radio' name='resource' value='working-machine' required='')
-              label(for='working-machine')
-                svg
-                  path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
           .priority
             span Low priority
             span High priority
         .resources-details
-          .resource-quantity-info
-            .resource-info
-              span Limit
-              div
-                div 15 Persons
-                div 7 already applied
-            .resource-info
-              span Priority
-              div 2/3
-          .resource-notes
-            h2 Helping hands / Human power
-            span Important notes - 
-            p
-              | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              | Deserunt expedita beatae molestias dolore sequi, voluptatibus
-              | cum a ducimus atque, ad quibusdam unde suscipit tenetur rem
-              | vitae doloribus, quod excepturi! Vero. Lorem ipsum dolor sit
-              | amet consectetur adipisicing elit. Vero, iusto quisquam
-              | accusantium nam animi laborum expedita saepe earum. Impedit
-              | autem a, cupiditate officiis inventore repudiandae
-              | reprehenderit accusantium! Ipsum, quisquam sequi! Lorem ipsum
-              | dolor sit amet consectetur adipisicing elit. Perferendis
-              | reprehenderit recusandae minima deleniti facilis velit
-              | explicabo voluptas modi id blanditiis, maxime molestias sint
-              | veritatis cumque alias sit ab voluptatum iste.
-          .resource-finantial-input
-            label.hidden(for='payment-amount') Amount in USD
-            input#payment-amount(form='contribute' type='number' name='payment-amount' placeholder='USD' required='')
-          .resource-contribution
-            p.require-login
-              | Login required to contribute with this resource.
-            form#contribute.submit-button-wrapper
-              button.submit-contribution-btn
-                span Contribute
-          .resource-contribution-acknowledgement
-            input#contribution-ack(form='contribute' type='checkbox' name='contribution-ack' required='')
-            label(for='contribution-ack')
-              | I have read and accept the leaders requests. I will do my
-              | part in accordance with the notes.
     section.location
       .content-stripe
         #map
@@ -134,46 +80,6 @@ block content
     section.progress
       .content-stripe
         h2.headline Progress
-        section
-          article.feed
-            header
-              span.feed-date 24.02.2024
-              h3 Milestone &quot;Shelters&quot; done!
-            .feed-content
-              aside.tags
-                .milestone-tag
-              .post
-                p.post-text
-                  | Hooray! All shelters are done and furnished. Of course
-                  | from &quot;DOGKEA&quot; :D 21 from 32 are already taken in use. Next
-                  | week we would have an official opening for future dog
-                  | owners to adopt, give a long lasting happiness and love
-                  | for these dogs. Thank you all who participated and
-                  | contributed to reach this milestone!
-                .post-multimedia
-                  .video
-                    #player
-          article.feed
-            header
-              span.feed-date 05.02.2024
-              h3 First inhabitants.
-            .feed-content
-              aside.tags
-              .post
-                p.post-text
-                  | The Shelters are not yet fully done, but the first 3 of
-                  | them are ready for occupancy, and we got a call, that 2
-                  | dogs needs a place urgently. So we tougth that we could
-                  | offer these for them. They was wery happy about their new
-                  | home, and was a love on first sight. Special thanks for
-                  | John and Mary to drive all night to bring them safely to
-                  | us.
-                .post-multimedia
-                  .gallery
-                    .slideshow
-                      img(src='' alt='Photo')
-                      .controls
-                        .arrow
-                          .arrow-left &lt;
-                        .arrow
-                          .arrow-right &gt;
+        section.feed-thread
+        div.feed-control
+          button(data-next-page=1) Load more
