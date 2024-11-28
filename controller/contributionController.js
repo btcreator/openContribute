@@ -34,7 +34,7 @@ const _clarifyResourceAndLimit = async function (projectId, resourceName, amount
   // deny contribution if the maximal limit would be exceeded with this contribution
   const totalAmount = resource[0]?.amount ?? 0;
   if (totalAmount + amountChange > projectsResource.limit?.max)
-    throw new AppError(400, 'Contribution not accepted, because the max limit of the resource would be exceeded.');
+    throw new AppError(422, 'Contribution not accepted, because the max limit of the resource would be exceeded.');
 };
 
 // Update contribution
@@ -63,7 +63,7 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
   const { project, resource, amount } = payload;
 
   // controlling the project for the specific resource and check the limit if its exceeded
-  await _clarifyResourceAndLimit(project, resource, amount, isGuest);
+  await _clarifyResourceAndLimit(project, resource, +amount, isGuest);
 
   const contribution = await Contribution.create(payload);
 
