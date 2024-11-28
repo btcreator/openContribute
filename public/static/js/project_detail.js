@@ -26,6 +26,8 @@ const units = {
   tools: 'Tools',
   support: 'Sessions',
 };
+// feed multimedia names
+const media = {};
 
 // Fill page with data
 ////
@@ -80,6 +82,25 @@ function feedHandlerInit() {
   btnFeedLoad.addEventListener('click', displayFeedBinded);
   btnFeedLoad.click();
 }
+
+feedThread.addEventListener('click', (ev) => {
+  const left = ev.target.classList.contains('arrow-left');
+  const right = ev.target.classList.contains('arrow-right');
+
+  if (left || right) {
+    const gallery = ev.target.closest('.gallery');
+    const source = gallery.dataset.id;
+    const isImg = gallery.dataset.id.startsWith('img');
+    const mediaRep = isImg ? gallery.querySelector('img') : gallery.querySelector('source');
+
+    let next = +mediaRep.dataset.index + left * -1 + right;
+    next = next < 0 ? media[source].length - 1 : next % media[source].length;
+
+    mediaRep.dataset.index = next;
+    mediaRep.src = `/media/feed/${isImg ? 'img' : 'vid'}/${media[source][next]}`;
+    if (!isImg) mediaRep.parentElement.load();
+  }
+});
 
 // Listeners
 ////
@@ -239,42 +260,48 @@ function insertFeedToHTML(feed) {
 
 function injectMultimedia(feed) {
   let multimediaMarkup = '';
-  if (feed.videos.length > 0)
-    multimediaMarkup += `<div class="gallery">
+  if (feed.videos.length > 0) {
+    media[`vid-${feed._id}`] = feed.videos;
+    multimediaMarkup += `<div class="gallery" data-id="vid-${feed._id}">
       <div class="slideshow">
         <video controls>
-          <source src="/media/feed/vid/${feed.videos[0]}" type="video/mp4">
+          <source data-index="0" src="/media/feed/vid/${feed.videos[0]}" type="video/mp4">
           Your browser does not support the video tag.
         </video>
 
         <div class="controls">
-          <div class="arrow">
+          <div class="arrow arrow-left">
             <div class="arrow-left">&lt;</div>
           </div>
-          <div class="arrow">
+          <div class="arrow arrow-right">
             <div class="arrow-right">&gt;</div>
           </div>
         </div>
       </div>
     </div>`;
-  if (feed.images.length > 0)
-    multimediaMarkup += `<div class="gallery">
+  }
+
+  if (feed.images.length > 0) {
+    media[`img-${feed._id}`] = feed.images;
+    multimediaMarkup += `<div class="gallery" data-id="img-${feed._id}">
       <div class="slideshow">
-        <img
+        <img data-index="0"
           src="/media/feed/img/${feed.images[0]}"
           alt="Photo"
         />
 
         <div class="controls">
-          <div class="arrow">
+          <div class="arrow arrow-left">
             <div class="arrow-left">&lt;</div>
           </div>
-          <div class="arrow">
+          <div class="arrow arrow-right">
             <div class="arrow-right">&gt;</div>
           </div>
         </div>
       </div>
     </div>`;
+  }
+
   if (feed.link) {
     const videoId = feed.link.substring(32);
     multimediaMarkup += `<div id="video-${feed._id}" data-video-id=${videoId} class="video">
