@@ -17,6 +17,7 @@ router
 
 // POST for guests and users
 router.route('/myContribution').post(identificateUser, contriController.createContribution);
+router.route('/fundsContributionSession/:projectId').post(identificateUser, contriController.fundsContributionSession);
 
 // After this point an authentication is needed
 router.use(authenticate);
