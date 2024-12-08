@@ -1,14 +1,20 @@
 import { getFeedData } from './_feed_api_calls.js';
+import { createContribution } from './_contribution_api_calls.js';
 import { displayMap } from './_leaflet.js';
 import { loadYTvideo } from './_ytLoader.js';
+import { setAlert } from './_alert.js';
+import { contributeFunds } from './_stripe.js';
 
+// Variables
+////
 // extract server passed data
 const projResources = JSON.parse(document.getElementById('server-data-project').textContent);
 const contriResources = JSON.parse(document.getElementById('server-data-contributions').textContent);
 const locations = JSON.parse(document.getElementById('server-data-locations').textContent);
 const resObj = projResources.reduce((acc, item) => ((acc[item.name] = item), acc), {});
+const projectId = document.querySelector('.container main').dataset.id;
 
-// soelct containers
+// select containers
 const resourceIcons = document.querySelector('.resources-icons');
 const resourceDetails = document.querySelector('.resources-details');
 const feedThread = document.querySelector('.feed-thread');
@@ -52,7 +58,13 @@ function displayResources(resources) {
 
   // set initial state
   const lastResource = sortedRes.at(-1);
-  fillResourceDetails(lastResource, contriResources[lastResource.name]);
+  handleResourceDetailsAndContributionForm(lastResource, contriResources[lastResource.name]);
+}
+
+function handleResourceDetailsAndContributionForm(resObj, contriResObj) {
+  document.getElementById('contribute')?.removeEventListener('submit', contributeWithResource);
+  fillResourceDetails(resObj, contriResObj);
+  document.getElementById('contribute').addEventListener('submit', contributeWithResource);
 }
 
 function feedHandlerInit() {
@@ -83,24 +95,8 @@ function feedHandlerInit() {
   btnFeedLoad.click();
 }
 
-feedThread.addEventListener('click', (ev) => {
-  const left = ev.target.classList.contains('arrow-left');
-  const right = ev.target.classList.contains('arrow-right');
-
-  if (left || right) {
-    const gallery = ev.target.closest('.gallery');
-    const source = gallery.dataset.id;
-    const isImg = gallery.dataset.id.startsWith('img');
-    const mediaRep = isImg ? gallery.querySelector('img') : gallery.querySelector('source');
-
-    let next = +mediaRep.dataset.index + left * -1 + right;
-    next = next < 0 ? media[source].length - 1 : next % media[source].length;
-
-    mediaRep.dataset.index = next;
-    mediaRep.src = `/media/feed/${isImg ? 'img' : 'vid'}/${media[source][next]}`;
-    if (!isImg) mediaRep.parentElement.load();
-  }
-});
+// control of the gallery when want to load next image/video (arrow left/right)
+feedThread.addEventListener('click', feedMediaGalleryControl);
 
 // Listeners
 ////
@@ -110,16 +106,43 @@ function toggleResourceDetails(ev) {
   const name = ev.target.closest('input')?.value;
   if (!name) return;
 
-  fillResourceDetails(resObj[name], contriResources[name]);
+  handleResourceDetailsAndContributionForm(resObj[name], contriResources[name]);
+}
+
+async function contributeWithResource(ev) {
+  ev.preventDefault();
+
+  const form = new FormData(this);
+  if (form.get('contribution-ack') !== 'on') return setAlert('You must accept the terms', 'error');
+
+  const amount = +form.get('contribution-amount');
+  const resource = form.get('resource');
+  const appliedEl = document.querySelector('.resource-applied');
+  const amountEl = document.getElementById('contribution-amount');
+  const ackEl = document.getElementById('contribution-ack');
+
+  if (resource === 'funds') {
+    // stripe payment procedure
+    await contributeFunds(projectId, amount);
+    return;
+  }
+
+  const contribution = await createContribution(projectId, resource, amount);
+  if (contribution.status === 201) {
+    contriResources[resource] += amount;
+    appliedEl.textContent = `${contriResources[resource]} is already applied`;
+    amountEl.value = '';
+    ackEl.checked = false;
+    setAlert('Contribution successful!');
+  }
 }
 
 async function displayFeed(observer) {
   // disable btn, get project Id for db call, and which page (the next 10 feeds)
   this.disabled = true;
-  const projectId = document.querySelector('.container main').dataset.id;
   const page = +this.dataset.nextPage;
 
-  // db call for feed (is limited to 10)
+  // db call for feed (is limited to 10 feeds per call)
   const feedFlow = await getFeedData(projectId, page);
   if (!feedFlow) {
     this.disabled = false;
@@ -142,6 +165,25 @@ async function displayFeed(observer) {
     return;
   }
   this.disabled = false;
+}
+
+function feedMediaGalleryControl(ev) {
+  const left = ev.target.classList.contains('arrow-left');
+  const right = ev.target.classList.contains('arrow-right');
+
+  if (left || right) {
+    const gallery = ev.target.closest('.gallery');
+    const source = gallery.dataset.id;
+    const isImg = gallery.dataset.id.startsWith('img');
+    const mediaRep = isImg ? gallery.querySelector('img') : gallery.querySelector('source');
+
+    let next = +mediaRep.dataset.index + left * -1 + right;
+    next = next < 0 ? media[source].length - 1 : next % media[source].length;
+
+    mediaRep.dataset.index = next;
+    mediaRep.src = `/media/feed/${isImg ? 'img' : 'vid'}/${media[source][next]}`;
+    if (!isImg) mediaRep.parentElement.load();
+  }
 }
 
 // Markup fill functions
@@ -178,7 +220,7 @@ function fillResourceDetails(resource, applied) {
         <div class="resource-info">
         <span>Progress</span>
         <div>
-          <div>${applied ?? 0} is already applied</div>
+          <div class="resource-applied">${applied ?? 0} is already applied</div>
         </div>
       </div>
 
