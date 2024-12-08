@@ -217,7 +217,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
 
   // check if user still exists
   const _id = new ObjectId(`${tokenData.id}`);
-  const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
+  const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt +email');
 
   if (!user) throw new AppError(401, 'User does no longer exists. Please log in again.');
 
@@ -242,7 +242,7 @@ exports.identificateUser = catchAsync(async (req, res, next) => {
 
   // check if user still exists and if the password changed after token issue date
   const _id = new ObjectId(`${tokenData.id}`);
-  const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt');
+  const user = await User.findOne({ _id, isActive: true }, '+passwordChangedAt +email');
   if (!user || user.passwordChangedAt > tokenData.iat * 1000) return next();
 
   // user is identified
