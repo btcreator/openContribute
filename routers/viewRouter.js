@@ -4,6 +4,8 @@ const viewController = require('./../controller/viewController');
 
 const router = express.Router();
 
+router.use(viewController.alertMsgHandler);
+
 router.get('/', identificateUser, viewController.getHome);
 router.get('/login', identificateUser, viewController.login);
 router.get('/search');
