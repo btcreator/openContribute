@@ -7,6 +7,18 @@ const stat = require('./aggregationPipelines/statsPipelines');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+// Alert handler middleware. Passes alert messages to the pug templates
+exports.alertMsgHandler = (req, res, next) => {
+  if (req.query?.alert) {
+    res.locals.alert = req.query.alert;
+  }
+  if (req.query?.error) {
+    res.locals.alert = req.query.error;
+    res.locals.alertError = true;
+  }
+  next();
+};
+
 exports.getHome = catchAsync(async function (req, res) {
   const projects = (await Project.aggregate(stat.projectStatsPipeline))[0];
   const resList = await Contribution.aggregate(stat.resourceStatsPipeline);
@@ -34,7 +46,6 @@ exports.getHome = catchAsync(async function (req, res) {
     user: req.user,
     stats,
     reviews,
-    alert: req.query?.alert,
   });
 });
 
@@ -42,7 +53,6 @@ exports.login = (req, res) => {
   res.status(200).render('signIn', {
     title: 'User Login / Signup',
     user: req.user,
-    alert: req.query?.alert,
   });
 };
 
