@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Contribution = require('./../model/contribution');
 const Project = require('./../model/project');
 const User = require('./../model/user');
@@ -16,9 +17,7 @@ const {
 const _clarifyResourceAndLimit = async function (projectId, resourceName, amountChange, guest) {
   // search for project to which the contribution belongs
   const projIdObj = new ObjectId(`${projectId}`);
-  const project = await Project.findOne({ _id: projIdObj, 'resources.name': resourceName, isActive: true }).select(
-    'resources'
-  );
+  const project = await Project.findOne({ _id: projIdObj, 'resources.name': resourceName, isActive: true });
 
   // check project presence - project not exists or the resource does not need for that project
   if (!project) throw new AppError(404, 'Project resource to contribute to, is not found.');
@@ -35,6 +34,8 @@ const _clarifyResourceAndLimit = async function (projectId, resourceName, amount
   const totalAmount = resource[0]?.amount ?? 0;
   if (totalAmount + amountChange > projectsResource.limit?.max)
     throw new AppError(422, 'Contribution not accepted, because the max limit of the resource would be exceeded.');
+
+  return project;
 };
 
 // Update contribution
@@ -248,5 +249,38 @@ exports.getAllContributions = catchAsync(async (req, res) => {
     data: {
       contributions,
     },
+  });
+});
+
+// Payment operation
+////
+exports.fundsContributionSession = catchAsync(async (req, res) => {
+  const project = await _clarifyResourceAndLimit(req.params.projectId, 'funds', +req.body.amount, !req.user);
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    customer_email: req.user?.email,
+    client_reference_id: req.params.projectId,
+    success_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?alert="Contribution successful."`,
+    cancel_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?error="Contribution cancelled."`,
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: project.name,
+            description: project.summary,
+            images: [`https://placehold.co/600x400?font=roboto`],
+          },
+          unit_amount: req.body.amount * 100,
+        },
+        quantity: 1,
+      },
+    ],
+  });
+
+  res.status(200).json({
+    status: 'success',
+    session,
   });
 });
