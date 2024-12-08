@@ -15,7 +15,7 @@ html
 
   body
     .container
-        .alert-window(class=`${alert ? "" : "hidden"}`)
+        .alert-window(class=`${alert ? "" : "hidden"} ${alertError ? "error" : ""}`)
           if alert
             p= alert
         // HEADER
