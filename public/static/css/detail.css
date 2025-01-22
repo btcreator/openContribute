@@ -270,7 +270,7 @@ input#contribution-amount {
   height: 50px;
 }
 
-.submit-contribution-btn {
+.submit-btn {
   width: 75%;
   height: 150px;
   position: absolute;
@@ -285,11 +285,11 @@ input#contribution-amount {
   border-bottom: 0;
 }
 
-.submit-contribution-btn span {
+.submit-btn span {
   margin-top: 25px;
 }
 
-.submit-contribution-btn:disabled {
+.submit-btn:disabled {
   filter: grayscale(1);
 }
 
