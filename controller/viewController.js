@@ -101,3 +101,16 @@ exports.myProjects = catchAsync(async (req, res) => {
     projects,
   });
 });
+
+exports.updateMyProject = catchAsync(async (req, res) => {
+  const project = await Project.aggregate(
+    populateContributionsToProjectPipeline({ slug: req.params.slug, leader: req.user._id, isActive: true })
+  );
+  if (!project) throw new AppError(404, 'No Project found with your lead');
+
+  res.status(200).render('project_update', {
+    title: project[0].name,
+    user: req.user,
+    project: project[0],
+  });
+});
