@@ -40,13 +40,12 @@ const _handleMongoError = (err) => {
 
 // File grabbing error form Multer middleware
 const _handleMulterError = (err) => {
-  console.log(err);
   let message =
     'An unexpected error happened while trying to upload the media file. Check your file for right format, then try again.';
   if (err.code === 'LIMIT_FILE_SIZE') message = 'Max file size limit reached.';
   if (err.code === 'LIMIT_UNEXPECTED_FILE') message = `Unexpected field: ${err.field}`;
   return {
-    statusCode: 520,
+    statusCode: 400,
     message,
   };
 };
