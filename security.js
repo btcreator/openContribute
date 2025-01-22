@@ -20,8 +20,15 @@ router.use(
   helmet.contentSecurityPolicy({
     directives: {
       'script-src': ['unpkg.com', 'https://js.stripe.com/', 'https://www.youtube.com/', 'http://localhost:3000'],
-      'img-src': ['https://tile.openstreetmap.org', 'https://img.youtube.com', 'http://localhost:3000'],
+      'img-src': [
+        'https://tile.openstreetmap.org',
+        'https://img.youtube.com',
+        'http://localhost:3000',
+        'blob:',
+        'data:',
+      ],
       'frame-src': ['https://www.youtube.com/', 'https://js.stripe.com/'],
+      'media-src': ['http://localhost:3000', 'data:', 'blob:'],
     },
   })
 );
