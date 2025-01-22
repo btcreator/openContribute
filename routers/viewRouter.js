@@ -15,8 +15,8 @@ router.use(authenticate);
 router.get('/myProfile', viewController.myProfile);
 router.get('/myContributions', viewController.myContributions);
 router.get('/myProjects', viewController.myProjects);
+router.get('/projectUpdate/:slug', viewController.updateMyProject);
 
 // router.get('/project-create');
-// router.get("/project-update/:slug");
 
 module.exports = router;
