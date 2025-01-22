@@ -271,6 +271,7 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
             name: project.name,
             description: project.summary,
             images: [`https://placehold.co/600x400?font=roboto`],
+            //images: [`${req.protocol}://${req.get('host')}/media/projects/content/${project.coverImg}`],
           },
           unit_amount: req.body.amount * 100,
         },
