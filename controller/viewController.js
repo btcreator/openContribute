@@ -56,7 +56,7 @@ exports.login = (req, res) => {
   });
 };
 
-exports.showProject = async (req, res) => {
+exports.showProject = catchAsync(async (req, res) => {
   const project = await Project.aggregate(
     populateContributionsToProjectPipeline({ slug: req.params.slug, isActive: true })
   );
@@ -72,7 +72,7 @@ exports.showProject = async (req, res) => {
     user: req.user,
     project: project[0],
   });
-};
+});
 
 exports.myProfile = (req, res) => {
   res.status(200).render('user_profile', {
