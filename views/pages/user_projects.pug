@@ -2,7 +2,7 @@ extends base
 
 mixin projectCard(project)
   - const offset = 100 - Math.round(project.progress * 100);
-  a.project-box(class=`${project.isDone ? "done" : ""}` href=`/project/${project.slug}` alt=`Details of project ${project.name}`)
+  a.project-box(class=`${project.isDone ? "done" : ""}` href=`/projectUpdate/${project.slug}` alt=`Details of project ${project.name}`)
     .project-image
         img(src=`/media/projects/content/${project.resultImg}` alt='Project image')
     h3= project.name
