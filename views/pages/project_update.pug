@@ -1,0 +1,104 @@
+extends base
+
+block append head
+  link(rel='stylesheet' href='/static/css/detail.css')
+  link(rel='stylesheet' href='/static/css/update.css')
+  link(rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="")
+  script(defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="")
+  script(src="https://js.stripe.com/v3/")
+  script(type="module" src='/static/js/project.js')
+  script(src='https://www.youtube.com/iframe_api' defer='')
+
+
+block hero
+    .project-hero
+      .content-stripe
+        .project-cover-image
+           img(src=`/media/projects/content/${project.coverImg}` alt='Cover image')
+        .type-badge
+          svg
+            path(d='M 0 0 l 16 4 l 16 -4 l -4 24 l -12 5 l -12 -5 z')
+          span.type-badge-name= project.type
+        .project-headline
+          .project-cover-name
+            h1= project.name
+            h2
+              | lead by
+              | 
+              span.project-leader= project.leader.name
+          .deadline= `Deadline ${project.deadline ? new Date(project.deadline).toLocaleDateString() : "not specified."}`
+        .project-description
+          p= project.description
+
+block content
+  main(data-id=project._id)
+    script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources)}`}
+    script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources)}`}
+    script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations)}`}
+    section.milestones
+      .bg-cover
+      .content-stripe.clip-sides
+        .rotation-box
+          ul.milestones-images
+            - let inProgressIndex = 0;
+            - const mile = project.milestones;
+            - for(let i = 0; i < mile.length; i++)
+              - if(mile[i].isDone) ++inProgressIndex;
+              li(class=`${!mile[i].isDone && inProgressIndex === i ? "in-progress" : ""}`)
+                img(src=`/media/projects/milestones/${mile[i].img}` alt='Milestone image')
+            
+          .next-milestone
+            span In Progress: 
+            h2= project.milestones[inProgressIndex].name
+          .overall
+            span Milestones done: #{inProgressIndex}/#{project.milestones.length}
+    section.resources(data-mode="edit")
+      .content-stripe
+        h2.headline Resources needed
+        span.edit-content Edit Mode
+        .resources-elements
+          ul.resources-icons
+          .priority
+            span Low priority
+            span High priority
+        .resources-details
+    section.location
+      .content-stripe
+        #map
+    section.contributors
+      .bg-cover
+        .btn-pseudo-bg-front.stretch
+        .btn-pseudo-bg-tail.stretch
+      .content-stripe.clip-sides
+        .header
+          h2 Contributors
+        .rotation-box
+          ul.last-contributors
+            each contributor in project.contributions.contributors
+              li
+                img(src=`/media/users/${contributor.photo}` alt='User photo')
+                .name= contributor.name
+          button.all-contributors
+            span See All &gt;
+    section.progress
+      .content-stripe
+        h2.headline Progress
+        section
+          form.add-new-feed
+            .new-feed-title
+              label.hidden(for='title') Title
+              input#title(type='text' name='title' placeholder='Title' required='')
+              input#milestone(type='checkbox' name='milestone')
+              label(for='milestone') Milestone summary
+            .new-feed-content
+              label.hidden(for='message') Message
+              textarea#text-content(name='message' rows='15' placeholder='Your message to your followers and participients.')
+              ul.uploaded-media
+                li
+                  label.add-media-button(for='upload-files')
+                    span +
+                  input#upload-files.hidden(type='file' name='upload-files' multiple='')
+            button.submit-new-feed Publish
+        section.feed-thread
+        div.feed-control
+          button(data-next-page=1) Load more
