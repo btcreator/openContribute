@@ -21,8 +21,8 @@ function toggleHidden(el) {
   el.classList.toggle('hidden');
 }
 
+// Add listeners to click events on proceed buttons
 export function toggleSignInWindowInit() {
-  // Add listeners to click events on proceed buttons
   proceedLogin.addEventListener('click', toggleLoginSignup);
   proceedSignup.addEventListener('click', toggleLoginSignup);
 }

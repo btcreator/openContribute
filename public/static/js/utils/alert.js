@@ -1,5 +1,6 @@
 const alertWindow = document.querySelector('.alert-window');
 
+// Show then hide alert
 export const setAlert = function (message, status) {
   alertWindow.classList.toggle('error', status === 'error');
   alertWindow.classList.remove('hidden');

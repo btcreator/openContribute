@@ -1,4 +1,4 @@
-import { setAlert } from './_alert.js';
+import showError from './../utils/showResponseError.js';
 
 export const login = function (email, password) {
   return axios
@@ -6,9 +6,7 @@ export const login = function (email, password) {
       email,
       password,
     })
-    .catch((err) => {
-      setAlert(err.response.data.message, 'error');
-    });
+    .catch(showError);
 };
 
 export const signup = function (email, password, confirmPassword) {
@@ -18,7 +16,5 @@ export const signup = function (email, password, confirmPassword) {
       password,
       confirmPassword,
     })
-    .catch((err) => {
-      setAlert(err.response.data.message, 'error');
-    });
+    .catch(showError);
 };

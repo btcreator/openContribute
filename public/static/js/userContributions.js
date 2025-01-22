@@ -1,21 +1,45 @@
-import { getProject, getContributedResources } from './_profile_api_calls.js';
+import { getContributedResources } from './apiCalls/contribution.js';
+import { getProject } from './apiCalls/project.js';
 
 const projectThumbs = document.querySelector('.project-thumbs');
 const detailBox = document.querySelector('.project-details');
+// Container for loaded data from server
 const projects = {};
 
-// Details of one project to HTML Markup
-const fillDetailBox = function (project, resources) {
-  const offset = 100 - Math.round(project.progress * 100);
 
+// Project selection handler - show the selected project in details
+projectThumbs.addEventListener('click', async function (ev) {
+  // get clicked project
+  const projectBox = ev.target.closest('.project-box');
+  if (!projectBox) return;
+
+  // check if that project was loaded previously, when not, get it from db and save locally (to save db calls and performance).
+  let project, resources;
+  const id = projectBox.dataset.id;
+  if (!projects[id]) {
+    [project, resources] = await Promise.all([getProject(id), getContributedResources(id)]);
+    if (project && resources) projects[id] = { project, resources };
+  } else ({ project, resources } = projects[id]);
+
+  // when one of them can't be loaded, show some message in detail box
+  if (!project || !resources) {
+    detailBox.innerHTML = '<p>This project was probably removed by the leader.</p>';
+    return;
+  }
+
+  // all good, show the details
+  const detailMarkup = fillDetailBox(project, resources);
+  detailBox.innerHTML = detailMarkup;
+});
+
+// Fill details of a project to HTML Markup
+function fillDetailBox (project, resources) {
+  const offset = 100 - Math.round(project.progress * 100);
   const resourcesIconsHTML = Object.keys(resources)
     .map((resourceName) => `<li><img src="/static/img/icons/res_${resourceName}.png" /></li>`)
     .join('');
-
   const resourcesWithValuesHTML = Object.entries(resources)
-    .map(
-      ([resourceName, value]) => `<li><img src="/static/img/icons/res_${resourceName}.png" /><span>${value}</span></li>`
-    )
+    .map(([resourceName, value]) => `<li><img src="/static/img/icons/res_${resourceName}.png" /><span>${value}</span></li>`)
     .join('');
 
   return `<a class="project-box" href="/project/${project.slug}" alt="Details of project ${project.name}">
@@ -50,28 +74,3 @@ const fillDetailBox = function (project, resources) {
           </div>
       </div>`;
 };
-
-// Project selection handler
-projectThumbs.addEventListener('click', async function (ev) {
-  // get clicked project
-  const projectBox = ev.target.closest('.project-box');
-  if (!projectBox) return;
-
-  // check if that project was loaded previously, when not, get it from db and save locally (to not load the server).
-  let project, resources;
-  const id = projectBox.dataset.id;
-  if (!projects[id]) {
-    [project, resources] = await Promise.all([getProject(id), getContributedResources(id)]);
-    if (project && resources) projects[id] = { project, resources };
-  } else ({ project, resources } = projects[id]);
-
-  // when one of them cant load, show some message in detail box
-  if (!project || !resources) {
-    detailBox.innerHTML = '<p>This project was probably removed by the leader.</p>';
-    return;
-  }
-
-  // all good, show the details
-  const detailMarkup = fillDetailBox(project, resources);
-  detailBox.innerHTML = detailMarkup;
-});

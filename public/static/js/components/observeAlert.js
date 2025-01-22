@@ -1,4 +1,4 @@
-import { hideAlert } from './_alert.js';
+import { hideAlert } from '../utils/alert.js';
 
 const alertWindow = document.querySelector('.alert-window');
 
@@ -8,6 +8,7 @@ if (!alertWindow.classList.contains('hidden')) {
   const url = window.location.href.split('?')[0];
   window.history.replaceState(null, '', url);
 
+  // show and hide alert
   setTimeout(() => {
     alertWindow.style.opacity = 1;
     hideAlert(3000);

@@ -1,14 +1,19 @@
-import { updateProfile, passwordChange } from './_profile_api_calls.js';
-import { setAlert } from './_alert.js';
+import { updateProfile, passwordChange } from './apiCalls/profile.js';
+import { setAlert } from './utils/alert.js';
 
-const btnChangePhoto = document.querySelector('.change-photo');
+// Image containers - in profile and top navigation
 const userImage = document.querySelector('.photo-frame img');
 const userNavImg = document.querySelector('.profile img');
+// Select forms
 const formSaveProfile = document.querySelector('.profile-form');
 const formPasswordChange = document.querySelector('.password-change-form');
+// Pseudo button for file input
+const btnChangePhoto = document.querySelector('.change-photo');
+// File input for user image change button
 const fileInput = document.createElement('input');
 fileInput.setAttribute('type', 'file');
 
+// Update profile
 formSaveProfile.addEventListener('submit', async function (ev) {
   ev.preventDefault();
   const submitBtn = ev.target.querySelector('button');
@@ -27,6 +32,7 @@ formSaveProfile.addEventListener('submit', async function (ev) {
   if (res?.status === 200) setAlert('Profile updated successfully');
 });
 
+// Update/Change Password
 formPasswordChange.addEventListener('submit', async function (ev) {
   ev.preventDefault();
   const form = new FormData(this);
@@ -40,7 +46,7 @@ formPasswordChange.addEventListener('submit', async function (ev) {
   if (res?.status === 200) window.location.replace('/login/?alert=Please Log in with your new password.');
 });
 
-// button for change photo is just a pseudo button for file input
+// Update/Change photo
 btnChangePhoto.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', async function (ev) {
   fileInput.disabled = true;

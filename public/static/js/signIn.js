@@ -1,5 +1,5 @@
-import { login, signup } from './_signIn_api_calls.js';
-import { toggleSignInWindowInit } from './_signInToggleWindow.js';
+import { login, signup } from './apiCalls/auth.js';
+import { toggleSignInWindowInit } from './components/signInToggleWindow.js';
 
 const loginForm = document.querySelector('#login-form');
 const signupForm = document.querySelector('#signup-form');
