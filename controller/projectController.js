@@ -8,6 +8,7 @@ const { cleanBody } = require('./../utils/cleanIOdata');
 const { updateFilesOnDisk, removeFiles } = require('./staticFilesystem/staticFileController');
 const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
+const axios = require('axios');
 
 const _updateProject = async function (queryStr, body, files) {
   const project = await Project.findOne(queryStr);
@@ -72,8 +73,22 @@ exports.getSearchResults = catchAsync(async (req, res) => {
   const projectsQuery = Project.find().populate('leader', 'name -_id');
   const filter = { isActive: true };
 
-  // geo-localization
-  const { distance, center, unit } = req.query;
+  // geo-localization...
+  const { distance, unit, address } = req.query;
+  let center = req.query.center;
+  // ...with address
+  if (!center && address) {
+    const link = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=${process.env.GEOAPIFY_API_KEY}`;
+    const geoRes = await axios(encodeURI(link));
+    if (!geoRes.data?.results.length)
+      throw new AppError(404, 'Location could not be localized. Try with different location.');
+
+    const lat = geoRes.data.results[0].lat;
+    const lng = geoRes.data.results[0].lon;
+    center = `${lat},${lng}`;
+  }
+
+  // locate projects from center
   if (distance && center) {
     const [lat, lng] = center.split(',');
     const radius = unit === 'mi' ? distance / 3958.8 : distance / 6378.1;
