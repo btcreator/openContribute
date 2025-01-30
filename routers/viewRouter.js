@@ -8,7 +8,7 @@ router.use(viewController.alertMsgHandler);
 
 router.get('/', identificateUser, viewController.getHome);
 router.get('/login', identificateUser, viewController.login);
-router.get('/search');
+router.get('/search', identificateUser, viewController.search);
 router.get('/project/:slug', identificateUser, viewController.showProject);
 
 router.use(authenticate);
