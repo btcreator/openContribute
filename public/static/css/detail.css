@@ -146,6 +146,10 @@ main {
   border-color: rgb(30, 184, 30);
 }
 
+.milestones-images .done {
+  filter: grayscale(1);
+}
+
 .next-milestone {
   padding: 10px 100px;
 }

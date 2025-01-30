@@ -44,7 +44,7 @@ block content
             - const mile = project.milestones;
             - for(let i = 0; i < mile.length; i++)
               - if(mile[i].isDone) ++inProgressIndex;
-              li(class=`${!mile[i].isDone && inProgressIndex === i ? "in-progress" : ""}`)
+              li(class=`${!mile[i].isDone && inProgressIndex === i ? "in-progress" : ""} ${mile[i].isDone ? "done" : ""}`)
                 img(src=`/media/projects/milestones/${mile[i].img}` alt='Milestone image')
             
           .next-milestone
