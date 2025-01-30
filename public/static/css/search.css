@@ -1,11 +1,11 @@
 /*HERO*/
 .hero {
-  background: linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 40%
-    ),
-    center / cover url(../img/static/search_hero_bg.jpg);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 40%),
+    center / cover url(/static/img/search_hero_bg.jpg);
+}
+
+.hero .content-stripe {
+  grid-template-rows: 1fr auto;
 }
 
 .hero sub {
@@ -107,9 +107,8 @@
   height: 30px;
 }
 
-.resources svg {
-  width: 24px;
-  height: 24px;
+.resources img {
+  width: 100%;
 }
 
 .card-footer {
