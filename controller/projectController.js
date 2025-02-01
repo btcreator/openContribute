@@ -8,7 +8,7 @@ const { cleanBody } = require('./../utils/cleanIOdata');
 const { updateFilesOnDisk, removeFiles } = require('./staticFilesystem/staticFileController');
 const { description } = require('./../model/resourceDescriptions/resourceDescriptions');
 const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
-const axios = require('axios');
+const { createGeoQuery } = require('./geoQuery/geoQuery');
 
 const _updateProject = async function (queryStr, body, files) {
   const project = await Project.findOne(queryStr);
@@ -73,36 +73,30 @@ exports.getSearchResults = catchAsync(async (req, res) => {
   const projectsQuery = Project.find().populate('leader', 'name -_id');
   const filter = { isActive: true };
 
-  // geo-localization...
-  const { distance, unit, address } = req.query;
-  let center = req.query.center;
-  // ...with address
-  if (!center && address) {
-    const link = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=${process.env.GEOAPIFY_API_KEY}`;
-    const geoRes = await axios(encodeURI(link));
-    if (!geoRes.data?.results.length)
-      throw new AppError(404, 'Location could not be localized. Try with different location.');
+  // if the location cookie was set, and the same address is passed, the location of the address dont need to fetch again in createGeoQuery
+  const lastLoc = req.cookies?.searchLocation ?? null;
+  const sameAddr = lastLoc?.address ? req.query?.address === lastLoc.address : false;
+  // locationData gets mutated when the address are not the same
+  const locationData = sameAddr ? { lastLoc: lastLoc.location } : {};
 
-    const lat = geoRes.data.results[0].lat;
-    const lng = geoRes.data.results[0].lon;
-    center = `${lat},${lng}`;
-  }
+  // geo-localization
+  const { center, distance, unit, address } = req.query;
+  const geoQuery = await createGeoQuery(center, distance, unit, address, locationData);
 
-  // locate projects from center
-  if (distance && center) {
-    const [lat, lng] = center.split(',');
-    const radius = unit === 'mi' ? distance / 3958.8 : distance / 6378.1;
+  Object.assign(filter, geoQuery);
 
-    Object.assign(filter, { 'locations.coordinates': { $geoWithin: { $centerSphere: [[1 * lng, 1 * lat], radius] } } });
-  }
+  // set cookie on response when different address and when locationData was mutated (new location was added - user can send different address, but send a center with distance too - in this fall no new address location gets added).
+  !sameAddr && locationData.lastLoc && res.cookie('searchLocation', { address, location: locationData.lastLoc });
 
   // remove geo location query elements or the search gets filtered based on them too and no entry gets found
   delete req.query.distance;
+  delete req.query.address;
   delete req.query.center;
   delete req.query.unit;
 
+  // searched text is converted as regex for more flexible search results
   const query = new RefineQuery(projectsQuery, req.query).refine(filter, selector);
-  const projects = await query;
+  const projects = await query.where('name', new RegExp(query.getQuery().name, 'i'));
 
   res.status(200).json({
     status: 'success',
