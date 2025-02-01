@@ -234,7 +234,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
 // Identificate user
 exports.identificateUser = catchAsync(async (req, res, next) => {
   // get the token
-  const token = req.cookies.jwt;
+  const token = req.cookies?.jwt;
   if (!token) return next();
 
   // verify token
