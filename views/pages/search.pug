@@ -1,0 +1,69 @@
+extends base
+
+mixin resultCard(project)
+  a.result-card(href=`/project/${project.slug}`)
+    .card-bg
+      img(src=`/media/projects/content/${project.resultImg}` alt='background image')
+    h2.card-header= project.name
+    .card-content
+      p.summary= project.summary
+      .resources
+        h3 Resources Needed
+        ul
+          - for(const resource of project.resources)
+            li
+              img(src=`/static/img/icons/res_${resource.name}.png`)
+    p.card-footer
+      | Lead by
+      | 
+      span.leader-name= project.leader.name
+
+block append head 
+  link(rel='stylesheet' href='/static/css/search.css')
+  script(type="module" src="/static/js/search.js")
+
+block hero
+    .hero
+      .content-stripe
+        .hero-message
+          p
+            | Search 
+            sub and rescue
+            br
+        form.search-form
+          .hero-searchbar
+            label.hidden(for='search') Searchfield
+            input#search(type='text' name='search')
+            button.btn-search Find Project
+          .filter-options
+            h3 Filter Options
+            .filter-inputs
+              label(for='type') Type
+              select#type(name='type')
+                option(value='any') Any
+                option(value='social') Social
+                option(value='rescue') Rescue
+                option(value='rebuild') Rebuild
+                option(value='development') Development
+                option(value='other') Other
+              label(for='location') Location
+              input#location(type='text' name='location' placeholder='City, Land, Place name...')
+              label(for='perimeter') - in perimeter
+              input#perimeter(type='text' name='perimeter' placeholder='km')
+            
+block content
+  main
+    .content-stripe
+      p.search-query-text
+        | Latest projects:
+      .search-results
+         each project in projects
+            +resultCard(project)
+      .pagination
+        nav
+          li
+            button.prev-results(data-page=0 disabled) < Prev
+          li
+            p.actual-page 1
+          li
+            button.next-results(data-page=2) Next >
