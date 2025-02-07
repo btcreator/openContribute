@@ -61,9 +61,10 @@ block content
             +resultCard(project)
       .pagination
         nav
+        - const isDisabled = projects.length < 10;
           li
             button.prev-results(data-page=0 disabled) < Prev
           li
             p.actual-page 1
           li
-            button.next-results(data-page=2) Next >
+            button.next-results(data-page=2 disabled=isDisabled) Next >
