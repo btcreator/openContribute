@@ -1,0 +1,228 @@
+extends base
+
+mixin projectTypeCard(type)
+  - const value = type.split(" ")[0].toLowerCase();
+  li.type-card
+    input.hidden(id=value type='radio' name='type' value=value)
+    label.img-holder(for=value)
+      img(src=`/public/static/img/project-types/${value}.jpg` alt=value)
+    p= type
+    - if(value === "other")
+      label.hidden(for='custom-type') Provide type
+      input#custom-type.hidden(type='text' name='other-type-name' placeholder='.........')
+
+block append head 
+  link(rel='stylesheet' href='../../public/css/create.css')
+
+block content
+  main
+    section.intension
+      .content-stripe
+        .project-name
+          label.hidden(for='name') Your projects name
+          input#name(type='text' name='name' placeholder='Your projects name')
+          p
+            | Lead by 
+            span.leader-name(data-id=user._id)= user.name
+        .project-summary
+          div
+            label(for='summary') Summary
+            textarea#summary(name='summary' rows='5' placeholder='Be short, but expressive (for search results)' maxlength='160')
+        .project-description
+          label(for='description') Description
+          textarea#description(name='description' rows='10' placeholder='Tooooo long texts get rarely read to the end...')
+          
+    section.type
+      .content-stripe
+        h2 Which type represents at best your project?
+        .type-card-container
+          ul
+            - const types = ["Developement", "Rebuild / Renovation", "Rescue", "Social", "Other"]
+            each type in types 
+              +projectTypeCard(type)
+
+    section.location
+      .content-stripe
+        .location-descriptor
+          h2 Location
+          p
+            | Please point on the map where the location of your project takes
+            | place. 
+            br
+            br
+            | Or you can give the exact coordinates.
+            |                 (Latitude, Longitude)
+          .location-input
+            label.hidden(for='location-point') Location Point
+            input#location-point(type='text' name='location-point' placeholder='68.085135, 18.301253')
+            button &gt;
+        #map
+    section.milestones
+      .content-stripe
+        h2 Milestones
+        .milestone-bubbles
+          ul
+            li
+              img(src='../../public/img/projects/milestones/test_project_05_milestone_01.jpg' alt='milestone photo')
+            li
+              img(src='../../public/img/projects/milestones/test_project_05_milestone_02.jpg' alt='milestone photo')
+            li
+              img(src='../../public/img/projects/milestones/test_project_05_milestone_03.jpg' alt='milestone photo')
+        .milestone-inputs
+          label(for='add-photo')
+            img(src='../../public/img/icons/add.png' alt='add-photo')
+          input#add-photo.hidden(type='file' name='milestone-photo')
+          .milestone-name-input
+            label.hidden(for='milestone-name') Milestone name
+            input#milestone-name(type='text' name='milestone-name' placeholder='Name of the milestone')
+            button ADD
+    section.resources
+      .content-stripe
+        h2 Resources
+        ul.resources-icons
+          li
+            input#finantial.hidden(type='checkbox' name='resource' value='finantial')
+            label(for='finantial')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          li
+            input#human-power.hidden(type='checkbox' name='resource' value='human-power')
+            label(for='human-power')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          li
+            input#technology.hidden.actual(type='checkbox' name='resource' value='technology')
+            label(for='technology')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          li
+            input#knowledge.hidden(type='checkbox' name='resource' value='knowledge')
+            label(for='knowledge')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          li
+            input#material.hidden(type='checkbox' name='resource' value='material')
+            label(for='material')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          li
+            input#special.hidden(type='checkbox' name='resource' value='special')
+            label(for='special')
+              svg
+                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+        .resources-details
+          .settings
+            .priority.option
+              span Priority
+              .selection-bar
+                label
+                  input.hidden(type='radio' name='priority' value='1' checked='')
+                label
+                  input.hidden(type='radio' name='priority' value='2')
+                label
+                  input.hidden(type='radio' name='priority' value='3')
+                label
+                  input.hidden(type='radio' name='priority' value='4')
+                label
+                  input.hidden(type='radio' name='priority' value='5')
+            .limit.option
+              span Limit
+              div
+                label.hidden(for='limit-min') Minimum value
+                input#limit-min(type='text' name='limit-min-value' placeholder='Min')
+                label.hidden(for='limit-max') Maximum value
+                input#limit-max(type='text' name='limit-max-value' placeholder='Max')
+            .authenticate.option
+              label(for='auth-req') Authentication required
+              input#auth-req(type='checkbox' name='authenticate')
+          .notes
+            label.hidden(for='opt-notes') Notes
+            textarea#opt-notes(name='notes' rows='10' placeholder='Some inportant notes for the required resource (its optional, but highly recommended!)')
+        button.control-btn Apply
+    section.deadline
+      .deadline-bg
+      .content-stripe
+        .header
+          h2 Deadline
+          span (optional)
+        label.hidden(for='deadline-input') Time limit of project
+        input#deadline-input(type='date' name='deadline')
+    section.media
+      .media-bg
+      .content-stripe
+        .header
+          h2 Media
+          span Photos / Videos
+        .upload-panel
+          .upload-media-col
+            img.icon(src='../../public/img/icons/photo.png' alt='photo icon')
+            p
+              | The first image gets the cover image, the second is for search
+              | results. Both are required.
+            .media-container
+              label.media-frame
+                input.hidden(type='file' accept='image/*' name='cover-photo')
+                img(src='../../public/img/icons/add.png' alt='add cover image')
+              label.media-frame
+                input.hidden(type='file' accept='image/*' name='result-photo')
+                img(src='../../public/img/icons/add.png' alt='add search result image')
+          .upload-media-col
+            img.icon(src='../../public/img/icons/video.png' alt='video icon')
+            p
+              | Show your vision trough videos. They are
+              span.express optional
+              |  and gets uploaded to
+              |                   your projects feed.
+            .media-container
+              label.media-frame
+                input.hidden(type='file' accept='video/*' name='video1')
+                img(src='../../public/img/icons/add.png' alt='add cover image')
+              label.media-frame
+                input.hidden(type='file' accept='video/*' name='video2')
+                img(src='../../public/img/icons/add.png' alt='add search result image')
+        p.upload-info
+          | You can upload more pictures and 
+          br
+          | videos in your feed after
+          |               publishing.
+    .publicate
+      .publicate-bg
+      .content-stripe
+        button.btn-publicate Publish
+  footer
+    .content-stripe
+      .reach-info
+        article
+          h2 OpenConTRIBUTE HQ
+          p
+            | Examplestr. 11 
+            br
+            |                 00000 Examplecity
+          p
+            | Examplestr. 12 
+            br
+            |                 11111 Examplecity
+        ul
+          li
+            | E-mail:
+            span.reach-contact
+              a(href='mailto:some@mailing.de') some@mailing.de
+          li
+            | Tel.:
+            span.reach-contact 0123/456789
+          li
+            | Fax.:
+            span.reach-contact 0987/65432
+      nav
+        li
+          a(href='impressum.html' target='_self') Impressum
+        li
+          a(href='contact.html' target='_self') Contact
+        li
+          a(href='about.html' target='_self') About Us
+        li
+          a(href='links.html' target='_self') Useful links
+        li
+          a(href='story.html' target='_self') Our Story
+      .copyright
+        p OpenConTRIBUTE &copy; 2023
