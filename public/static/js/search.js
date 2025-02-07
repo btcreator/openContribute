@@ -2,8 +2,8 @@ import { findProjects } from './apiCalls/project.js';
 const LIMIT_PER_PAGE = 10;
 
 // State
-let searchText = '';
-let filterOptions = {};
+let stateSearchText = '';
+let stateFilterOptions = {};
 
 // search related
 const searchQueryText = document.querySelector('.search-query-text');
@@ -26,30 +26,29 @@ async function searchSubmit(ev) {
 
   // disable search button and reset navigaton elements
   ev.submitter.disabled = true;
-  resetNavigation();
 
   // collect form data
   const form = new FormData(this);
-  searchText = form.get('search');
+  stateSearchText = form.get('search');
   const type = form.get('type');
   const address = form.get('location');
   const distance = form.get('perimeter');
 
   // limit results to 10 undone projects and sort by creation date
-  filterOptions = { limit: LIMIT_PER_PAGE, sort: 'createdAt', isDone: false };
+  stateFilterOptions = { limit: LIMIT_PER_PAGE, sort: 'createdAt', isDone: false };
 
   // add user set filter options
-  type !== 'any' && Object.assign(filterOptions, { type });
-  address && Object.assign(filterOptions, { address, distance });
+  type !== 'any' && Object.assign(stateFilterOptions, { type });
+  address && Object.assign(stateFilterOptions, { address, distance });
 
   // load projects and insert results to page
-  await loadProjectsToPage(searchText, filterOptions);
+  await resolvePage(1);
 
   // add search query text
   searchQueryText.textContent =
-    searchText === ''
+    stateSearchText === ''
       ? `Latest projects${type !== 'any' ? ' in ' + type : ''}`
-      : `Results for: "${searchText}" - ${type}`;
+      : `Results for: "${stateSearchText}" - ${type}`;
   searchQueryText.textContent += ` ${address && `in ${address}`}${address && +distance ? ` (${distance} km)` : ''}`;
 
   // enable search button
@@ -59,34 +58,35 @@ async function searchSubmit(ev) {
 // Pagination / navigation
 ////
 function getNewResults(ev) {
-  const page = +this.dataset.page;
-  loadProjectsToPage(searchText, Object.assign({}, filterOptions, { page }));
-  updateNavigation(page);
+  resolvePage(+this.dataset.page);
 }
 
 // update elements with actual page
-function updateNavigation(page) {
+function updateNavigation(page, results) {
+  // disable and enable buttons when reach beginning or end
+  btnPrevResults.disabled = page <= 1;
+  btnNextResults.disabled = results < LIMIT_PER_PAGE;
+
   btnNextResults.dataset.page = page + 1;
   btnPrevResults.dataset.page = page - 1;
   actualPage.textContent = page;
 }
 
-// reset elements to state of first page
-function resetNavigation() {
-  updateNavigation(1);
-}
-
 // Fetch
 ////
-async function loadProjectsToPage(searchFor, filter) {
+async function resolvePage(page) {
   // search for projects
-  const response = await findProjects(searchFor, filter);
+  const response = await findProjects(stateSearchText, Object.assign({}, stateFilterOptions, { page }));
+  let results = 0;
 
   // insert found projects to page / show info
   searchResults.textContent = '';
-  if (response?.status === 200 && response.data.data.projects.length)
+  if (response?.status === 200 && response.data.data.projects.length) {
     response.data.data.projects.forEach((project) => insertProjectToHTML(project));
-  else searchResults.innerHTML = '<p>No results</p>';
+    results = response.data.data.projects.length;
+  } else searchResults.innerHTML = '<p>No results</p>';
+
+  updateNavigation(page, results);
 }
 
 // Markup fill functions
