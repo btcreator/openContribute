@@ -65,7 +65,7 @@ exports.search = catchAsync(async (req, res) => {
   const projectsQuery = Project.find().populate('leader', 'name -_id');
 
   // search with url query when the search from other page was hit
-  const searchText = req.query?.name ?? "";
+  const searchText = req.query?.q ?? "";
   const query = new RefineQuery(projectsQuery, { limit: 10, sort: 'createdAt', isDone: false }).refine({ isActive: true }, selector);
   const projects = await query.where('name', new RegExp(searchText, 'i'));
 
