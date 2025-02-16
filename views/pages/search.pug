@@ -55,13 +55,16 @@ block content
   main
     .content-stripe
       p.search-query-text
-        | Latest projects:
+        - if(searchText)
+          | Results for "#{searchText}":
+        - else
+          | Latest projects:
       .search-results
          each project in projects
             +resultCard(project)
       .pagination
         nav
-        - const isDisabled = projects.length < 10;
+          - const isDisabled = projects.length < 10;
           li
             button.prev-results(data-page=0 disabled) < Prev
           li
