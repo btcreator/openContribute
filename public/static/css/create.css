@@ -1,514 +1,506 @@
 /*INTENSION*/
 .intension label:not(.hidden) {
-    display: block;
-    margin-block: 10px;
-    font-weight: bold;
-    font-size: medium;
+  display: block;
+  margin-block: 10px;
+  font-weight: bold;
+  font-size: medium;
 }
 
 .project-name {
-    padding: 35px;
-    width: 60%;
-    margin-bottom: 20px;
-    background: linear-gradient(110deg, #ffffff00 90%, #ffffff 90.2%),
-        linear-gradient(178deg, #ff8731 80%, #ffffff00 80.9%);
+  padding: 35px;
+  width: 60%;
+  margin-bottom: 20px;
+  background: linear-gradient(110deg, #ffffff00 90%, #ffffff 90.2%),
+    linear-gradient(178deg, #ff8731 80%, #ffffff00 80.9%);
 }
 
 .project-name p {
-    text-align: right;
-    margin-right: 45px;
-    transform: rotate(358deg);
-    transform-origin: right;
+  text-align: right;
+  margin-right: 45px;
+  transform: rotate(358deg);
+  transform-origin: right;
 }
 
 .project-name span {
-    color: white;
+  color: white;
 }
 
 .project-summary {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .project-summary > div {
-    padding-block: 39px;
-    padding-inline: 70px 50px;
-    background: linear-gradient(358deg, #ffffff00 90%, #ffffff 90.9%),
-        linear-gradient(259deg, #ffffff00 90%, #ffffff 90.2%),
-        linear-gradient(181deg, #f1a61e 90%, #ffffff00 90.9%);
+  padding-block: 39px;
+  padding-inline: 70px 50px;
+  background: linear-gradient(358deg, #ffffff00 90%, #ffffff 90.9%),
+    linear-gradient(259deg, #ffffff00 90%, #ffffff 90.2%), linear-gradient(181deg, #f1a61e 90%, #ffffff00 90.9%);
 }
 
 .project-summary textarea {
-    width: 300px;
-    height: 100px;
+  width: 300px;
+  height: 100px;
 }
 
 .project-description {
-    padding-left: 35px;
-    margin-top: -80px;
+  padding-left: 35px;
+  margin-top: -80px;
 }
 
 .project-description textarea {
-    width: 55%;
-    height: 200px;
+  width: 55%;
+  height: 200px;
 }
 
 /*TYPE*/
 section.type {
-    background-color: #708090a8;
-    margin-top: 25px;
-    padding-block: 35px;
+  background-color: #708090a8;
+  margin-top: 25px;
+  padding-block: 35px;
 }
 
 .type-card-container {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .type-card-container ul {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-    line-height: 0;
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  line-height: 0;
 }
 
 .type-card {
-    width: 130px;
-    min-height: 165px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: center;
-    padding: 10px;
-    color: beige;
+  width: 130px;
+  min-height: 165px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  padding: 10px;
+  color: beige;
 }
 
 .img-holder {
-    display: block;
-    width: 110px;
-    border-radius: 50%;
-    background-color: #f1a61e;
-    border: 2px solid beige;
-    cursor: pointer;
+  display: block;
+  width: 110px;
+  border-radius: 50%;
+  background-color: #f1a61e;
+  border: 2px solid beige;
+  cursor: pointer;
 }
 
 .type-card input:checked + .img-holder {
-    border-start-end-radius: 10px;
+  border-start-end-radius: 10px;
 }
 
 .img-holder img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .type-card p {
-    line-height: initial;
-    margin-top: 10px;
+  line-height: initial;
+  margin-top: 10px;
 }
 
 input#custom-type {
-    width: 110px;
-    border-radius: 20px;
-    margin: 0;
-    margin-top: 10px;
-    padding-inline: 10px;
-    text-align: center;
+  width: 110px;
+  border-radius: 20px;
+  margin: 0;
+  margin-top: 10px;
+  padding-inline: 10px;
+  text-align: center;
 }
 
 .type-card input#other:checked ~ p {
-    display: none;
+  display: none;
 }
 
 .type-card input#other:checked ~ input#custom-type {
-    display: block;
+  display: block;
 }
 
 /*LOCATION*/
 .location {
-    height: 600px;
-    margin-top: 25px;
+  height: 600px;
+  margin-top: 25px;
 }
 
 .location .content-stripe {
-    position: relative;
-    height: 100%;
+  position: relative;
+  height: 100%;
 }
 
 .location-descriptor {
-    position: absolute;
-    top: 0;
-    width: 330px;
-    padding: 20px;
-    padding-right: 90px;
-    background-color: #f1a61e;
-    clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
-    z-index: 5;
+  position: absolute;
+  top: 0;
+  width: 330px;
+  padding: 20px;
+  padding-right: 90px;
+  background-color: #f1a61e;
+  clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
+  z-index: 5;
 }
 
 .location-descriptor h2 {
-    margin-bottom: 20px;
-    text-align: center;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .location-descriptor p {
-    padding-left: 25px;
+  padding-left: 25px;
 }
 
 .location-input {
-    display: flex;
-    margin-top: 20px;
+  display: flex;
+  margin-top: 20px;
 }
 
 .location-input input {
-    margin: 0;
-    padding-block: 5px;
-    width: 90%;
-    border-radius: 10px 0 0 10px;
-    border: 1px solid gray;
+  margin: 0;
+  padding-block: 5px;
+  width: 90%;
+  border-radius: 10px 0 0 10px;
+  border: 1px solid gray;
 }
 
 .location-input button {
-    width: 15%;
-    border-radius: 9px;
-    margin-left: -7px;
-    border: 1px solid gray;
+  width: 15%;
+  border-radius: 9px;
+  margin-left: -7px;
+  border: 1px solid gray;
 }
 
 #map {
-    width: 100%;
-    height: 100%;
-    background-color: azure;
-    clip-path: polygon(0 0, 100% 0, 100% 90%, 15% 100%);
+  width: 100%;
+  height: 100%;
+  background-color: azure;
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 15% 100%);
 }
 
 /*MILESTONES*/
 .milestones {
-    margin-top: -50px;
+  margin-top: -50px;
 }
 
 .milestones img {
-    width: 100%;
-    border-radius: 50%;
+  width: 100%;
+  border-radius: 50%;
 }
 
 .milestones .content-stripe {
-    background-color: #a1abb6;
-    clip-path: polygon(0 0, 85% 0, 75% 85%, 0 100%);
-    padding: 40px;
-    padding-bottom: 80px;
+  background-color: #a1abb6;
+  clip-path: polygon(0 0, 85% 0, 75% 85%, 0 100%);
+  padding: 40px;
+  padding-bottom: 80px;
 }
 
 .milestone-bubbles {
-    display: inline-block;
-    border-top: 4px solid rgb(255, 255, 255);
-    margin-top: 60px;
-    margin-left: 40px;
+  display: inline-block;
+  border-top: 4px solid rgb(255, 255, 255);
+  margin-top: 60px;
+  margin-left: 40px;
 }
 
 .milestone-bubbles ul {
-    line-height: 0;
-    display: flex;
-    gap: 40px;
-    margin-top: -42px;
+  line-height: 0;
+  display: flex;
+  gap: 40px;
+  margin-top: -42px;
 }
 
 .milestone-bubbles li {
-    width: 80px;
-    position: relative;
+  width: 80px;
+  position: relative;
 }
 .milestone-bubbles img {
-    border: 2px solid rgb(255, 255, 255);
+  border: 2px solid rgb(255, 255, 255);
 }
 
 .milestone-bubbles li:hover::after {
-    content: '\2717';
-    color: rgba(145, 145, 145, 0.931);
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 50px;
-    font-weight: 700;
-    background-color: #e1e1e1b8;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  content: '\2717';
+  color: rgba(145, 145, 145, 0.931);
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 50px;
+  font-weight: 700;
+  background-color: #e1e1e1b8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .milestone-inputs {
-    margin-top: 30px;
-    margin-left: 40px;
-    display: flex;
-    gap: 30px;
-    align-items: center;
+  margin-top: 30px;
+  margin-left: 40px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
 }
 
 .milestone-inputs > label {
-    display: block;
-    width: 80px;
+  display: block;
+  width: 80px;
 }
 
 .milestone-inputs img {
-    border: 2px solid rgb(0, 170, 20);
-    cursor: pointer;
+  border: 2px solid rgb(0, 170, 20);
+  cursor: pointer;
 }
 
 .milestone-name-input {
-    display: flex;
-    width: 40%;
+  display: flex;
+  width: 40%;
 }
 
 .milestone-name-input input {
-    margin: 0;
-    padding-block: 5px;
-    width: 85%;
-    border: 1px solid gray;
+  margin: 0;
+  padding-block: 5px;
+  width: 85%;
+  border: 1px solid gray;
 }
 
 .milestone-name-input button {
-    width: 15%;
-    border: 1px solid gray;
+  width: 15%;
+  border: 1px solid gray;
 }
 
 /*RESOURCES*/
 .resources h2 {
-    text-align: right;
-    margin-right: 25px;
+  text-align: right;
+  margin-right: 25px;
 }
 
 .resources-icons {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .resources-icons li {
-    line-height: 0;
-    width: 100px;
-    display: inline-block;
-    text-align: center;
+  width: 100px;
+  display: inline-block;
+  text-align: center;
 }
 
-.resources-icons li svg {
-    width: 89px;
-    height: 82px;
-    fill: whitesmoke;
-    stroke: grey;
-    cursor: pointer;
+.resources-icons li label {
+  display: inline-block;
+  opacity: 0.3;
+  cursor: pointer;
 }
 
-.resources-icons .actual + label svg {
-    transform: scale(1.3);
+.resources-icons li img {
+  width: 50px;
+  height: 50px;
 }
 
-.resources-icons input:checked + label svg {
-    stroke-width: 2;
+.resources-icons input:checked + label {
+  opacity: 1;
 }
 
 .resources-icons {
-    margin-block: 50px;
+  margin-block: 50px;
 }
 
 .resources-details {
-    display: flex;
-    padding-inline: 70px;
+  display: flex;
+  padding-inline: 70px;
 }
 
 .resources-details .settings {
-    width: 300px;
-    padding: 10px 40px 10px 0;
-    flex-shrink: 0;
+  width: 300px;
+  padding: 10px 40px 10px 0;
+  flex-shrink: 0;
 }
 
 .option {
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .priority .selection-bar {
-    display: flex;
+  display: flex;
 }
 
 .priority label {
-    display: inline-block;
-    width: 25px;
-    height: 15px;
-    border: 1px solid black;
+  display: inline-block;
+  width: 25px;
+  height: 15px;
+  border: 1px solid black;
 }
 
 .priority label:not(:first-of-type) {
-    border-left: none;
+  border-left: none;
 }
 
 .priority label:has(input:checked) {
-    background-color: rgb(14, 70, 149);
+  background-color: rgb(14, 70, 149);
 }
 
 .limit input {
-    display: inline;
-    margin: 0;
-    width: 80px;
-    border: 1px solid #cbcbcb;
+  display: inline;
+  margin: 0;
+  width: 80px;
+  border: 1px solid #cbcbcb;
 }
 
 .authenticate input {
-    margin: 0;
-    width: 20px;
-    height: 20px;
+  margin: 0;
+  width: 20px;
+  height: 20px;
 }
 
 .resources-details .notes {
-    width: 100%;
+  width: 100%;
 }
 
 .notes textarea {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .control-btn {
-    margin-left: 70px;
-    padding: 5px 25px;
+  margin-left: 70px;
+  padding: 5px 25px;
 }
 
 /*DEADLINE*/
 .deadline {
-    position: relative;
+  position: relative;
+  z-index: 5;
 }
 
 .deadline-bg {
-    position: absolute;
-    width: calc((100% - 1024px) / 2 + 400px);
-    height: 100%;
-    right: 0;
-    clip-path: polygon(0 50px, 100% 0, 100% 100%, 30px calc(100% - 30px));
-    background-color: #cbcbcb;
-    z-index: -5;
+  position: absolute;
+  width: calc((100% - 1024px) / 2 + 400px);
+  height: 100%;
+  right: 0;
+  clip-path: polygon(0 50px, 100% 0, 100% 100%, 30px calc(100% - 30px));
+  background-color: #cbcbcb;
+  z-index: -5;
 }
 
 .deadline .content-stripe {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 60px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 60px 25px;
 }
 
 .deadline .header span {
-    text-align: left;
+  text-align: left;
 }
 
 .deadline input {
-    margin: 40px 90px 0 0;
-    border: 1px solid #cbcbcb;
-    padding: 10px;
+  margin: 40px 90px 0 0;
+  border: 1px solid #cbcbcb;
+  padding: 10px;
 }
 
 /*MEDIA*/
 .media {
-    position: relative;
-    margin-top: -150px;
+  position: relative;
+  margin-top: -150px;
 }
 
 .media .content-stripe {
-    padding: 80px 25px 25px;
+  padding: 80px 25px 25px;
 }
 
 .media-bg {
-    position: absolute;
-    width: calc((100% + 1024px) / 2 + 100px);
-    height: 100%;
-    left: 0;
-    clip-path: polygon(0 0, 75% 70px, 100% 100%, 0 100%);
-    background-color: #ededed;
-    z-index: -10;
+  position: absolute;
+  width: calc((100% + 1024px) / 2 + 100px);
+  height: 100%;
+  left: 0;
+  clip-path: polygon(0 0, 75% 70px, 100% 100%, 0 100%);
+  background-color: #ededed;
+  z-index: -10;
 }
 
 .media .upload-panel {
-    display: flex;
-    margin-block: 25px;
+  display: flex;
+  margin-block: 25px;
 }
 
 .upload-media-col {
-    padding: 20px;
-    width: 35%;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    justify-content: space-between;
+  padding: 20px;
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  justify-content: space-between;
 }
 
 .upload-media-col .icon {
-    width: 50px;
-    height: 40px;
-    object-fit: contain;
+  width: 50px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .media-container {
-    display: flex;
-    gap: 5px;
+  display: flex;
+  gap: 5px;
 }
 
 .media-frame {
-    width: 120px;
-    height: 120px;
-    transform: skewX(-10deg);
-    overflow: hidden;
-    border: 1px solid grey;
+  width: 120px;
+  height: 120px;
+  transform: skewX(-10deg);
+  overflow: hidden;
+  border: 1px solid grey;
 }
 
 .media-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transform: scale(1.2) skewX(10deg);
-    cursor: pointer;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.2) skewX(10deg);
+  cursor: pointer;
 }
 
 .upload-info {
-    text-align: center;
-    font-style: italic;
-    color: darkgray;
+  text-align: center;
+  font-style: italic;
+  color: darkgray;
 }
 
 .express {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /*PUBLICATE*/
 .publicate {
-    position: relative;
-    margin-top: 50px;
+  position: relative;
+  margin-top: 50px;
 }
 
 .publicate-bg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: #f1a61e;
-    clip-path: polygon(
-        0 10%,
-        calc((100% - 1024px) / 2) 0,
-        100% 80%,
-        100% 100%,
-        0 100%
-    );
-    z-index: -5;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #f1a61e;
+  clip-path: polygon(0 10%, calc((100% - 1024px) / 2) 0, 100% 80%, 100% 100%, 0 100%);
+  z-index: -5;
 }
 
 .publicate .content-stripe {
-    text-align: right;
+  text-align: right;
 }
 
 .btn-publicate {
-    padding: 20px 50px;
-    font-size: 1.5em;
-    margin-right: 50px;
-    margin-bottom: 25px;
-    border: 2px solid grey;
-    border-radius: 15px;
+  padding: 20px 50px;
+  font-size: 1.5em;
+  margin-right: 50px;
+  margin-bottom: 25px;
+  border: 2px solid grey;
+  border-radius: 15px;
 }
