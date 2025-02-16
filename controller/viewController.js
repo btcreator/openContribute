@@ -4,6 +4,7 @@ const Contribution = require('./../model/contribution');
 const { summaryPipeline } = require('./aggregationPipelines/contributionPipelines');
 const { populateContributionsToProjectPipeline } = require('./aggregationPipelines/projectPipelines');
 const stat = require('./aggregationPipelines/statsPipelines');
+const { resources } = require('./../model/resourceDescriptions/resourceDescriptions');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const RefineQuery = require('../utils/refineQuery');
@@ -147,3 +148,12 @@ exports.updateMyProject = catchAsync(async (req, res) => {
     project: project[0],
   });
 });
+
+// create
+exports.createMyProject = (req, res) => {
+  res.status(200).render('project_create', {
+    title: 'Be the leader of your own project.',
+    user: req.user,
+    resourceNames: resources,
+  });
+};
