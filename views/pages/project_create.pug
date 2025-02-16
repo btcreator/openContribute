@@ -5,14 +5,16 @@ mixin projectTypeCard(type)
   li.type-card
     input.hidden(id=value type='radio' name='type' value=value)
     label.img-holder(for=value)
-      img(src=`/public/static/img/project-types/${value}.jpg` alt=value)
+      img(src=`/static/img/project-types/${value}.jpg` alt=value)
     p= type
     - if(value === "other")
       label.hidden(for='custom-type') Provide type
       input#custom-type.hidden(type='text' name='other-type-name' placeholder='.........')
 
 block append head 
-  link(rel='stylesheet' href='../../public/css/create.css')
+  link(rel='stylesheet' href='/static/css/create.css')
+  link(rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="")
+  script(defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="")
 
 block content
   main
@@ -62,15 +64,9 @@ block content
         h2 Milestones
         .milestone-bubbles
           ul
-            li
-              img(src='../../public/img/projects/milestones/test_project_05_milestone_01.jpg' alt='milestone photo')
-            li
-              img(src='../../public/img/projects/milestones/test_project_05_milestone_02.jpg' alt='milestone photo')
-            li
-              img(src='../../public/img/projects/milestones/test_project_05_milestone_03.jpg' alt='milestone photo')
         .milestone-inputs
           label(for='add-photo')
-            img(src='../../public/img/icons/add.png' alt='add-photo')
+            img(src='/static/img/icons/add.png' alt='add-photo')
           input#add-photo.hidden(type='file' name='milestone-photo')
           .milestone-name-input
             label.hidden(for='milestone-name') Milestone name
@@ -80,36 +76,13 @@ block content
       .content-stripe
         h2 Resources
         ul.resources-icons
-          li
-            input#finantial.hidden(type='checkbox' name='resource' value='finantial')
-            label(for='finantial')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-          li
-            input#human-power.hidden(type='checkbox' name='resource' value='human-power')
-            label(for='human-power')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-          li
-            input#technology.hidden.actual(type='checkbox' name='resource' value='technology')
-            label(for='technology')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-          li
-            input#knowledge.hidden(type='checkbox' name='resource' value='knowledge')
-            label(for='knowledge')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-          li
-            input#material.hidden(type='checkbox' name='resource' value='material')
-            label(for='material')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
-          li
-            input#special.hidden(type='checkbox' name='resource' value='special')
-            label(for='special')
-              svg
-                path(d='M 1 1 L 71 1 L 86 41 L 71 81 L 1 81 L 16 41 z')
+          each resource in resourceNames 
+            li
+              input.hidden(id=resource type='checkbox' name='resource' value=resource)
+              label(for=resource)
+                img(src=`/static/img/icons/res_${resource}.png` alt=resource)
+                p= resource
+
         .resources-details
           .settings
             .priority.option
@@ -155,31 +128,31 @@ block content
           span Photos / Videos
         .upload-panel
           .upload-media-col
-            img.icon(src='../../public/img/icons/photo.png' alt='photo icon')
+            img.icon(src='/static/img/icons/photo.png' alt='photo icon')
             p
               | The first image gets the cover image, the second is for search
               | results. Both are required.
             .media-container
               label.media-frame
                 input.hidden(type='file' accept='image/*' name='cover-photo')
-                img(src='../../public/img/icons/add.png' alt='add cover image')
+                img(src='/static/img/icons/add.png' alt='add cover image')
               label.media-frame
                 input.hidden(type='file' accept='image/*' name='result-photo')
-                img(src='../../public/img/icons/add.png' alt='add search result image')
+                img(src='/static/img/icons/add.png' alt='add search result image')
           .upload-media-col
-            img.icon(src='../../public/img/icons/video.png' alt='video icon')
+            img.icon(src='/static/img/icons/video.png' alt='video icon')
             p
-              | Show your vision trough videos. They are
-              span.express optional
-              |  and gets uploaded to
-              |                   your projects feed.
+              | Show your vision trough videos. They are 
+              span.express optional 
+              | and gets uploaded to
+              | your projects feed.
             .media-container
               label.media-frame
-                input.hidden(type='file' accept='video/*' name='video1')
-                img(src='../../public/img/icons/add.png' alt='add cover image')
+                input.hidden(type='file' accept='video/mp4' name='video1')
+                img(src='/static/img/icons/add.png' alt='presentation video 1')
               label.media-frame
-                input.hidden(type='file' accept='video/*' name='video2')
-                img(src='../../public/img/icons/add.png' alt='add search result image')
+                input.hidden(type='file' accept='video/mp4' name='video2')
+                img(src='/static/img/icons/add.png' alt='presentation video 2')
         p.upload-info
           | You can upload more pictures and 
           br
@@ -189,40 +162,3 @@ block content
       .publicate-bg
       .content-stripe
         button.btn-publicate Publish
-  footer
-    .content-stripe
-      .reach-info
-        article
-          h2 OpenConTRIBUTE HQ
-          p
-            | Examplestr. 11 
-            br
-            |                 00000 Examplecity
-          p
-            | Examplestr. 12 
-            br
-            |                 11111 Examplecity
-        ul
-          li
-            | E-mail:
-            span.reach-contact
-              a(href='mailto:some@mailing.de') some@mailing.de
-          li
-            | Tel.:
-            span.reach-contact 0123/456789
-          li
-            | Fax.:
-            span.reach-contact 0987/65432
-      nav
-        li
-          a(href='impressum.html' target='_self') Impressum
-        li
-          a(href='contact.html' target='_self') Contact
-        li
-          a(href='about.html' target='_self') About Us
-        li
-          a(href='links.html' target='_self') Useful links
-        li
-          a(href='story.html' target='_self') Our Story
-      .copyright
-        p OpenConTRIBUTE &copy; 2023
