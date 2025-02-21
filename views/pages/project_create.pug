@@ -15,6 +15,7 @@ block append head
   link(rel='stylesheet' href='/static/css/create.css')
   link(rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="")
   script(defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="")
+  script(type="module" src="/static/js/create.js")
 
 block content
   main
@@ -49,7 +50,7 @@ block content
           h2 Location
           p
             | Please point on the map where the location of your project takes
-            | place. 
+            | place. (Ctrl + click)
             br
             br
             | Or you can give the exact coordinates.
@@ -57,21 +58,21 @@ block content
           .location-input
             label.hidden(for='location-point') Location Point
             input#location-point(type='text' name='location-point' placeholder='68.085135, 18.301253')
-            button &gt;
+            button.add-location &gt;
         #map
     section.milestones
       .content-stripe
         h2 Milestones
         .milestone-bubbles
-          ul
+          ul.milestone-bubbles-list
         .milestone-inputs
-          label(for='add-photo')
-            img(src='/static/img/icons/add.png' alt='add-photo')
-          input#add-photo.hidden(type='file' name='milestone-photo')
+          label(for='add-milestone-img')
+            img(src='/static/img/icons/add.png' alt='add-img')
+          input#add-milestone-img.hidden(type='file' accept='image/*' name='milestone-img')
           .milestone-name-input
             label.hidden(for='milestone-name') Milestone name
             input#milestone-name(type='text' name='milestone-name' placeholder='Name of the milestone')
-            button ADD
+            button.add-milestone ADD
     section.resources
       .content-stripe
         h2 Resources
@@ -111,7 +112,6 @@ block content
           .notes
             label.hidden(for='opt-notes') Notes
             textarea#opt-notes(name='notes' rows='10' placeholder='Some inportant notes for the required resource (its optional, but highly recommended!)')
-        button.control-btn Apply
     section.deadline
       .deadline-bg
       .content-stripe
