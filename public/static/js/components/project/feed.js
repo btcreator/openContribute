@@ -1,4 +1,5 @@
 import { getFeedData, createFeed } from './../../apiCalls/feed.js';
+import fileToImage from './../../utils/fileToImage.js';
 import { loadYTvideo } from './../ytLoader.js';
 import { setAlert } from './../../utils/alert.js';
 
@@ -51,56 +52,22 @@ function uploadFileHandler(ev) {
 
   // each supported file is inserted to the upload-ready list
   for (const file of this.files) {
-    if (file.type.startsWith('image')) {
-      newFeedImages.push(file);
-      insertListItem(URL.createObjectURL(file), file);
-    } else if (file.type === 'video/mp4') {
-      insertVideoFrameAsImgToList(file);
-    } else {
-      isMediaDeny = true;
-    }
+    if (file.type.startsWith('image')) newFeedImages.push(file);
+    else if (file.type === 'video/mp4') newFeedVideos.push(file);
+
+    const denyFile = !fileToImage(file, insertListItem);
+    isMediaDeny = isMediaDeny || denyFile;
   }
-  isMediaDeny && setAlert(`Media type is not allowed.`, 'error');
-}
-
-// show video as image for upload ready list (take a screenshot from the first frame)
-function insertVideoFrameAsImgToList(file) {
-  const video = document.createElement('video');
-  video.src = URL.createObjectURL(file);
-
-  // seek video to first frame (0sec)
-  video.addEventListener(
-    'loadeddata',
-    () => {
-      video.currentTime = 0;
-    },
-    { once: true }
-  );
-
-  // when video is on first frame, take is as image and show in the list
-  video.addEventListener(
-    'seeked',
-    () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      newFeedVideos.push(file);
-      insertListItem(canvas.toDataURL(), file, 'video');
-    },
-    { once: true }
-  );
+  isMediaDeny && setAlert(`One of media type is not allowed.`, 'error');
 }
 
 // insert media image as thumbnail in the list and track the file
-function insertListItem(source, file, type) {
+function insertListItem(source, file) {
   const li = document.createElement('li');
   const img = document.createElement('img');
   img.src = source;
   li.appendChild(img);
-  type === 'video' && li.classList.add('video');
+  file.type === 'video/mp4' && li.classList.add('video');
   uploadedMedia.insertBefore(li, uploadedMedia.lastElementChild);
   mediaMap.set(li, file);
 }
