@@ -1,4 +1,5 @@
 import { displayMap, setTheMarker, setClickOnMapToOutput } from './components/leaflet.js';
+import fileToImage from './utils/fileToImage.js';
 import { setAlert } from './utils/alert.js';
 
 // Buttons
@@ -9,6 +10,7 @@ const btnAddMilestone = document.querySelector('.add-milestone');
 const inputLocationPoint = document.querySelector('#location-point');
 const inputMilestoneImg = document.querySelector('#add-milestone-img');
 const inputMilestoneName = document.querySelector('#milestone-name');
+const fileInputs = document.querySelectorAll('input[type="file"]');
 
 // Forms
 const formResourcesDetails = document.querySelector('#resources-details-form');
@@ -21,6 +23,20 @@ const resourcesIcons = document.querySelector('.resources-icons');
 const milestonesImg = {}; // {name: file}
 const milestones = {}; // {name: milestoneFilename}
 const resourcesData = {}; // {fund: {name: "fund", priority: 3, limit: {min: 2, max: 10}, ...}}
+
+// Input File image handling
+////
+// Listener for select and show image for input file fields
+function showImage(ev) {
+  const img = ev.target.labels[0].children[0];
+
+  fileToImage(ev.target.files[0], (source) => {
+    img.src = source;
+    img.onload = () => URL.revokeObjectURL(img.src);
+  });
+}
+
+fileInputs.forEach((input) => input.addEventListener('change', showImage));
 
 // Map
 ////
@@ -87,14 +103,6 @@ function removeMilestone(ev) {
   li.remove();
 }
 
-// The selected image (from file input) gets shown
-function showImage(ev) {
-  const img = ev.target.labels[0].children[0];
-  img.src = URL.createObjectURL(ev.target.files[0]);
-  img.onload = () => URL.revokeObjectURL(img.src);
-}
-
-inputMilestoneImg.addEventListener('change', showImage);
 btnAddMilestone.addEventListener('click', insertMilestone);
 milestonesList.addEventListener('click', removeMilestone);
 
@@ -160,3 +168,4 @@ resourcesIcons.addEventListener('click', handleResources);
 
 // Media
 ////
+// The selected files shown as image on the page are handled trough showImage event listener
