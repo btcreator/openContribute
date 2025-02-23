@@ -66,9 +66,9 @@ block content
         .milestone-bubbles
           ul.milestone-bubbles-list
         .milestone-inputs
-          label(for='add-milestone-img')
+          label
             img(src='/static/img/icons/add.png' alt='add-img')
-          input#add-milestone-img.hidden(type='file' accept='image/*' name='milestone-img')
+            input#add-milestone-img.hidden(type='file' accept='image/*' name='milestone-img')
           .milestone-name-input
             label.hidden(for='milestone-name') Milestone name
             input#milestone-name(type='text' name='milestone-name' placeholder='Name of the milestone')
@@ -143,11 +143,11 @@ block content
               | results. Both are required.
             .media-container
               label.media-frame
-                input.hidden(type='file' accept='image/*' name='cover-photo')
                 img(src='/static/img/icons/add.png' alt='add cover image')
+                input.hidden(type='file' accept='image/*' name='cover-photo')
               label.media-frame
-                input.hidden(type='file' accept='image/*' name='result-photo')
                 img(src='/static/img/icons/add.png' alt='add search result image')
+                input.hidden(type='file' accept='image/*' name='result-photo')
           .upload-media-col
             img.icon(src='/static/img/icons/video.png' alt='video icon')
             p
@@ -157,11 +157,11 @@ block content
               | your projects feed.
             .media-container
               label.media-frame
-                input.hidden(type='file' accept='video/mp4' name='video1')
                 img(src='/static/img/icons/add.png' alt='presentation video 1')
+                input.hidden(type='file' accept='video/mp4' name='video1')
               label.media-frame
-                input.hidden(type='file' accept='video/mp4' name='video2')
                 img(src='/static/img/icons/add.png' alt='presentation video 2')
+                input.hidden(type='file' accept='video/mp4' name='video2')
         p.upload-info
           | You can upload more pictures and 
           br
