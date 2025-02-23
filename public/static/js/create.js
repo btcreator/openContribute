@@ -10,12 +10,17 @@ const inputLocationPoint = document.querySelector('#location-point');
 const inputMilestoneImg = document.querySelector('#add-milestone-img');
 const inputMilestoneName = document.querySelector('#milestone-name');
 
+// Forms
+const formResourcesDetails = document.querySelector('#resources-details-form');
+
 // Containers
 const milestonesList = document.querySelector('.milestone-bubbles-list');
+const resourcesIcons = document.querySelector('.resources-icons');
 
 // State
-const milestonesImg = {}; // milestones_img - {name: images/files}
-const milestones = {}; // milestones - {name: milestoneFilename}
+const milestonesImg = {}; // {name: file}
+const milestones = {}; // {name: milestoneFilename}
+const resourcesData = {}; // {fund: {name: "fund", priority: 3, limit: {min: 2, max: 10}, ...}}
 
 // Map
 ////
@@ -92,6 +97,62 @@ function showImage(ev) {
 inputMilestoneImg.addEventListener('change', showImage);
 btnAddMilestone.addEventListener('click', insertMilestone);
 milestonesList.addEventListener('click', removeMilestone);
+
+// Resources
+////
+function handleResources(ev) {
+  const icon = ev.target.closest('.icon-holder');
+  if (!icon) return;
+
+  toggleSelection(icon.parentElement.parentElement);
+  loadDetailsOfResource(icon.dataset.name);
+}
+
+function toggleSelection(li) {
+  resourcesIcons.childNodes.forEach((item) => item.classList.toggle('selected', li === item));
+}
+
+function loadDetailsOfResource(resourceName) {
+  if (formResourcesDetails.classList.contains('hidden')) {
+    formResourcesDetails.classList.remove('hidden');
+    document.querySelector('.resources-user-info').classList.add('hidden');
+  }
+
+  const resource = resourcesData[resourceName];
+  formResourcesDetails.dataset.resource = resourceName;
+  if (!resource) return formResourcesDetails.reset();
+
+  // fill form with data
+  const elements = formResourcesDetails.elements;
+  elements.authenticate.checked = resource.auth;
+  elements['limit-max'].value = resource.limit?.max;
+  elements['limit-min'].value = resource.limit?.min;
+  elements.notes.value = resource.notes;
+  elements.priority[resource.priority - 1].checked = true;
+}
+
+function handleResourceDetails(ev) {
+  ev.preventDefault();
+
+  const form = new FormData(this);
+  const resourceName = this.dataset.resource;
+
+  resourcesData[resourceName] = {
+    name: resourceName,
+    auth: form.get('authenticate'),
+    limit: {
+      min: form.get('limit-min'),
+      max: form.get('limit-max'),
+    },
+    notes: form.get('notes'),
+    priority: form.get('priority'),
+  };
+
+  setAlert(`${resourceName.toUpperCase()} data are saved...`);
+}
+
+formResourcesDetails.addEventListener('submit', handleResourceDetails);
+resourcesIcons.addEventListener('click', handleResources);
 
 // Media
 ////

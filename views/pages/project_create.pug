@@ -79,39 +79,48 @@ block content
         ul.resources-icons
           each resource in resourceNames 
             li
-              input.hidden(id=resource type='checkbox' name='resource' value=resource)
-              label(for=resource)
-                img(src=`/static/img/icons/res_${resource}.png` alt=resource)
-                p= resource
-
-        .resources-details
-          .settings
-            .priority.option
-              span Priority
-              .selection-bar
-                label
-                  input.hidden(type='radio' name='priority' value='1' checked='')
-                label
-                  input.hidden(type='radio' name='priority' value='2')
-                label
-                  input.hidden(type='radio' name='priority' value='3')
-                label
-                  input.hidden(type='radio' name='priority' value='4')
-                label
-                  input.hidden(type='radio' name='priority' value='5')
-            .limit.option
-              span Limit
               div
-                label.hidden(for='limit-min') Minimum value
-                input#limit-min(type='text' name='limit-min-value' placeholder='Min')
-                label.hidden(for='limit-max') Maximum value
-                input#limit-max(type='text' name='limit-max-value' placeholder='Max')
-            .authenticate.option
-              label(for='auth-req') Authentication required
-              input#auth-req(type='checkbox' name='authenticate')
-          .notes
-            label.hidden(for='opt-notes') Notes
-            textarea#opt-notes(name='notes' rows='10' placeholder='Some inportant notes for the required resource (its optional, but highly recommended!)')
+                input.hidden(id=resource type='checkbox' name='resource' value=resource)
+                .icon-holder(data-name=resource)
+                  img(src=`/static/img/icons/res_${resource}.png` alt=resource)
+                  p= resource
+                label(for=resource)
+        form#resources-details-form.hidden
+          .resources-details
+            .settings
+              .priority.option
+                span Priority
+                .selection-bar
+                  label
+                    input.hidden(type='radio' name='priority' value='1' checked='')
+                  label
+                    input.hidden(type='radio' name='priority' value='2')
+                  label
+                    input.hidden(type='radio' name='priority' value='3')
+                  label
+                    input.hidden(type='radio' name='priority' value='4')
+                  label
+                    input.hidden(type='radio' name='priority' value='5')
+              .limit.option
+                span Limit
+                div
+                  label.hidden(for='limit-min') Minimum value
+                  input#limit-min(type='text' name='limit-min' placeholder='Min')
+                  label.hidden(for='limit-max') Maximum value
+                  input#limit-max(type='text' name='limit-max' placeholder='Max')
+              .authenticate.option
+                label(for='authenticate') Authentication required
+                input#authenticate(type='checkbox' name='authenticate')
+            .notes
+              label.hidden(for='notes') Notes
+              textarea#notes(name='notes' rows='10' placeholder='Some inportant notes for the required resource (its optional, but highly recommended!)')
+          button.control-btn Apply changes
+        .resources-user-info 
+          p 
+            | Select all resources which you need for your project by selecting/deselecting the buttons bellow the icons
+            br
+            | Select a resource to edit by clicking on the icon. (Inputs are optional)
+            
     section.deadline
       .deadline-bg
       .content-stripe
