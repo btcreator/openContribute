@@ -30,7 +30,6 @@ exports.createGeoQuery = async function (center, dist, unit, address, locationDa
 
 // Locate address coordinates (limit call for 1 result)
 async function locateAddress(address) {
-  console.log('Call for address');
   const link = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&limit=1&apiKey=${process.env.GEOAPIFY_API_KEY}`;
   const response = await axios(encodeURI(link));
   if (!response.data.results?.length)
