@@ -74,7 +74,6 @@ function insertListItem(source, file) {
 
 // remove media image from list and the file from every container / cut references for GC
 function removeMedia(ev) {
-  ev.preventDefault();
   const listEl = ev.target.closest('li');
   if (!listEl) return;
 
