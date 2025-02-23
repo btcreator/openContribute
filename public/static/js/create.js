@@ -100,6 +100,7 @@ milestonesList.addEventListener('click', removeMilestone);
 
 // Resources
 ////
+// Select the corresponding icon, then load/show the details for user
 function handleResources(ev) {
   const icon = ev.target.closest('.icon-holder');
   if (!icon) return;
@@ -113,16 +114,18 @@ function toggleSelection(li) {
 }
 
 function loadDetailsOfResource(resourceName) {
+  // hide user info / show form
   if (formResourcesDetails.classList.contains('hidden')) {
     formResourcesDetails.classList.remove('hidden');
     document.querySelector('.resources-user-info').classList.add('hidden');
   }
 
+  // load saved resource data
   const resource = resourcesData[resourceName];
   formResourcesDetails.dataset.resource = resourceName;
   if (!resource) return formResourcesDetails.reset();
 
-  // fill form with data
+  // fill form with previously saved data
   const elements = formResourcesDetails.elements;
   elements.authenticate.checked = resource.auth;
   elements['limit-max'].value = resource.limit?.max;
@@ -131,6 +134,7 @@ function loadDetailsOfResource(resourceName) {
   elements.priority[resource.priority - 1].checked = true;
 }
 
+// Save the resource details
 function handleResourceDetails(ev) {
   ev.preventDefault();
 
