@@ -15,3 +15,7 @@ export const findProjects = function (searchText, filterOptions) {
 
   return axios.get(`/api/v1/project/search?name=${searchText}${filterStr}`).catch(showError);
 };
+
+export const createProject = function (projectData) {
+  return axios.post(`/api/v1/project/myProject`, projectData).catch(showError);
+};

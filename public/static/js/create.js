@@ -1,3 +1,5 @@
+import { createProject } from './apiCalls/project.js';
+import { createFeed } from './apiCalls/feed.js';
 import { displayMap, setTheMarker, setClickOnMapToOutput } from './components/leaflet.js';
 import fileToImage from './utils/fileToImage.js';
 import { setAlert } from './utils/alert.js';
@@ -14,6 +16,7 @@ const fileInputs = document.querySelectorAll('input[type="file"]');
 
 // Forms
 const formResourcesDetails = document.querySelector('#resources-details-form');
+const formNewProject = document.querySelector('#new-project');
 
 // Containers
 const milestonesList = document.querySelector('.milestone-bubbles-list');
@@ -169,3 +172,72 @@ resourcesIcons.addEventListener('click', handleResources);
 // Media
 ////
 // The selected files shown as image on the page are handled trough showImage event listener
+
+// Publish
+////
+async function publishNewProject(ev) {
+  ev.preventDefault();
+  const elements = this.elements;
+  const type = elements.type.value;
+  const locations = [
+    {
+      name: 'Worksite',
+      coordinates: elements['location-point'].value.split(',').reverse(),
+    },
+  ];
+  const milest = Object.entries(milestones).map((entry) => ({ name: entry[0], img: entry[1] }));
+
+  // gather data for the project
+  const projectData = new FormData();
+  projectData.set('name', elements.name.value);
+  projectData.set('summary', elements.summary.value);
+  projectData.set('description', elements.description.value);
+  projectData.set('deadline', elements.deadline.value);
+
+  projectData.set('cover', elements['cover-image'].files[0]);
+  projectData.set('result', elements['result-image'].files[0]);
+  Object.values(milestonesImg).forEach((file) => projectData.append('milestones_img', file));
+
+  projectData.set('locations', JSON.stringify(locations));
+  projectData.set('resources', JSON.stringify(Object.values(resourcesData)));
+  projectData.set('milestones', JSON.stringify(milest));
+
+  if (type === 'other' && elements.customType.value) projectData.set('type', elements.customType.value);
+  else if (type !== 'other' && type) projectData.set('type', type);
+  else return setAlert('Project TYPE is required.', 'error');
+
+  // create project
+  const projectResponse = await createProject(projectData);
+  console.log(projectResponse);
+  if (!projectResponse || projectResponse.status !== 201) return;
+
+  let message = 'Project created successfully.';
+  let alert = 'alert';
+
+  // gather data for first feed upload (2 optional videos)
+  const feedData = new FormData();
+  const video1 = elements.video1.files[0];
+  const video2 = elements.video1.files[1];
+
+  // if there is data for the feed, create feed entry
+  if (video1 || video2) {
+    video1 && feedData.append('videos', video1);
+    video2 && feedData.append('videos', video2);
+    feedData.set('isMilestone', true);
+    feedData.set('title', 'Welcome!');
+    feedData.set('message', 'Let me introduce this project...');
+    feedData.set('project', projectResponse.data.data.project._id);
+
+    const feed = await createFeed(feedData);
+    if (!feed) {
+      alert = 'error';
+      message = 'Feed entry could not be created.';
+    }
+  }
+
+  // redirect user to his newly created project.
+  const slug = projectResponse.data.data.project.slug;
+  window.location.replace(`/project/${slug}?${alert}=${message}`);
+}
+
+formNewProject.addEventListener('submit', publishNewProject);
