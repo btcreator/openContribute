@@ -3,13 +3,13 @@ extends base
 mixin projectTypeCard(type)
   - const value = type.split(" ")[0].toLowerCase();
   li.type-card
-    input.hidden(id=value type='radio' name='type' value=value)
+    input.hidden(form="new-project" id=value type='radio' name='type' value=value)
     label.img-holder(for=value)
       img(src=`/static/img/project-types/${value}.jpg` alt=value)
     p= type
     - if(value === "other")
       label.hidden(for='custom-type') Provide type
-      input#custom-type.hidden(type='text' name='other-type-name' placeholder='.........')
+      input#custom-type.hidden(form="new-project" type='text' name='custom-type' placeholder='.........')
 
 block append head 
   link(rel='stylesheet' href='/static/css/create.css')
@@ -23,17 +23,17 @@ block content
       .content-stripe
         .project-name
           label.hidden(for='name') Your projects name
-          input#name(type='text' name='name' placeholder='Your projects name')
+          input#name(form="new-project" type='text' name='name' placeholder='Your projects name' required)
           p
             | Lead by 
             span.leader-name(data-id=user._id)= user.name
         .project-summary
           div
             label(for='summary') Summary
-            textarea#summary(name='summary' rows='5' placeholder='Be short, but expressive (for search results)' maxlength='160')
+            textarea#summary(form="new-project" name='summary' rows='5' placeholder='Be short, but expressive (for search results)' maxlength='160' required)
         .project-description
           label(for='description') Description
-          textarea#description(name='description' rows='10' placeholder='Tooooo long texts get rarely read to the end...')
+          textarea#description(form="new-project" name='description' rows='10' placeholder='Tooooo long texts get rarely read to the end...' required)
           
     section.type
       .content-stripe
@@ -57,7 +57,7 @@ block content
             |                 (Latitude, Longitude)
           .location-input
             label.hidden(for='location-point') Location Point
-            input#location-point(type='text' name='location-point' placeholder='68.085135, 18.301253')
+            input#location-point(form="new-project" type='text' name='location-point' placeholder='68.085135, 18.301253' required)
             button.add-location &gt;
         #map
     section.milestones
@@ -128,7 +128,7 @@ block content
           h2 Deadline
           span (optional)
         label.hidden(for='deadline-input') Time limit of project
-        input#deadline-input(type='date' name='deadline')
+        input#deadline-input(form="new-project" type='date' name='deadline')
     section.media
       .media-bg
       .content-stripe
@@ -144,10 +144,10 @@ block content
             .media-container
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='add cover image')
-                input.hidden(type='file' accept='image/*' name='cover-photo')
+                input.hidden(form="new-project" type='file' accept='image/*' name='cover-image' required)
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='add search result image')
-                input.hidden(type='file' accept='image/*' name='result-photo')
+                input.hidden(form="new-project" type='file' accept='image/*' name='result-image' required)
           .upload-media-col
             img.icon(src='/static/img/icons/video.png' alt='video icon')
             p
@@ -158,10 +158,10 @@ block content
             .media-container
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='presentation video 1')
-                input.hidden(type='file' accept='video/mp4' name='video1')
+                input.hidden(form="new-project" type='file' accept='video/mp4' name='video1')
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='presentation video 2')
-                input.hidden(type='file' accept='video/mp4' name='video2')
+                input.hidden(form="new-project" type='file' accept='video/mp4' name='video2')
         p.upload-info
           | You can upload more pictures and 
           br
@@ -170,4 +170,5 @@ block content
     .publicate
       .publicate-bg
       .content-stripe
-        button.btn-publicate Publish
+        form#new-project
+          button.btn-publicate Publish
