@@ -164,9 +164,11 @@ exports.createMyProject = catchAsync(async (req, res) => {
   const project = await Project.create(bodyCl);
   await project.rearrangeMilestones();
 
-  res.status(200).json({
+  res.status(201).json({
     status: 'success',
-    project,
+    data: {
+      project,
+    },
   });
 });
 
