@@ -363,6 +363,7 @@ input#contribution-ack {
 .contributors .rotation-box {
   display: flex;
   justify-content: space-between;
+  min-height: 150px;
 }
 
 .content-stripe .header {
@@ -370,7 +371,7 @@ input#contribution-ack {
   top: -30px;
   padding: 15px 30px;
   background-color: #f7bc3d;
-  height: 50%;
+  height: 65px;
   border: 2px solid #a76a00;
 }
 
@@ -397,6 +398,12 @@ input#contribution-ack {
 
 .last-contributors .name {
   font-size: 1.2em;
+  font-style: italic;
+}
+
+.last-contributors > p {
+  align-self: center;
+  font-size: large;
   font-style: italic;
 }
 
