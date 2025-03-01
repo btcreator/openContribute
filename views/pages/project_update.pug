@@ -32,9 +32,9 @@ block hero
 
 block content
   main(data-id=project._id)
-    script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources)}`}
-    script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources)}`}
-    script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations)}`}
+    script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources ?? {})}`}
+    script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources) ?? {}}`}
+    script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations ?? [])}`}
     section.milestones
       .bg-cover
       .content-stripe.clip-sides

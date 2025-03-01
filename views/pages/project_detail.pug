@@ -31,9 +31,9 @@ block hero
 
 block content
   main(data-id=project._id)
-    script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources)}`}
-    script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources)}`}
-    script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations)}`}
+    script#server-data-project(type="application/json") !{`${JSON.stringify(project.resources || [])}`}
+    script#server-data-contributions(type="application/json") !{`${JSON.stringify(project.contributions.resources || {})}`}
+    script#server-data-locations(type="application/json") !{`${JSON.stringify(project.locations || [])}`}
     section.milestones
       .bg-cover
       .content-stripe.clip-sides
@@ -71,11 +71,16 @@ block content
         .header
           h2 Contributors
         .rotation-box
-          ul.last-contributors
-            each contributor in project.contributions.contributors
-              li
-                img(src=`/media/users/${contributor.photo}` alt='User photo')
-                .name= contributor.name
+          if project.contributions.contributors.length
+            ul.last-contributors
+              each contributor in project.contributions.contributors
+                li
+                  img(src=`/media/users/${contributor.photo}` alt='User photo')
+                  .name= contributor.name
+          else
+            .last-contributors
+              p
+                | There are no contributors yet, but you can be the first...
           button.all-contributors
             span See All &gt;
     section.progress
