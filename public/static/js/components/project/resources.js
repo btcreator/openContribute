@@ -71,9 +71,9 @@ function toggleResourceDetails(ev) {
 }
 
 // resource details gets shown differently depending if it gets edited or just shown (possibility to contribute)
-function handleResourceDetails(resObj, contriResObj) {
+function handleResourceDetails(resObj, contriResAmount) {
   document.getElementById('cta-form')?.removeEventListener('submit', processResourceAction);
-  isInEditMode ? fillResourceDetailsInEditMode(resObj, contriResObj) : fillResourceDetails(resObj, contriResObj);
+  isInEditMode ? fillResourceDetailsInEditMode(resObj, contriResAmount) : fillResourceDetails(resObj, contriResAmount);
   document.getElementById('cta-form').addEventListener('submit', processResourceAction);
 }
 
