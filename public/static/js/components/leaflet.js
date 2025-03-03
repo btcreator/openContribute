@@ -24,7 +24,7 @@ export const displayMap = function (locations) {
   // add controls
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  if (locations?.length) {
+  if (locations?.length > 2) {
     // set bounds
     const bounds = L.latLngBounds();
 
@@ -36,7 +36,7 @@ export const displayMap = function (locations) {
     });
 
     // set map to boundaries
-    map.fitBounds(bounds.pad(30));
+    locations.length > 1 ? map.fitBounds(bounds.pad(30)) : map.setView(locations[0].coordinates, 10);
   } else
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -44,7 +44,7 @@ export const displayMap = function (locations) {
         map.setView([coord.latitude, coord.longitude], 8);
       },
       () => {
-        map.setView([51.505, -0.09], 8);
+        map.setView([47.551666, 10.310555], 8);
       }
     );
 };
