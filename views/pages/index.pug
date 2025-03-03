@@ -98,7 +98,7 @@ block content
               br
               | Then feel that you are part of something real and see the fruits of your sacrifice...
           .cta-action
-            button Contribute
+            a.button(href="/search") Contribute
         article.leader.cta-box
           .cta-description
             h2 Leaders
@@ -109,7 +109,7 @@ block content
               br
               | Then bring your vision to life with the help of others and be the leader of your dreams...
           .cta-action
-            button Create
+            a.button(href="/projectCreate") Create
     section.impact
       .impact-bg
       .content-stripe
@@ -130,7 +130,7 @@ block content
             |                 suscipit voluptatibus quo natus magni! Soluta culpa illo aperiam
             |                 autem reprehenderit voluptates eum assumenda ipsam.
         .impact-interaction
-          button More successful stories
+          a.button(href="#") More successful stories
 
     section.stat
       .stat-bg
@@ -139,7 +139,7 @@ block content
           h2 Statistics
           p Lorem ipsum dolor sit amet consectetur adipisicing elit.
           .stat-table-holder
-            +stat("resources", stats.resources)
+            +stat("contributions", stats.resources)
             +stat("members", stats.members)
             +stat("projects", stats.projects)
 

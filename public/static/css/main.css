@@ -62,7 +62,8 @@ a:visited {
   margin: auto;
 }
 
-button {
+button,
+a.button {
   background-color: rgb(32, 153, 30);
   color: white;
   cursor: pointer;
@@ -315,7 +316,7 @@ main {
   text-align: right;
 }
 
-.cta-action button {
+.cta-action a {
   padding: 8px 27px;
 }
 
@@ -369,7 +370,7 @@ main {
   margin-top: 30px;
 }
 
-.impact-interaction button {
+.impact-interaction a {
   padding: 10px 15px;
 }
 
