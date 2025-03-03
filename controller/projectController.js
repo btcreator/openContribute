@@ -120,7 +120,7 @@ exports.resourceInfo = (req, res) => {
 // Project "MY" operations
 ////
 exports.myProjects = catchAsync(async (req, res) => {
-  const projects = await Project.find({ leader: req.user._id, isActive: true });
+  const projects = await Project.find({ leader: req.user._id, isActive: true }).sort('-createdAt');
 
   res.status(200).json({
     status: 'success',
