@@ -154,7 +154,7 @@ function handleResourceDetails(ev) {
 
   resourcesData[resourceName] = {
     name: resourceName,
-    auth: form.get('authenticate'),
+    auth: !!form.get('authenticate'),
     limit: {
       min: form.get('limit-min'),
       max: form.get('limit-max'),
@@ -185,6 +185,10 @@ async function publishNewProject(ev) {
       coordinates: elements['location-point'].value.split(',').reverse(),
     },
   ];
+  const resources = elements.resource.reduce(
+    (acc, res) => (res.checked ? acc.push(resourcesData[res.value]) : acc),
+    []
+  );
   const milest = Object.entries(milestones).map((entry) => ({ name: entry[0], img: entry[1] }));
 
   // gather data for the project
@@ -199,10 +203,10 @@ async function publishNewProject(ev) {
   Object.values(milestonesImg).forEach((file) => projectData.append('milestones_img', file));
 
   projectData.set('locations', JSON.stringify(locations));
-  projectData.set('resources', JSON.stringify(Object.values(resourcesData)));
+  projectData.set('resources', JSON.stringify(resources));
   projectData.set('milestones', JSON.stringify(milest));
 
-  if (type === 'other' && elements.customType.value) projectData.set('type', elements.customType.value);
+  if (type === 'other' && elements['custom-type'].value) projectData.set('type', elements['custom-type'].value);
   else if (type !== 'other' && type) projectData.set('type', type);
   else return setAlert('Project TYPE is required.', 'error');
 
