@@ -73,6 +73,7 @@ block content
             label.hidden(for='milestone-name') Milestone name
             input#milestone-name(type='text' name='milestone-name' placeholder='Name of the milestone')
             button.add-milestone ADD
+        span.milestones-info Max file size 200kB
     section.resources
       .content-stripe
         h2 Resources
@@ -140,7 +141,9 @@ block content
             img.icon(src='/static/img/icons/photo.png' alt='photo icon')
             p
               | The first image gets the cover image, the second is for search
-              | results. Both are required.
+              | results. Both are required. 
+              br
+              | (max 5MB / image)
             .media-container
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='add cover image')
@@ -153,8 +156,9 @@ block content
             p
               | Show your vision trough videos. They are 
               span.express optional 
-              | and gets uploaded to
-              | your projects feed.
+              | and gets uploaded to your projects feed. 
+              br
+              | (max 50MB / video)
             .media-container
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='presentation video 1')

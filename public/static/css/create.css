@@ -258,7 +258,7 @@ input#custom-type {
 }
 
 .milestone-inputs {
-  margin-top: 30px;
+  margin-block: 30px;
   margin-left: 40px;
   display: flex;
   gap: 30px;
@@ -290,6 +290,11 @@ input#custom-type {
 .milestone-name-input button {
   width: 15%;
   border: 1px solid gray;
+}
+
+.milestones-info {
+  font-size: 0.9em;
+  font-style: italic;
 }
 
 /*RESOURCES*/
