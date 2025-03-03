@@ -67,7 +67,7 @@ exports.search = catchAsync(async (req, res) => {
 
   // search with url query when the search from other page was hit
   const searchText = req.query?.q ?? '';
-  const query = new RefineQuery(projectsQuery, { limit: 10, sort: 'createdAt', isDone: false }).refine(
+  const query = new RefineQuery(projectsQuery, { limit: 10, sort: '-createdAt', isDone: false }).refine(
     { isActive: true },
     selector
   );
