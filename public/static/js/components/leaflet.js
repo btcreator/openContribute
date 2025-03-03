@@ -24,7 +24,7 @@ export const displayMap = function (locations) {
   // add controls
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  if (locations?.length > 2) {
+  if (locations?.length) {
     // set bounds
     const bounds = L.latLngBounds();
 
