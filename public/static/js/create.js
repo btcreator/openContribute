@@ -159,7 +159,7 @@ function handleResourceDetails(ev) {
       min: form.get('limit-min'),
       max: form.get('limit-max'),
     },
-    notes: form.get('notes'),
+    description: form.get('notes'),
     priority: form.get('priority'),
   };
 
@@ -185,11 +185,9 @@ async function publishNewProject(ev) {
       coordinates: elements['location-point'].value.split(',').reverse(),
     },
   ];
-  const resources = elements.resource.reduce(
-    (acc, res) => (res.checked ? acc.push(resourcesData[res.value]) : acc),
-    []
-  );
   const milest = Object.entries(milestones).map((entry) => ({ name: entry[0], img: entry[1] }));
+  const resources = [];
+  elements.resource.forEach((res) => res.checked && resources.push(resourcesData[res.value]));
 
   // gather data for the project
   const projectData = new FormData();
@@ -212,7 +210,6 @@ async function publishNewProject(ev) {
 
   // create project
   const projectResponse = await createProject(projectData);
-  console.log(projectResponse);
   if (!projectResponse || projectResponse.status !== 201) return;
 
   let message = 'Project created successfully.';
