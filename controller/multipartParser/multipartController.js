@@ -3,7 +3,7 @@ const AppError = require('../../utils/appError');
 const multer = require('multer');
 const sharp = require('sharp');
 const _IMAGE_FILE_BIG_SIZE_LIMIT = 5e6; // 5MB
-const _IMAGE_FILE_SMALL_SIZE_LIMIT = 1e5; // 100KB
+const _IMAGE_FILE_SMALL_SIZE_LIMIT = 2e5; // 200KB
 const _VIDEO_FILE_SIZE_LIMIT = 50e6; // 50MB
 
 // Parse multipart incoming data to memory
