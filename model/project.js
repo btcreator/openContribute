@@ -16,7 +16,7 @@ const _uniqueName = function (val) {
 };
 
 // Arrays required validator checks if array is not empty
-mongoose.Schema.Types.Array.checkRequired(v => Array.isArray(v) && v.length);
+mongoose.Schema.Types.Array.checkRequired((v) => Array.isArray(v) && v.length);
 
 const projectSchema = new mongoose.Schema(
   {
@@ -54,7 +54,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      required: [true, "Project needs at least one location."],
+      required: [true, 'Project needs at least one location.'],
       validate: [_uniqueName, 'Duplicate locations are not allowed.'],
     },
     milestones: {
@@ -66,7 +66,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      required: [true, "Project needs at least one milestone."],
+      required: [true, 'Project needs at least one milestone.'],
       validate: [_uniqueName, 'Duplicate milestones are not allowed.'],
     },
     resources: {
@@ -81,8 +81,14 @@ const projectSchema = new mongoose.Schema(
           },
           auth: { type: Boolean, default: true },
           limit: {
-            min: Number,
-            max: Number,
+            min: {
+              type: Number,
+              set: (val) => (val === '' || val === null ? undefined : val),
+            },
+            max: {
+              type: Number,
+              set: (val) => (val === '' || val === null ? undefined : val),
+            },
           },
           description: {
             type: String,
@@ -91,7 +97,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      required: [true, "Project needs at least one resource."],
+      required: [true, 'Project needs at least one resource.'],
       validate: [_uniqueName, 'Duplicate resources are not allowed.'],
     },
     progress: { type: Number, default: 0, min: 0, max: 1 },
