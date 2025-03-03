@@ -26,7 +26,7 @@ block content
           input#name(form="new-project" type='text' name='name' placeholder='Your projects name' required)
           p
             | Lead by 
-            span.leader-name(data-id=user._id)= user.name
+            span.leader-name= user.name
         .project-summary
           div
             label(for='summary') Summary
@@ -80,7 +80,7 @@ block content
           each resource in resourceNames 
             li
               div
-                input.hidden(id=resource type='checkbox' name='resource' value=resource)
+                input.hidden(id=resource form="new-project" type='checkbox' name='resource' value=resource)
                 .icon-holder(data-name=resource)
                   img(src=`/static/img/icons/res_${resource}.png` alt=resource)
                   p= resource
