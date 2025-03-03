@@ -3,7 +3,7 @@ const LIMIT_PER_PAGE = 10;
 
 // State
 let stateSearchText = '';
-let stateFilterOptions = {};
+let stateFilterOptions = { limit: LIMIT_PER_PAGE, sort: '-createdAt', isDone: false }; // limit results to 10 undone projects and sort by creation date
 
 // search related
 const searchQueryText = document.querySelector('.search-query-text');
@@ -34,8 +34,8 @@ async function searchSubmit(ev) {
   const address = form.get('location');
   const distance = form.get('perimeter');
 
-  // limit results to 10 undone projects and sort by creation date
-  stateFilterOptions = { limit: LIMIT_PER_PAGE, sort: 'createdAt', isDone: false };
+  // reset filter
+  stateFilterOptions = { limit: LIMIT_PER_PAGE, sort: '-createdAt', isDone: false };
 
   // add user set filter options
   type !== 'any' && Object.assign(stateFilterOptions, { type });
