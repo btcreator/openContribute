@@ -192,7 +192,7 @@ function fillResourceDetails(resource, applied) {
         <div class="resource-notes">
           <h2>${resource.name}</h2>
           <span>Important notes - </span>
-          <p>${resource.description}</p>
+          <p>${resource.description ?? 'No notes provided'}</p>
         </div>
     
         <div class="resource-contribution-input">
