@@ -25,6 +25,5 @@ signupForm.addEventListener('submit', async (ev) => {
   const confirmPassword = document.getElementById('confirm-password').value;
 
   const res = await signup(email, password, confirmPassword);
-  console.log(res);
   if (res?.status === 201) window.location.replace('/?alert="Welcome on board!"');
 });
