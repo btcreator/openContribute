@@ -20,10 +20,11 @@ loginForm.addEventListener('submit', async (ev) => {
 // Sign up
 signupForm.addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  const email = document.getElementById('email-sign');
-  const password = document.getElementById('password-sign');
-  const confirmPassword = document.getElementById('confirm-password');
+  const email = document.getElementById('email-sign').value;
+  const password = document.getElementById('password-sign').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
 
   const res = await signup(email, password, confirmPassword);
-  if (res?.status === 204) window.location.replace('/?alert="Welcome on board!"');
+  console.log(res);
+  if (res?.status === 201) window.location.replace('/?alert="Welcome on board!"');
 });
