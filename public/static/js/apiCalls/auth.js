@@ -18,3 +18,7 @@ export const signup = function (email, password, confirmPassword) {
     })
     .catch(showError);
 };
+
+export const logout = function () {
+  return axios.get('/api/v1/user/logout').catch(showError);
+}
