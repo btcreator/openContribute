@@ -155,6 +155,10 @@ textarea {
   line-height: 0;
 }
 
+.user-nav a:hover {
+  color: #5ea135;
+}
+
 .user-nav .profile {
   border-radius: 50%;
 }
@@ -162,6 +166,7 @@ textarea {
 .user-nav .access-btn {
   padding: 15px 20px;
   border-block: 2px solid black;
+  cursor: pointer;
 }
 
 /*HERO*/
