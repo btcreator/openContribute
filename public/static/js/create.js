@@ -65,6 +65,7 @@ function insertMilestone() {
   // name for milestone is mandatory
   const name = inputMilestoneName.value.trim();
   if (!name) return setAlert('Milestone need a name.', 'error');
+  if (milestones.hasOwnProperty(name)) return setAlert('Milestone with that name already exists.', 'error');
 
   // save image / milestone data to state
   const img = inputMilestoneImg.files[0];
