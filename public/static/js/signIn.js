@@ -14,7 +14,7 @@ loginForm.addEventListener('submit', async (ev) => {
   const password = document.getElementById('password').value;
 
   const res = await login(email, password);
-  if (res?.status === 200) window.location.replace('/?alert="You logged In Successfully"');
+  if (res?.status === 200) window.location.replace('/?alert=You logged In Successfully');
 });
 
 // Sign up
@@ -25,5 +25,5 @@ signupForm.addEventListener('submit', async (ev) => {
   const confirmPassword = document.getElementById('confirm-password').value;
 
   const res = await signup(email, password, confirmPassword);
-  if (res?.status === 201) window.location.replace('/?alert="Welcome on board!"');
+  if (res?.status === 201) window.location.replace('/?alert=Welcome on board!');
 });
