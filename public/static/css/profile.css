@@ -104,6 +104,13 @@ nav {
   margin-block: 24px;
 }
 
+.password-info {
+  font-size: .8em;
+  font-style: italic;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
 /*SETTINGS - CONTRIBUTION & PROJECTS*/
 
 li > img {

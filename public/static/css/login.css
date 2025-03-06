@@ -1,7 +1,7 @@
 /*GLOBAL*/
 
 h1 {
-  margin-bottom: 70px;
+  margin-bottom: 65px;
   font-weight: 400;
 }
 
@@ -87,4 +87,10 @@ button {
 
 .signup-inputs input:nth-of-type(3) {
   margin-inline: auto 90px;
+}
+
+.password-info {
+  font-size: .8em;
+  font-style: italic;
+  margin-bottom: 10px;
 }
