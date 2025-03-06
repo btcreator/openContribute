@@ -7,7 +7,7 @@ const alertWindow = document.querySelector('.alert-window');
 if (btnLogout)
   btnLogout.addEventListener('click', async (ev) => {
     const res = await logout();
-    if (res?.status === 200) window.location.replace('/?alert="You logged out successfully!"');
+    if (res?.status === 200) window.location.replace('/?alert=You logged out successfully!');
   });
 
 // When alert window is set to visible on load, it mean it is set by server and there is a message for user to show
