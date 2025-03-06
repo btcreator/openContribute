@@ -104,7 +104,7 @@ async function contributeWithResource(form) {
   // create new contribution. On success update values on page
   const contribution = await createContribution(projectId, resource, amount);
   if (contribution.status === 201) {
-    contriResources[resource] += amount;
+    contriResources[resource] = (contriResources[resource] || 0) + amount;
     appliedEl.textContent = `${contriResources[resource]} is already applied`;
     amountEl.value = '';
     ackEl.checked = false;
