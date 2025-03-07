@@ -1,5 +1,6 @@
 import { createContribution } from './../../apiCalls/contribution.js';
 import { updateProject } from './../../apiCalls/project.js';
+import { myProfile } from '../../apiCalls/profile.js';
 import { setAlert } from './../../utils/alert.js';
 import { contributeFunds } from './../stripe.js';
 
@@ -103,16 +104,48 @@ async function contributeWithResource(form) {
 
   // create new contribution. On success update values on page
   const contribution = await createContribution(projectId, resource, amount);
-  if (contribution.status === 201) {
-    contriResources[resource] = (contriResources[resource] || 0) + amount;
-    appliedEl.textContent = `${contriResources[resource]} is already applied`;
-    amountEl.value = '';
-    ackEl.checked = false;
-    setAlert('Contribution successful!');
-  }
+  if (contribution.status !== 201) return;
+
+  contriResources[resource] = (contriResources[resource] || 0) + amount;
+  appliedEl.textContent = `${contriResources[resource]} is already applied`;
+  contribution.data.data.contribution.user && updateHallOfFame();
+
+  // reset inputs
+  amountEl.value = '';
+  ackEl.checked = false;
+  setAlert('Contribution successful!');
 }
 
-// handle the update process
+// update hall of fame stripe with a user
+async function updateHallOfFame() {
+  const response = await myProfile();
+  const user = response.data.data.user;
+  // just users with names gets shown on the stripe
+
+  if (!user.name) return;
+
+  const contriList = document.querySelector('.last-contributors');
+  const lItems = Array.from(contriList.childNodes);
+
+  // check if user is already present in the list, when yes, do nothing
+  const index = lItems.findIndex((li) => li.dataset.id === user._id);
+
+  if (index !== -1) return;
+
+  // decide if need a removal - the stripe is full, or the user-info is present
+  if (lItems.length > 4 || !lItems[0].dataset.id) {
+    lItems.at(-1).remove();
+  }
+
+  // add user to the list
+  const markup = `<li data-id=${user._id} >
+      <img src='/media/users/${user.photo}' alt='User photo' />
+      <div class="name">${user.name}</div>
+    </li>`;
+  contriList.insertAdjacentHTML('afterbegin', markup);
+}
+
+// handle the resource update process
 async function updateResource(form) {
   // create update object
   const min = form.get('limit-min') === '' ? undefined : +form.get('limit-min');
