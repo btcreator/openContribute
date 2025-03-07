@@ -65,16 +65,18 @@ block content
         .header
           h2 Contributors
         .rotation-box
-          if project.contributions.contributors.length
-            ul.last-contributors
+          ul.last-contributors
+            if project.contributions.contributors.length
               each contributor in project.contributions.contributors
-                li
+                li(data-id=contributor._id)
                   img(src=`/media/users/${contributor.photo}` alt='User photo')
                   .name= contributor.name
-          else
-            .last-contributors
-              p
-                | There are no contributors yet...
+            else
+              li.contributors-user-info
+                p
+                  | Hall of fame...
+                  br
+                  | contributors with names gets listed here
           button.all-contributors
             span See All &gt;
     
