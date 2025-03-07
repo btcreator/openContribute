@@ -401,7 +401,12 @@ input#contribution-ack {
   font-style: italic;
 }
 
-.last-contributors > p {
+li.contributors-user-info {
+  width: auto;
+  display: flex;
+}
+
+.contributors-user-info p {
   align-self: center;
   font-size: large;
   font-style: italic;
