@@ -86,7 +86,7 @@ exports.populateContributionsToProjectPipeline = (match) => [
       localField: 'contributions.contributors',
       foreignField: '_id',
       as: 'contributions.contributors',
-      pipeline: [{ $match: { name: { $exists: true } } }, { $limit: 5 }, { $project: { _id: 0, name: 1, photo: 1 } }],
+      pipeline: [{ $match: { name: { $exists: true } } }, { $limit: 5 }, { $project: { _id: 1, name: 1, photo: 1, alias: 1 } }],
     },
   },
   // stage 7 - remove unnecessary fields
