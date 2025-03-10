@@ -1,6 +1,6 @@
 // Return the contributions summary of the user
 exports.summaryPipeline = (user) => [
-  // stage 1 - match all contributions from the logged in user
+  // stage 1 - match all contributions from the user
   {
     $match: { user },
   },
@@ -37,7 +37,7 @@ exports.summaryPipeline = (user) => [
       },
     },
   },
-  // stage 5 - populate the projects id and select just the name
+  // stage 5 - populate the projects id and select needed fields
   {
     $lookup: {
       from: 'projects',
@@ -129,7 +129,7 @@ exports.projectsContributorsPipeline = (project) => [
       as: 'contributors',
       pipeline: [
         {
-          $project: { name: { $ifNull: ['$name', 'Anonymous'] }, photo: 1, _id: 0 },
+          $project: { name: { $ifNull: ['$name', 'Anonymous'] }, photo: 1, alias: 1, _id: 1 },
         },
       ],
     },
@@ -142,7 +142,7 @@ exports.projectsContributorsPipeline = (project) => [
           if: {
             $lt: [{ $size: '$contributors' }, { $size: '$users' }],
           },
-          then: { $concatArrays: ['$contributors', [{ photo: 'default.jpg', name: 'Guest' }]] },
+          then: { $concatArrays: ['$contributors', [{ photo: 'default.jpg', name: 'Guest', alias: 'Guest' }]] },
           else: '$contributors',
         },
       },
