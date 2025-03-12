@@ -141,16 +141,18 @@ block content
             img.icon(src='/static/img/icons/photo.png' alt='photo icon')
             p
               | The first image gets the cover image, the second is for search
-              | results. Both are required. 
+              | results. 
+              br
+              span.express Both are required. 
               br
               | (max 5MB / image)
             .media-container
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='add cover image')
-                input.hidden(form="new-project" type='file' accept='image/*' name='cover-image' required)
+                input.hidden(form="new-project" type='file' accept='image/*' name='cover-image')
               label.media-frame
                 img(src='/static/img/icons/add.png' alt='add search result image')
-                input.hidden(form="new-project" type='file' accept='image/*' name='result-image' required)
+                input.hidden(form="new-project" type='file' accept='image/*' name='result-image')
           .upload-media-col
             img.icon(src='/static/img/icons/video.png' alt='video icon')
             p
