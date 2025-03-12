@@ -32,8 +32,13 @@ const resourcesData = {}; // {fund: {name: "fund", priority: 3, limit: {min: 2, 
 // Listener for select and show image for input file fields
 function showImage(ev) {
   const img = ev.target.labels[0].children[0];
+  const file = ev.target.files[0];
+  if (!file) {
+    img.src = '/static/img/icons/add.png';
+    return;
+  }
 
-  fileToImage(ev.target.files[0], (source) => {
+  fileToImage(file, (source) => {
     img.src = source;
     img.onload = () => URL.revokeObjectURL(img.src);
   });
@@ -179,6 +184,11 @@ resourcesIcons.addEventListener('click', handleResources);
 async function publishNewProject(ev) {
   ev.preventDefault();
   const elements = this.elements;
+
+  const cover = elements['cover-image'].files[0];
+  const result = elements['result-image'].files[0];
+  if (!(cover && result)) return setAlert('COVER and RESULT images are required.', 'error');
+
   const type = elements.type.value;
   const locations = [
     {
@@ -197,8 +207,8 @@ async function publishNewProject(ev) {
   projectData.set('description', elements.description.value);
   projectData.set('deadline', elements.deadline.value);
 
-  projectData.set('cover', elements['cover-image'].files[0]);
-  projectData.set('result', elements['result-image'].files[0]);
+  projectData.set('cover', cover);
+  projectData.set('result', result);
   Object.values(milestonesImg).forEach((file) => projectData.append('milestones_img', file));
 
   projectData.set('locations', JSON.stringify(locations));
