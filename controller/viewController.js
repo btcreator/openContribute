@@ -151,6 +151,9 @@ exports.updateMyProject = catchAsync(async (req, res) => {
 
 // create
 exports.createMyProject = (req, res) => {
+  if (!req.user) return res.redirect('/login?alert=You need to be logged in to be a leader.');
+  if (!req.user.name) res.locals.alert = 'Provide your name under your profile to create a project.';
+
   res.status(200).render('project_create', {
     title: 'Be the leader of your own project.',
     user: req.user,
