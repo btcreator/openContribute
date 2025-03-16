@@ -23,8 +23,8 @@ formSaveProfile.addEventListener('submit', async function (ev) {
   const form = new FormData(this);
 
   const res = await updateProfile({
-    name: form.get('fullName'),
-    alias: form.get('alias'),
+    name: form.get('fullName') || undefined,
+    alias: form.get('alias') || undefined,
   });
 
   submitBtn.disabled = false;
