@@ -77,7 +77,13 @@ exports.globalErrorHandler = function (err, req, res, next) {
   const statusCode = error.statusCode;
   delete error.statusCode;
 
-  res.status(statusCode).json(Object.assign(error, { status: 'error' }));
+  if (req.originalUrl.startsWith('/api')) return res.status(statusCode).json(Object.assign(error, { status: 'error' }));
+
+  res.status(statusCode).render('error', {
+    title: 'Ups...',
+    user: req.user,
+    message: error.message,
+  });
 };
 
 // Global route handler
