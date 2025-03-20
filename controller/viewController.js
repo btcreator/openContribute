@@ -7,7 +7,7 @@ const stat = require('./aggregationPipelines/statsPipelines');
 const { resources } = require('./../model/resourceDescriptions/resourceDescriptions');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
-const RefineQuery = require('../utils/refineQuery');
+const axios = require('axios');
 
 // Alert handler middleware. Passes alert messages to the pug templates
 exports.alertMsgHandler = (req, res, next) => {
@@ -22,6 +22,7 @@ exports.alertMsgHandler = (req, res, next) => {
 };
 
 // Home page
+////
 exports.getHome = catchAsync(async function (req, res) {
   const projects = (await Project.aggregate(stat.projectStatsPipeline))[0];
   const resList = await Contribution.aggregate(stat.resourceStatsPipeline);
@@ -53,6 +54,7 @@ exports.getHome = catchAsync(async function (req, res) {
 });
 
 // Login page
+////
 exports.login = (req, res) => {
   res.status(200).render('signIn', {
     title: 'User Login / Signup',
@@ -61,23 +63,49 @@ exports.login = (req, res) => {
 };
 
 // Search page
+////
 exports.search = catchAsync(async (req, res) => {
-  const selector = 'name slug leader summary type resources resultImg isDone';
-  const projectsQuery = Project.find().populate('leader', 'name -_id');
-
-  // search with url query when the search from other page was hit
+  // set defaults when needed of query data
   const searchText = req.query?.q ?? '';
-  const query = new RefineQuery(projectsQuery, { limit: 10, sort: '-createdAt', isDone: false }).refine(
-    { isActive: true },
-    selector
-  );
-  const projects = await query.where('name', new RegExp(searchText, 'i'));
+  const address = req.query?.address ?? '';
+  const distance = req.query?.distance ?? '';
+  const type = req.query?.type ?? 'any';
+  const page = +req.query?.page || 1;
+
+  // predefine origin link with path
+  const link = `${req.protocol}://${req.hostname}:${process.env.PORT}/api/v1/project/search`;
+
+  // create search url query
+  let queryStr = `?name=${searchText}`;
+  address && (queryStr += `&address=${address}`);
+  distance && (queryStr += `&distance=${distance}`);
+  type !== 'any' && (queryStr += `&type=${type}`);
+
+  // define url query for pagination and other default settings
+  const queryPagination = `&page=${page}&limit=10&isDone=false`;
+
+  // fetch data
+  const results = await axios(encodeURI(link + queryStr + queryPagination)).catch((err) => {
+    res.locals.alert = err.response.data.message;
+    res.locals.alertError = true;
+  });
+
+  const projects = results?.status === 200 ? results.data.data.projects : [];
+
+  // construct the query search string
+  let searchQueryText =
+    searchText === ''
+      ? `Latest projects${type !== 'any' ? ' in ' + type : ''}`
+      : `Results for: "${searchText}" - ${type}`;
+  searchQueryText += ` ${address && `in ${address}`}${address && +distance ? ` (${distance} km)` : ''}`;
 
   res.status(200).render('search', {
     title: 'Search for project',
     user: req.user,
-    searchText,
     projects,
+    page,
+    queryStr,
+    searchQueryText,
   });
 });
 
