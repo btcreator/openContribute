@@ -183,11 +183,19 @@ resourcesIcons.addEventListener('click', handleResources);
 ////
 async function publishNewProject(ev) {
   ev.preventDefault();
+  
+  // disable button, and inform user about prcessing
+  const toggleSubmitter = function(on) {
+    ev.submitter.disabled = on;
+    ev.submitter.innerText = on ? "Processing..." : "Publish";
+  }
+
+  toggleSubmitter(true);
   const elements = this.elements;
 
   const cover = elements['cover-image'].files[0];
   const result = elements['result-image'].files[0];
-  if (!(cover && result)) return setAlert('COVER and RESULT images are required.', 'error');
+  if (!(cover && result)) return toggleSubmitter(false), setAlert('COVER and RESULT images are required.', 'error');
 
   const type = elements.type.value;
   const locations = [
@@ -217,11 +225,11 @@ async function publishNewProject(ev) {
 
   if (type === 'other' && elements['custom-type'].value) projectData.set('type', elements['custom-type'].value);
   else if (type !== 'other' && type) projectData.set('type', type);
-  else return setAlert('Project TYPE is required.', 'error');
+  else return toggleSubmitter(false), setAlert('Project TYPE is required.', 'error');
 
   // create project
   const projectResponse = await createProject(projectData);
-  if (!projectResponse || projectResponse.status !== 201) return;
+  if (!projectResponse || projectResponse.status !== 201) return toggleSubmitter(false);
 
   let message = 'Project created successfully.';
   let alert = 'alert';
