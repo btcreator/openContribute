@@ -1,7 +1,7 @@
 /* IMPORTANT: change this file with node_modules/busboy/lib/types/multipart.js
   Issue:     In multer/busboy the file size limit can be set for all fields, but not separately for each field.
-            In this project it is useful by uploading files to the feed - images and videos
-  Solution:  With this code is now possible to upload each field with custom file size max value
+            In this project it is useful when uploading files to the feed - images and videos (and want to have different allowed sizes)
+  Solution:  With this code it is now possible to upload each field with custom file size max value
 
             In multer:
               const upload = multer({ storage, fileFilter, limits: { fileSize: ALL_FILE_SIZE_LIMIT } }).fields([
