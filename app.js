@@ -9,6 +9,7 @@ const { stats } = require('./controller/statisticsController');
 const exception = require('./controller/exception/exceptionHandler');
 const cookieParser = require('cookie-parser');
 const multiparter = require('./routers/multiparter/multipartRouter');
+const compression = require('compression');
 const security = require('./security');
 const cors = require('cors');
 const path = require('path');
@@ -31,6 +32,9 @@ app.use(cookieParser());
 
 // Implement security - prevent attack procedures
 app.use(security);
+
+// Compress response bodies to save data transfer time (cost on performance - compression level can be set or the middleware fully removed when needed)
+app.use(compression());
 
 // Setup view
 app.set('view engine', 'pug');
