@@ -221,6 +221,7 @@ input#custom-type {
 
 .milestone-bubbles img {
   border: 2px solid rgb(255, 255, 255);
+  object-fit: cover;
 }
 
 .milestone-bubbles p {
@@ -272,6 +273,7 @@ input#custom-type {
 
 .milestone-inputs img {
   border: 2px solid rgb(0, 170, 20);
+  object-fit: cover;
   cursor: pointer;
 }
 
