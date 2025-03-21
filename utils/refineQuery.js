@@ -30,7 +30,7 @@ class RefineQuery {
   }
 
   project(selector) {
-    // just in developement to warn developer that when project is used, dont use select before on the query (except +field - dont count in mongo as "selection").
+    // just in development to warn developer that when project method is used, dont use select on the query before (except +field - that dont count in mongo as "selection").
     if (process.env.NODE_ENV === 'development')
       if (this.query.selectedInclusively() || this.query.selectedExclusively())
         throw new Error(`No select before query project ${this.query.constructor.name}`);
@@ -47,9 +47,9 @@ class RefineQuery {
 
     // separate user selections
     // prettier-ignore
-    const requestInclusionFields = this.queryString.fields?.split(',').join(' ').match(/(?<![+-])\b\S+\b/g) ?? []; // photo email ...
+    const requestInclusionFields = this.queryString.fields?.replaceAll(',', ' ').match(/(?<![+-])\b\S+\b/g) ?? []; // photo email ...
     // prettier-ignore
-    const requestExclusionFields = this.queryString.fields?.split(',').join(' ').match(/-\S+/g) ?? []; // -photo -email ...
+    const requestExclusionFields = this.queryString.fields?.replaceAll(',', ' ').match(/-\S+/g) ?? []; // -photo -email ...
 
     // add the fields to selected ones based on restriction and user selection
     if (allowedFields.length > 0) {
