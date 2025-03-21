@@ -85,7 +85,7 @@ exports.saveProjectImages = catchAsync(async (req, res, next) => {
     },
   };
 
-  // save the images (milestones set to 100 which is probably over the common amount of milestones, but blocks a user with CoS attack)
+  // save the images (milestones set to 100 which is probably over the common amount of milestones, but blocks a user with DoS attack)
   const upload = multer({ storage, limits }).fields([
     { name: 'cover', maxCount: 1 },
     { name: 'result', maxCount: 1 },
