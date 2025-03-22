@@ -1,4 +1,5 @@
 const AppError = require('../../utils/appError');
+const ErrorStack = require('../../model/error');
 const { clearImages } = require('../staticFilesystem/staticFileController');
 
 // Enumerate error fields in a text form like "email, password and name"
@@ -9,6 +10,14 @@ const _enumerateErrors = function (errObj) {
 
   return `${errTxt}${errTxt && ' and '}${last}`;
 };
+
+// Save errors for later debug/review
+const _saveError = async function (err) {
+  const error = await ErrorStack.create({ error: err });
+
+  return error._id;
+};
+
 // Error handlers
 ////
 // Operational errors
@@ -66,7 +75,7 @@ const _errorRouter = function (err) {
 };
 
 // Global error handler
-exports.globalErrorHandler = function (err, req, res, next) {
+exports.globalErrorHandler = async function (err, req, res, next) {
   // remove uploaded files (it would just pollute the server space capacity)
   clearImages(req.files);
 
@@ -79,10 +88,13 @@ exports.globalErrorHandler = function (err, req, res, next) {
 
   if (req.originalUrl.startsWith('/api')) return res.status(statusCode).json(Object.assign(error, { status: 'error' }));
 
+  const errorID = await _saveError(err);
+
   res.status(statusCode).render('error', {
     title: 'Ups...',
     user: req.user,
     message: error.message,
+    errorID,
   });
 };
 
