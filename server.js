@@ -29,3 +29,9 @@ process.on('unhandledRejection', (err) => {
   serverLog(`Unhandled rejection: ${err}`);
   server.close(() => process.exit(1));
 });
+
+// Shut down the process when the server initate a termination signal
+process.on('SIGTERM', () => {
+  serverLog('SIGTERM received, terminating...');
+  server.close(() => console.log('------ Process terminated.------'));
+});
