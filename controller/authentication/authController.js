@@ -9,13 +9,14 @@ const { promisify } = require('util');
 const emailMarkup = require('../../utils/emailMarkup');
 const { ObjectId } = require('mongoose').Types;
 
-const _cookieOptions = {
+// Set secure (https) if the https protocol is used by direct client connection or proxy
+const _setCookieOptions = (req) => ({
   expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
   httpOnly: true,
-  secure: true,
+  secure: req.secure || req.headers['x-forwarded-proto'],
   sameSite: 'none',
   partitioned: true,
-};
+});
 
 // Token related functions
 ////
@@ -37,8 +38,8 @@ const _verifyJWT = (token) =>
 // Special case functions - No Middlewares, No Routes
 ////
 // Log out the user after a delete operation - reset cookie
-exports.logDeletedMeOutAndSend = async (res) => {
-  res.clearCookie('jwt', _cookieOptions);
+exports.logDeletedMeOutAndSend = async (req, res) => {
+  res.clearCookie('jwt', _setCookieOptions(req));
   res.status(204).end();
 };
 
@@ -53,7 +54,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   // create jwt token and set cookie
   const token = await _signJWT({ id: user._id });
-  res.cookie('jwt', token, _cookieOptions);
+  res.cookie('jwt', token, _setCookieOptions(req));
 
   res.status(201).json({
     status: 'success',
@@ -78,7 +79,7 @@ exports.login = catchAsync(async (req, res) => {
 
   // create jwt token and set cookie
   const token = await _signJWT({ id: user._id });
-  res.cookie('jwt', token, _cookieOptions);
+  res.cookie('jwt', token, _setCookieOptions(req));
 
   res.status(200).json({
     status: 'success',
@@ -89,7 +90,7 @@ exports.login = catchAsync(async (req, res) => {
 });
 
 exports.logout = catchAsync(async (req, res) => {
-  res.clearCookie('jwt', _cookieOptions);
+  res.clearCookie('jwt', _setCookieOptions(req));
 
   res.status(200).json({
     status: 'success',

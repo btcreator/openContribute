@@ -50,7 +50,7 @@ exports.deleteMyProfile = catchAsync(async (req, res) => {
   req.user.save();
 
   // log user out, and response with Status 204 - No content
-  await logDeletedMeOutAndSend(res);
+  await logDeletedMeOutAndSend(req, res);
 });
 
 // CRUD operations
