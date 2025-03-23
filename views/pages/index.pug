@@ -1,7 +1,8 @@
 extends base
 
 block append head 
-  script(type="module" src='static/js/index.js')
+  script(type="module" src='static/js/modern/index.js')
+  script(nomodule src='static/js/legacy/index.js')
 
 mixin stat(title, statObj)
    article.stat-table

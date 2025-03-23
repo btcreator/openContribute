@@ -19,8 +19,9 @@ mixin resultCard(project)
       span.leader-name= project.leader.name
 
 block append head 
-  link(rel='stylesheet' href='/static/css/search.css')
-  script(type="module" src="/static/js/search.js")
+  link(rel='stylesheet' href='/static/css/mini/search.css')
+  script(type="module" src="/static/js/modern/search.js")
+  script(nomodule src="/static/js/legacy/search.js")
 
 block hero
     .hero

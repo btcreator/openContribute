@@ -1,8 +1,9 @@
 extends base
 
 block append head
-  link(rel='stylesheet' href='/static/css/profile.css')
-  script(type="module" src="/static/js/userProfile.js") 
+  link(rel='stylesheet' href='/static/css/mini/profile.css')
+  script(type="module" src="/static/js/modern/userProfile.js") 
+  script(nomodule src="/static/js/legacy/userProfile.js") 
 
 block content
   main

@@ -1,8 +1,9 @@
 extends base
 
 block append head 
-  script(type="module" src='/static/js/signIn.js')
-  link(rel='stylesheet' href='/static/css/login.css')
+  script(type="module" src='/static/js/modern/signIn.js')
+  script(nomodule src='/static/js/legacy/signIn.js')
+  link(rel='stylesheet' href='/static/css/mini/login.css')
 
 block content
   main
