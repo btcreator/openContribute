@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { createProject } from './apiCalls/project.js';
 import { createFeed } from './apiCalls/feed.js';
 import { displayMap, setTheMarker, setClickOnMapToOutput } from './components/leaflet.js';
@@ -183,12 +185,12 @@ resourcesIcons.addEventListener('click', handleResources);
 ////
 async function publishNewProject(ev) {
   ev.preventDefault();
-  
+
   // disable button, and inform user about prcessing
-  const toggleSubmitter = function(on) {
+  const toggleSubmitter = function (on) {
     ev.submitter.disabled = on;
-    ev.submitter.innerText = on ? "Processing..." : "Publish";
-  }
+    ev.submitter.innerText = on ? 'Processing...' : 'Publish';
+  };
 
   toggleSubmitter(true);
   const elements = this.elements;

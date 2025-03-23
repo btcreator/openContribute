@@ -1,5 +1,5 @@
 const heroText = document.querySelector('.tail-text');
-const inputSearch = document.getElementById("search");
+const inputSearch = document.getElementById('search');
 const btnSearch = document.querySelector('.btn-search');
 
 // Hero text ease-in / -out
@@ -18,4 +18,4 @@ const changeText = () => {
 setInterval(changeText(), 4500);
 
 // Search for projects with given name
-btnSearch.addEventListener("click", ()=> window.location.replace(`/search?q=${inputSearch.value}`));
+btnSearch.addEventListener('click', () => window.location.replace(`/search?q=${inputSearch.value}`));

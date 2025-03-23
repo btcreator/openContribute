@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { getContributedResources } from './apiCalls/contribution.js';
 import { getProject } from './apiCalls/project.js';
 
@@ -5,7 +7,6 @@ const projectThumbs = document.querySelector('.project-thumbs');
 const detailBox = document.querySelector('.project-details');
 // Container for loaded data from server
 const projects = {};
-
 
 // Project selection handler - show the selected project in details
 projectThumbs.addEventListener('click', async function (ev) {
@@ -33,13 +34,15 @@ projectThumbs.addEventListener('click', async function (ev) {
 });
 
 // Fill details of a project to HTML Markup
-function fillDetailBox (project, resources) {
+function fillDetailBox(project, resources) {
   const offset = 100 - Math.round(project.progress * 100);
   const resourcesIconsHTML = Object.keys(resources)
     .map((resourceName) => `<li><img src="/static/img/icons/res_${resourceName}.png" /></li>`)
     .join('');
   const resourcesWithValuesHTML = Object.entries(resources)
-    .map(([resourceName, value]) => `<li><img src="/static/img/icons/res_${resourceName}.png" /><span>${value}</span></li>`)
+    .map(
+      ([resourceName, value]) => `<li><img src="/static/img/icons/res_${resourceName}.png" /><span>${value}</span></li>`
+    )
     .join('');
 
   return `<a class="project-box" href="/project/${project.slug}" alt="Details of project ${project.name}">
@@ -73,4 +76,4 @@ function fillDetailBox (project, resources) {
               <p>With your help, a dream could be reality. Thank you for all your support and help during this project! <br />This Project is done.</p>
           </div>
       </div>`;
-};
+}

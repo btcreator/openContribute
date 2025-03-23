@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { hideAlert } from './utils/alert.js';
 import { logout } from './apiCalls/auth.js';
 

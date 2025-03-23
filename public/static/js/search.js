@@ -1,3 +1,6 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 async function searchSubmit(ev) {
   ev.preventDefault();
 

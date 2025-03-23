@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { displayMap } from './components/leaflet.js';
 import { initResourceDisplay } from './components/project/resources.js';
 import { feedHandlerInit } from './components/project/feed.js';

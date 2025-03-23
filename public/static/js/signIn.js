@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { login, signup } from './apiCalls/auth.js';
 import { toggleSignInWindowInit } from './components/signInToggleWindow.js';
 

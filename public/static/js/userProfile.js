@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import { updateProfile, passwordChange } from './apiCalls/profile.js';
 import { setAlert } from './utils/alert.js';
 
