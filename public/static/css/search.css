@@ -1,7 +1,7 @@
 /*HERO*/
 .hero {
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 40%),
-    center / cover url(/static/img/search_hero_bg.jpg);
+    center / cover url(../img/search_hero_bg.jpg);
 }
 
 .hero .content-stripe {
