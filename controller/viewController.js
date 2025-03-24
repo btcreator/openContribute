@@ -83,7 +83,7 @@ exports.search = catchAsync(async (req, res) => {
 
   // define url query for pagination and other default settings
   const queryPagination = `&page=${page}&limit=10&isDone=false`;
-
+  console.log(link + queryStr + queryPagination);
   // fetch data
   const results = await axios(encodeURI(link + queryStr + queryPagination)).catch((err) => {
     res.locals.alert = err.response.data.message;
