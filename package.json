@@ -63,6 +63,7 @@
     "mongoose": "^8.4.5",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
+    "parcel": "^2.14.1",
     "path": "^0.12.7",
     "pug": "^3.0.3",
     "regenerator-runtime": "^0.14.1",
@@ -73,7 +74,6 @@
   },
   "devDependencies": {
     "ndb": "^1.1.5",
-    "nodemon": "^3.1.7",
-    "parcel": "^2.14.1"
+    "nodemon": "^3.1.7"
   }
 }
