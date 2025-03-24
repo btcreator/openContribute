@@ -19,16 +19,23 @@ router.use(helmet());
 router.use(
   helmet.contentSecurityPolicy({
     directives: {
-      'script-src': ['unpkg.com', 'https://js.stripe.com/', 'https://www.youtube.com/', 'http://localhost:3000'],
+      'script-src': [
+        'unpkg.com',
+        'https://js.stripe.com/',
+        'https://www.youtube.com/',
+        'http://localhost:3000',
+        'https://opencontribute.onrender.com/',
+      ],
       'img-src': [
         'https://tile.openstreetmap.org',
         'https://img.youtube.com',
         'http://localhost:3000',
+        'https://opencontribute.onrender.com/',
         'blob:',
         'data:',
       ],
       'frame-src': ['https://www.youtube.com/', 'https://js.stripe.com/'],
-      'media-src': ['http://localhost:3000', 'data:', 'blob:'],
+      'media-src': ['http://localhost:3000', 'https://opencontribute.onrender.com/', 'data:', 'blob:'],
     },
   })
 );
