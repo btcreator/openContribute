@@ -1,3 +1,5 @@
+const { serverLog } = require('./utils/helpers');
+
 // Load environment variables
 process.env.NODE_ENV === 'development' && require('@dotenvx/dotenvx').config({ path: './config.env' });
 
@@ -9,7 +11,6 @@ process.on('uncaughtException', (err) => {
 
 const mongoose = require('mongoose');
 const app = require('./app');
-const { serverLog } = require('./utils/helpers');
 
 // Establish connection with the database
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
