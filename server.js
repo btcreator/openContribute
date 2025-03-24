@@ -1,5 +1,5 @@
 // Load environment variables
-require('@dotenvx/dotenvx').config({ path: './config.env' });
+process.env.NODE_ENV === 'development' && require('@dotenvx/dotenvx').config({ path: './config.env' });
 
 // Error handling of unhandled exceptions (for example catch some bugs)
 process.on('uncaughtException', (err) => {
@@ -20,8 +20,7 @@ mongoose.connect(DB).then(() => {
 // Start the server
 const port = process.env.PORT || 3500;
 const host = process.env.HOST || 'localhost';
-const options = (process.env.NODE_ENV = 'development' ? { port, host } : { port });
-const server = app.listen(options, () => {
+const server = app.listen(port, host, () => {
   serverLog(`Server start up on port ${port}...`);
 });
 
