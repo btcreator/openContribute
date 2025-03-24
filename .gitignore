@@ -4,6 +4,3 @@ TODO_LIST.txt
 .prettierrc
 _material_for_dev
 .parcel-cache
-public/static/css/mini
-public/static/js/legacy
-public/static/js/modern

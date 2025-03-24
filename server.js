@@ -20,8 +20,9 @@ mongoose.connect(DB).then(() => {
 // Start the server
 const port = process.env.PORT || 3500;
 const host = process.env.HOST || 'localhost';
-const server = app.listen(port, host, () => {
-  serverLog(`Server start up on host:port ${host}:${port}...`);
+const options = (process.env.NODE_ENV = 'development' ? { port, host } : { port });
+const server = app.listen(options, () => {
+  serverLog(`Server start up on port ${port}...`);
 });
 
 // Error handling for unhandled rejections (outside of express)
