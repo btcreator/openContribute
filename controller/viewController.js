@@ -73,7 +73,9 @@ exports.search = catchAsync(async (req, res) => {
   const page = +req.query?.page || 1;
 
   // predefine origin link with path
-  const link = `${req.protocol}://${req.hostname}:${process.env.PORT}/api/v1/project/search`;
+  const link = `${req.protocol}://${req.hostname}${
+    req.hostname === 'localhost' ? ':' + process.env.PORT : ''
+  }/api/v1/project/search`;
 
   // create search url query
   let queryStr = `?name=${searchText}`;
@@ -83,7 +85,7 @@ exports.search = catchAsync(async (req, res) => {
 
   // define url query for pagination and other default settings
   const queryPagination = `&page=${page}&limit=10&isDone=false`;
-  console.log(link + queryStr + queryPagination);
+
   // fetch data
   const results = await axios(encodeURI(link + queryStr + queryPagination)).catch((err) => {
     res.locals.alert = err.response.data.message;
