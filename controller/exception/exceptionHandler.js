@@ -88,7 +88,8 @@ exports.globalErrorHandler = async function (err, req, res, next) {
 
   if (req.originalUrl.startsWith('/api')) return res.status(statusCode).json(Object.assign(error, { status: 'error' }));
 
-  const errorID = await _saveError(err);
+  // Just meaningless errors gets saved (save db space)
+  const errorID = statusCode === 500 ? await _saveError(err) : '';
 
   res.status(statusCode).render('error', {
     title: 'Ups...',
