@@ -1,5 +1,8 @@
 const { serverLog } = require('./utils/helpers');
 
+// Update busboy with custom code
+require('./utils/updateNodeModules');
+
 // Load environment variables
 process.env.NODE_ENV === 'development' && require('@dotenvx/dotenvx').config({ path: './config.env' });
 
