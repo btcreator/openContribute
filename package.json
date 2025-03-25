@@ -4,10 +4,11 @@
   "description": "A connection point for those who have a vision but no resources for their project, and for those who have those resources and are willing to share/commit them to a common project.",
   "main": "server.js",
   "scripts": {
-    "test": "nodemon server.js",
+    "test": "set NODE_ENV=development&& nodemon server.js",
     "start": "node server.js",
     "debug": "ndb server.js",
-    "build": "parcel build"
+    "build": "parcel build",
+    "deploy": "npm install && parcel build"
   },
   "targets": {
     "modern": {
