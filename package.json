@@ -8,7 +8,7 @@
     "start": "node server.js",
     "debug": "ndb server.js",
     "build": "parcel build",
-    "deploy": "npm install && parcel build"
+    "deploy": "npm install && parcel build --no-source-maps"
   },
   "targets": {
     "modern": {
