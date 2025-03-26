@@ -1,17 +1,20 @@
+.demo-info 
+  .content-stripe 
+    p This is just a demo website for testing and learning purpose! Click here.
 .header-top
-      .content-stripe
-        .logo
-          a(href='/')
-            img(src='/static/img/logo_svg.svg' alt='OpenConTRIBUTE logo')
-        .user-nav
-          if user
-            nav
-              li
-                a.profile(href="/myProfile")
-                  img(src=`/media/users/${user.photo}` alt=`User photo`)
-              li
-                a.access-btn.logout-btn LogOut
-          else 
-            nav 
-              li
-                a.access-btn(href='/login') Sign In
+  .content-stripe
+    .logo
+      a(href='/')
+        img(src='/static/img/logo_svg.svg' alt='OpenConTRIBUTE logo')
+    .user-nav
+      if user
+        nav
+          li
+            a.profile(href="/myProfile")
+              img(src=`/media/users/${user.photo}` alt=`User photo`)
+          li
+            a.access-btn.logout-btn LogOut
+      else 
+        nav 
+          li
+            a.access-btn(href='/login') Sign In

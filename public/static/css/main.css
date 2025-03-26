@@ -106,7 +106,30 @@ textarea {
 }
 
 /*HEADER*/
+.demo-info {
+  background-color: #3f94c3;
+  cursor: pointer;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 5;
+  transition: all 1s;
+  text-align: center;
+  color: white;
+}
+
+.demo-info .content-stripe {
+  padding: 15px;
+}
+
+.demo-info.modal-open {
+  height: 400px;
+  background-color: #407ca1;
+}
+
 .header-top {
+  margin-top: 50px;
   padding: 30px 0;
   border-bottom: 1px solid black;
 }
