@@ -7,10 +7,7 @@ export const getFeedData = async function (id, page) {
 };
 
 export const createFeed = async function (feedData) {
-  const newFeed = await axios.post(`/api/v1/feed/myFeed`, feedData).catch((err) => {
-    console.dir(err);
-    showError(err);
-  });
+  const newFeed = await axios.post(`/api/v1/feed/myFeed`, feedData).catch(showError);
 
   return newFeed?.data.data.feed;
 };
