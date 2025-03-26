@@ -110,7 +110,11 @@ async function insertNewFeed(ev) {
   feedData.delete('upload-files');
 
   const feed = await createFeed(feedData);
-  if (!feed) return;
+  if (!feed) {
+    submitBtn.textContent = 'Publish';
+    submitBtn.disabled = false;
+    return;
+  }
 
   // insert new feed in flow
   insertFeedToHTML('afterbegin', feed);
