@@ -6,6 +6,7 @@ const contributionRouter = require('./routers/contributionRouter');
 const reviewRouter = require('./routers/reviewRouter');
 const viewRouter = require('./routers/viewRouter');
 const { stats } = require('./controller/statisticsController');
+const { webhookCheckout } = require('./controller/contributionController');
 const exception = require('./controller/exception/exceptionHandler');
 const cookieParser = require('cookie-parser');
 const multiparter = require('./routers/multiparter/multipartRouter');
@@ -23,6 +24,11 @@ const app = express();
 app.enable('trust proxy');
 // enable cross origin resource sharing for everyone
 app.use(cors());
+
+// Special case routes / hooks which needs raw data
+////
+// stripe webhook
+app.post('/webhook-checkout', express.raw({type: 'application/json'}), webhookCheckout)
 
 // Load and parse
 //// body, images and cookies
