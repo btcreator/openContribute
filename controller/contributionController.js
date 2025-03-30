@@ -278,7 +278,7 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    customer: req.user?._id,
+    customer: req.user?.id,
     client_reference_id: req.params.projectId,
     success_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?alert="Contribution successful."`,
     cancel_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?error="Contribution cancelled."`,
