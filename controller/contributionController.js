@@ -1,4 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
+const { serverLog } = require('../utils/helpers');
 const AppError = require('./../utils/appError');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Contribution = require('./../model/contribution');
@@ -78,14 +79,16 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
 
 // Create fund contribution
 const _createFundContribution = async function (session) {
-  const userId = session.customer;
+  const userId = session.metadata.userId;
   const project = session.client_reference_id;
-  const amount = 100; //session.line_items[0]...??;
+  const amount = session.amount_total / 100;
 
   const payload = { project, resource: 'funds', amount };
   userId && Object.assign(payload, { user: userId });
 
-  await Contribution.create(payload);
+  (await Contribution.create(payload)).catch((err) =>
+    serverLog(`Fund contribution could not be recorded in the database. Session id: ${session.id} - Error: ${err}`)
+  );
 };
 
 // Public operations
@@ -315,11 +318,11 @@ exports.webhookCheckout = (req, res, next) => {
   try {
     event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    res.status(400).send(`Webhook signature error: ${err.message}`);
+    return res.status(400).send(`Webhook signature error: ${err.message}`);
   }
 
   // actually not mandatory if the webhook is listening just on that one event
-  if (event.type === 'checkout.session.complete') console.dir(event.data.object); //_createFundContribution(event.data.object);
+  if (event.type === 'checkout.session.completed') _createFundContribution(event.data.object);
 
   res.status(200).json({ received: true });
 };
