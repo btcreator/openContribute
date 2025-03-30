@@ -86,7 +86,7 @@ const _createFundContribution = async function (session) {
   const payload = { project, resource: 'funds', amount };
   userId && Object.assign(payload, { user: userId });
 
-  (await Contribution.create(payload)).catch((err) =>
+  await Contribution.create(payload).catch((err) =>
     serverLog(`Fund contribution could not be recorded in the database. Session id: ${session.id} - Error: ${err}`)
   );
 };
