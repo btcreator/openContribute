@@ -76,6 +76,18 @@ const _createContributionAndSend = async function (res, payload, isGuest) {
   });
 };
 
+// Create fund contribution
+const _createFundContribution = async function (session) {
+  const userId = session.customer;
+  const project = session.client_reference_id;
+  const amount = 100; //session.line_items[0]...??;
+
+  const payload = { project, resource: 'funds', amount };
+  userId && Object.assign(payload, { user: userId });
+
+  await Contribution.create(payload);
+};
+
 // Public operations
 ////
 exports.getProjectsContributors = catchAsync(async (req, res) => {
@@ -190,6 +202,10 @@ exports.deleteMyContribution = catchAsync(async (req, res) => {
 // CRUD operations
 ////
 exports.createContribution = catchAsync(async (req, res) => {
+  // for funds needs to be used aother route
+  if (req.body.resource === 'funds')
+    throw new AppError(400, "For funds contributions please use the 'fundsContributionSession' route.");
+
   // initiate most secure values
   let isGuest = true;
   let bodyCl = {};
@@ -199,10 +215,12 @@ exports.createContribution = catchAsync(async (req, res) => {
     bodyCl = cleanBody(req.body);
     isGuest = false;
 
-    // not an admin or when an admin, but not provide a user id (contribute self as user)
-    if (req.user.role !== 'admin' || !bodyCl.user) bodyCl.user = req.user._id;
     // when an admin and provide a user id (entry for other user), check if the user exists
-    else if (!(await User.exists({ _id: bodyCl.user }))) throw new AppError(400, 'False user id provided.');
+    if (req.user.role === 'admin' && bodyCl.user) {
+      if (!(await User.exists({ _id: bodyCl.user }))) throw new AppError(400, 'False user id provided.');
+    }
+    // not an admin or when an admin, but not provide a user id (contribute self as user)
+    else bodyCl.user = req.user._id;
   }
   // if its a guest...
   else bodyCl = cleanBody(req.body, 'user');
@@ -255,10 +273,12 @@ exports.getAllContributions = catchAsync(async (req, res) => {
 // Payment operation
 ////
 exports.fundsContributionSession = catchAsync(async (req, res) => {
-  const project = await _clarifyResourceAndLimit(req.params.projectId, 'funds', +req.body.amount, !req.user);
+  const isGuest = !req.user;
+  const project = await _clarifyResourceAndLimit(req.params.projectId, 'funds', +req.body.amount, isGuest);
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
+    customer: req.user?._id,
     customer_email: req.user?.email,
     client_reference_id: req.params.projectId,
     success_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?alert="Contribution successful."`,
@@ -270,8 +290,7 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
           product_data: {
             name: project.name,
             description: project.summary,
-            images: [`https://placehold.co/600x400?font=roboto`],
-            //images: [`${req.protocol}://${req.get('host')}/media/projects/content/${project.coverImg}`],
+            images: [`${req.protocol}://${req.get('host')}/media/projects/content/${project.coverImg}`],
           },
           unit_amount: req.body.amount * 100,
         },
@@ -285,3 +304,20 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
     session,
   });
 });
+
+// Stripe webhook
+exports.webhookCheckout = (req, res, next) => {
+  const signature = req.headers['stripe-signature'];
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    res.status(400).send(`Webhook signature error: ${err.message}`);
+  }
+
+  // actually not mandatory if the webhook is listening just on that one event
+  if (event.type === 'checkout.session.complete') console.dir(event.data.object); //_createFundContribution(event.data.object);
+
+  res.status(200).json({ received: true });
+};
