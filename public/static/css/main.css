@@ -68,6 +68,7 @@ a.button {
   color: white;
   cursor: pointer;
   border: none;
+  border-radius: 20px;
 }
 
 input {
@@ -210,10 +211,11 @@ textarea {
   font-size: 2.5em;
   line-height: 130%;
   padding: 50px 0 0 15%;
+  color: white;
 }
 
 .tail-text {
-  color: rgb(170, 125, 28);
+  color: rgb(255, 174, 0);
   position: relative;
   display: inline-block;
   transform: translateX(0px);
@@ -228,7 +230,6 @@ textarea {
 
 .hero-searchbar {
   display: flex;
-  gap: 5px;
   align-self: end;
 }
 
@@ -242,10 +243,12 @@ textarea {
   width: 35%;
   padding-inline: 15px;
   display: inline;
+  border-radius: 20px 0 0 20px;
 }
 
 .hero-searchbar .btn-search {
   padding-inline: 15px;
+  border-radius: 0 20px 20px 0;
 }
 
 /*WELCOME*/
@@ -284,9 +287,9 @@ main {
   height: 100%;
   width: calc(50% + 50px);
 }
+
 .cta-bg-contribute {
   background-color: rgb(244, 243, 242);
-  border: 2px solid #ffc851;
   border-radius: 0 30px 30px 0;
   background-size: cover;
   background-position: center;
@@ -334,6 +337,7 @@ main {
 .cta-description p {
   margin-inline: 20px;
   text-align: justify;
+  font-weight: 200;
 }
 
 .cta-action {
@@ -364,8 +368,7 @@ main {
   background-size: cover;
   background-position: center;
   background-image: url(./../img/impact_bg.jpg);
-  background-color: #804e49;
-  opacity: 0.35;
+  opacity: 0.8;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 125px));
 }
 
@@ -374,7 +377,7 @@ main {
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 1) 60%);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 1) 90%);
 }
 
 .impact-description,
@@ -437,7 +440,7 @@ main {
   position: inherit;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 90%);
+  background: linear-gradient(6deg, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 70%);
 }
 
 .stat h2 {
@@ -584,7 +587,7 @@ main {
 }
 
 .review-box-head svg {
-  filter: blur(2px);
+  filter: blur(1px);
   transform: rotate(-90deg);
 }
 
