@@ -24,21 +24,21 @@ exports.alertMsgHandler = (req, res, next) => {
 // Home page
 ////
 exports.getHome = catchAsync(async function (req, res) {
-  const projects = (await Project.aggregate(stat.projectStatsPipeline))[0];
-  const resList = await Contribution.aggregate(stat.resourceStatsPipeline);
-  const contributors = (await Contribution.aggregate(stat.contributorsStatPipeline))[0].contributors;
+  const projects = (await Project.aggregate(stat.projectStatsPipeline))[0] ?? [];
+  const resources = (await Contribution.aggregate(stat.resourceStatsPipeline))[0]?.resources ?? [];
+  const contributors = (await Contribution.aggregate(stat.contributorsStatPipeline))[0]?.contributors ?? 0;
   const reviews = await User.find({ isActive: true, 'review.review': { $exists: true } })
     .sort('-review.updatedAt')
     .limit(3)
     .select('-_id name photo review');
 
-  const leaders = projects.leaders;
+  const leaders = projects.leaders ?? 0;
   delete projects.leaders;
 
   // the output as stat
   const stats = {
-    projects: projects,
-    resources: resList[0].resources,
+    projects,
+    resources,
     members: {
       contributors,
       leaders,
