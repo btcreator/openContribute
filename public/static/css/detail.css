@@ -19,7 +19,7 @@
 
 /*PROJECT HERO - COVER*/
 .project-hero {
-  background: linear-gradient(-5deg, rgb(255, 255, 255) 0%, rgb(8, 181, 255) 84%);
+  background: linear-gradient(-5deg, #fff 0%, #4c94b2 84%);
 }
 
 .project-hero .content-stripe {
