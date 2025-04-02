@@ -19,7 +19,7 @@
 
 /*PROJECT HERO - COVER*/
 .project-hero {
-  background: linear-gradient(-5deg, rgb(237, 234, 209) 0%, rgb(255, 170, 42) 84%);
+  background: linear-gradient(-5deg, rgb(255, 255, 255) 0%, rgb(8, 181, 255) 84%);
 }
 
 .project-hero .content-stripe {
@@ -194,9 +194,10 @@ main {
 
 .priority {
   padding: 5px 15px;
+  border-radius: 20px;
   display: flex;
   justify-content: space-between;
-  background: linear-gradient(169deg, rgb(217 131 210) 40%, rgb(0 108 151) 60%);
+  background: linear-gradient(169deg, rgb(145 230 255) 20%, rgb(0 108 151) 80%);
   box-shadow: 0 0 3px #afafaf;
 }
 
