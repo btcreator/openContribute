@@ -66,7 +66,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: _requireUnique("location"),
+      validate: _requireUnique('location'),
     },
     milestones: {
       type: [
@@ -77,7 +77,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: _requireUnique("milestone"),
+      validate: _requireUnique('milestone'),
     },
     resources: {
       type: [
@@ -107,7 +107,7 @@ const projectSchema = new mongoose.Schema(
           _id: false,
         },
       ],
-      validate: _requireUnique("resource"),
+      validate: _requireUnique('resource'),
     },
     progress: { type: Number, default: 0, min: 0, max: 1 },
     deadline: { type: Date, default: null },
