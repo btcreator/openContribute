@@ -21,7 +21,7 @@ const app = express();
 // For barrier-free connections
 ////
 // if behind proxy - TODO after deploying the app needs check for proxies between client and server
-app.enable('trust proxy', 1);
+app.enable('trust proxy');
 // enable cross origin resource sharing for everyone
 app.use(cors());
 
