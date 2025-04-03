@@ -21,7 +21,7 @@ const app = express();
 // For barrier-free connections
 ////
 // if behind proxy
-app.set('trust proxy', 2);
+app.set('trust proxy', 3);
 // enable cross origin resource sharing for everyone
 app.use(cors());
 
