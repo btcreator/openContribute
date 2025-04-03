@@ -21,14 +21,14 @@ const app = express();
 // For barrier-free connections
 ////
 // if behind proxy - TODO after deploying the app needs check for proxies between client and server
-app.enable('trust proxy');
+app.enable('trust proxy', 1);
 // enable cross origin resource sharing for everyone
 app.use(cors());
 
 // Special case routes / hooks which needs raw data
 ////
 // stripe webhook
-app.post('/webhook-checkout', express.raw({type: 'application/json'}), webhookCheckout)
+app.post('/webhook-checkout', express.raw({ type: 'application/json' }), webhookCheckout);
 
 // Load and parse
 //// body, images and cookies
@@ -48,6 +48,8 @@ app.set('views', path.join(__dirname, 'views/pages'));
 
 // Serve the static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/ip', (req, res) => res.send(req.ip));
 
 // Route incoming requests to corresponding router
 app.use('/api/v1/user', userRouter);
