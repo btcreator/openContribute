@@ -20,7 +20,8 @@ const app = express();
 
 // For barrier-free connections
 ////
-// if behind proxy
+// if behind proxy - when the server is known how the x-forwarded-for headers are handled (overwrite), the fully enabling "trust proxy" can be used.
+// Render appends IP's so malicious user can inject x-forvarded-for prior sending the request. Determining hops number is a more secure then blindly trust the proxy
 app.set('trust proxy', 3);
 // enable cross origin resource sharing for everyone
 app.use(cors());
@@ -49,7 +50,8 @@ app.set('views', path.join(__dirname, 'views/pages'));
 // Serve the static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/ip', (req, res) => res.send(req.ip));
+// For setting the hops between clinet and proxy
+// app.get('/ip', (req, res) => res.send(req.ip));
 
 // Route incoming requests to corresponding router
 app.use('/api/v1/user', userRouter);
