@@ -149,7 +149,7 @@ function loadDetailsOfResource(resourceName) {
   elements.authenticate.checked = resource.auth;
   elements['limit-max'].value = resource.limit?.max;
   elements['limit-min'].value = resource.limit?.min;
-  elements.notes.value = resource.notes ?? '';
+  elements.notes.value = resource.description;
   elements.priority[resource.priority - 1].checked = true;
 }
 
