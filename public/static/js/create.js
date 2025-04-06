@@ -239,12 +239,13 @@ async function publishNewProject(ev) {
   // gather data for first feed upload (2 optional videos)
   const feedData = new FormData();
   const video1 = elements.video1.files[0];
-  const video2 = elements.video2.files[1];
+  const video2 = elements.video2.files[0];
 
   // if there is data for the feed, create feed entry
   if (video1 || video2) {
     video1 && feedData.append('videos', video1);
     video2 && feedData.append('videos', video2);
+    feedData.set('isMilestone', true);
     feedData.set('title', 'Welcome!');
     feedData.set('message', 'Let me introduce this project...');
     feedData.set('project', projectResponse.data.data.project._id);
