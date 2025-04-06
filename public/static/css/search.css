@@ -6,10 +6,13 @@
 
 .hero .content-stripe {
   grid-template-rows: 1fr auto;
+}
+
+.hero-message p {
   color: black;
 }
 
-.hero sub {
+.hero-message sub {
   font-size: 0.5em;
   color: #ce0606;
 }
