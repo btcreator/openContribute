@@ -17,7 +17,7 @@ exports.createGeoQuery = async function (center, dist, unit, address, locationDa
     if (distance) return { 'locations.coordinates': { $geoWithin: { $centerSphere: [geolocation.center, radius] } } };
     else if (geolocation.box) return { 'locations.coordinates': { $geoWithin: { $box: geolocation.box } } };
   } else if (center && distance) {
-    let [lat, lon] = center.split(',');
+    let [lon, lat] = center.split(',');
     lat = +lat;
     lon = +lon;
 
