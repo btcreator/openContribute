@@ -34,7 +34,7 @@ exports.removeFiles = function (path, filenames) {
 // "to" is an object with fieldname and the new filename { fieldname: filename }
 exports.updateFilesOnDisk = async function (from, to) {
   for (let key of Object.keys(to)) {
-    if (!from[key]) return;
+    if (!from[key]) continue;
 
     let file = from[key];
     if (Array.isArray(file)) file = file[0];
