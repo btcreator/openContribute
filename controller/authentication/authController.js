@@ -176,9 +176,8 @@ exports.passwordRecoveryProcess = catchAsync(async (req, res) => {
   if (!email) throw new AppError(400, 'Missing email address.');
   if (!url) throw new AppError(400, 'Missing url, where to link the token.');
 
-  // initially just actie users gets searched. Reactivation is one exception
-  let isActive = true;
-  if (req.originate === 'reactivateProfile') isActive = false;
+  // initially just active users gets searched. Reactivation is one exception
+  const isActive = req.originate !== 'reactivateProfile';
 
   // search for the user
   const user = await User.findOne({ email, isActive });
@@ -263,7 +262,7 @@ exports.restrictedTo = function (...roles) {
 // Middlewares for routes that needs a recovering password
 ////
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  req.resMessage = 'Message sent on your email with the password resert link.';
+  req.resMessage = 'Message sent on your email with the password reset link.';
   req.originate = 'forgotPassword';
 
   next();
