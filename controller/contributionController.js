@@ -95,10 +95,11 @@ const _createFundContribution = async function (session) {
 ////
 exports.getProjectsContributors = catchAsync(async (req, res) => {
   const projectId = new ObjectId(`${req.params.id}`);
-  const contributors = await Contribution.aggregate(projectsContributorsPipeline(projectId));
+  const contributors = (await Contribution.aggregate(projectsContributorsPipeline(projectId)))[0]?.contributors || [];
 
   res.status(200).json({
     status: 'success',
+    results: contributors.length,
     data: {
       contributors,
     },
@@ -207,7 +208,10 @@ exports.deleteMyContribution = catchAsync(async (req, res) => {
 exports.createContribution = catchAsync(async (req, res) => {
   // for funds needs to be used aother route
   if (req.body.resource === 'funds')
-    throw new AppError(400, "For funds contributions please use the 'fundsContributionSession' route.");
+    throw new AppError(
+      400,
+      'For funds contributions please use the api/v1/contribution/fundsContributionSession route.'
+    );
 
   // initiate most secure values
   let isGuest = true;
@@ -220,10 +224,19 @@ exports.createContribution = catchAsync(async (req, res) => {
 
     // when an admin and provide a user id (entry for other user), check if the user exists
     if (req.user.role === 'admin' && bodyCl.user) {
+      if (req.path === '/myContribution')
+        throw new AppError(
+          403,
+          'To create a contribution for another user as admin, please use the /api/v1/contribution/ route.'
+        );
       if (!(await User.exists({ _id: bodyCl.user }))) throw new AppError(400, 'False user id provided.');
     }
     // not an admin or when an admin, but not provide a user id (contribute self as user)
-    else bodyCl.user = req.user._id;
+    else {
+      if (req.path === '/')
+        throw new AppError(403, 'To create your own contribution, use the /api/v1/contribution/myContribution route.');
+      bodyCl.user = req.user._id;
+    }
   }
   // if its a guest...
   else bodyCl = cleanBody(req.body, 'user');
@@ -279,6 +292,9 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
   const isGuest = !req.user;
   const project = await _clarifyResourceAndLimit(req.params.projectId, 'funds', +req.body.amount, isGuest);
 
+  const successPath = req.body.successPath && req.body.successPath.replace('{SLUG}', project.slug);
+  const cancelPath = req.body.cancelPath && req.body.cancelPath.replace('{SLUG}', project.slug);
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     metadata: {
@@ -286,8 +302,8 @@ exports.fundsContributionSession = catchAsync(async (req, res) => {
     },
     customer_email: req.user?.email,
     client_reference_id: req.params.projectId,
-    success_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?alert="Contribution successful."`,
-    cancel_url: `${req.protocol}://${req.get('host')}/project/${project.slug}?error="Contribution cancelled."`,
+    success_url: `${req.protocol}://${req.get('host')}${successPath ?? ''}`,
+    cancel_url: `${req.protocol}://${req.get('host')}${cancelPath ?? ''}`,
     line_items: [
       {
         price_data: {
