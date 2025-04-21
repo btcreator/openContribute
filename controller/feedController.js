@@ -22,13 +22,13 @@ exports.getProjectsFeed = catchAsync(async (req, res) => {
   const feedQuery = Feed.find(match);
   const query = new RefineQuery(feedQuery, req.query).paginate().sort().query;
 
-  const feed = await query;
+  const feeds = await query;
 
   res.status(200).json({
     status: 'success',
-    results: feed.length,
+    results: feeds.length,
     data: {
-      feed,
+      feeds,
     },
   });
 });
@@ -133,6 +133,21 @@ exports.createFeed = catchAsync(async (req, res) => {
   });
 });
 
+exports.getAllFeed = catchAsync(async (req, res) => {
+  const feedQuery = Feed.find({}).select('+project');
+
+  const query = new RefineQuery(feedQuery, req.query).refine();
+  const feeds = await query;
+
+  res.status(200).json({
+    status: 'success',
+    results: feeds.length,
+    data: {
+      feeds,
+    },
+  });
+});
+
 exports.updateFeed = catchAsync(async (req, res) => {
   const bodyCl = cleanBody(req.body, 'leader', 'project');
   const maxImg = process.env.FEED_MAX_IMAGE_ALLOWED;
@@ -178,21 +193,6 @@ exports.deleteFeed = catchAsync(async (req, res) => {
   res.status(204).end();
 });
 
-exports.getAllFeed = catchAsync(async (req, res) => {
-  const feedQuery = Feed.find({}).select('+project');
-
-  const query = new RefineQuery(feedQuery, req.query).refine();
-  const feeds = await query;
-
-  res.status(200).json({
-    status: 'success',
-    results: feeds.length,
-    data: {
-      feeds,
-    },
-  });
-});
-
 // Remove Image(s) / remove video(s) route
 exports.removeFiles = catchAsync(async (req, res) => {
   // when one file was passed as string, wrap it in Array, when more files are passed, copy reference. Else empty Array
@@ -205,8 +205,7 @@ exports.removeFiles = catchAsync(async (req, res) => {
     videos: [],
   };
 
-  // need user id to check if the leader who try to remove - after authenticate
-  // get the feed  - need id - :id
+  // check if the user who try to remove files is really the leader of the project
   const _id = new ObjectId(`${req.params.id}`);
   const feed = await Feed.findOne({ _id, leader: req.user._id }).select('images videos');
   if (!feed) throw new AppError(403, "You are not the leader. Can't perform file removal.");
