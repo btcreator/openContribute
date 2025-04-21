@@ -172,6 +172,18 @@ projectSchema.pre(/.*update.*|save/i, function (next) {
   next();
 });
 
+// Project remove or reactivate (by admins)
+projectSchema.pre('save', function (next) {
+  if (this.isModified('isActive'))
+    if (this.isActive)
+      // when project is reactivated (just by admin), the date of inactivation is removed
+      this.setInactiveAt = undefined;
+    // when project is set to inactive (removed), then set the date but be idempotent too.
+    else this.setInactiveAt = this.setInactiveAt || Date.now();
+
+  next();
+});
+
 projectSchema.pre('findOneAndDelete', async function () {
   const projectMedia = await this.clone().findOne().select('coverImg resultImg milestones -_id');
 
