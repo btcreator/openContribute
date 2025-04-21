@@ -18,6 +18,7 @@ const _updateProject = async function (queryStr, body, files) {
   const filesRenameFrom = {};
   const filesRenameTo = {};
 
+  // create on object of images to better tacing
   const milest = {};
   if (files?.milestones_img) files.milestones_img.forEach((file) => (milest[file.originalname] = file));
 
@@ -29,31 +30,37 @@ const _updateProject = async function (queryStr, body, files) {
     // there are no object fields, so what is not an Array, but an Object, needs to be wrapped in an Array
     if (!Array.isArray(body[field])) body[field] = [body[field]];
 
-    // convert obj
+    // convert body fields to obj for better tracing - {uniqueName: {name: "uniqueName", isDone:..., img:...}, ...}
     const bField = body[field].reduce((acc, obj) => {
       acc[obj.name] = obj;
       return acc;
     }, {});
 
-    project[field]?.forEach((obj) => {
+    project[field]?.forEach((stateObj) => {
       // {name: ..., isDone: ..., img: ... }
-      if (bField[obj.name]) {
-        const toUpd = bField[obj.name];
+      // when an object in the specified field needs to be updated
+      if (bField[stateObj.name]) {
+        const toUpd = bField[stateObj.name];
+        // get the keys which needs to be updated in the object
         Object.keys(toUpd).forEach((key, i) => {
-          // name, isDone, img
+          // name, isDone, img - keys example for milestones objects
+          // when milestones image should be updated
           if (key === 'img' && field === 'milestones') {
-            if (obj[key] === 'default.jpg') obj[key] = milest[toUpd[key]].filename;
+            // in case that a default image was in use, update the object with the new image name. Otherwise rewrite the file on disk with the image name that is already in use.
+            if (stateObj.img === 'default.jpg') stateObj.img = milest[toUpd.img].filename;
             else {
-              filesRenameFrom[`${field}${i}`] = milest[toUpd[key]];
-              filesRenameTo[`${field}${i}`] = obj[key];
+              filesRenameFrom[`${field}${i}`] = milest[toUpd.img];
+              filesRenameTo[`${field}${i}`] = stateObj.img;
             }
-            delete milest[toUpd[key]];
-          } else obj[key] = toUpd[key];
+            // remove processed image from the tracing object
+            delete milest[toUpd.img];
+          } else stateObj[key] = toUpd[key];
         });
       }
     });
   });
 
+  //remove unprocessed images (images that could not be associated with any milestones).
   if (files?.milestones_img)
     removeFiles(
       './public/media/projects/milestones/',
@@ -133,7 +140,7 @@ exports.myProjects = catchAsync(async (req, res) => {
 
 exports.createMyProject = catchAsync(async (req, res) => {
   if (!req.user.name)
-    throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile.');
+    throw new AppError(400, 'To be a leader of a project, we need your name. Please update it in your profile first.');
 
   const bodyCl = cleanBody(req.body, 'isActive', 'setInactiveAt', 'isDone');
   bodyCl.leader = req.user._id;
