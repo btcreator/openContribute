@@ -2,7 +2,7 @@ const User = require('./../model/user');
 const { logDeletedMeOutAndSend } = require('./authentication/authController');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
-const { cleanBody } = require('../utils/cleanIOdata');
+const { cleanBody, cleanQueryFields } = require('../utils/cleanIOdata');
 const RefineQuery = require('../utils/refineQuery');
 const { updateFilesOnDisk } = require('./staticFilesystem/staticFileController');
 
