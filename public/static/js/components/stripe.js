@@ -9,6 +9,8 @@ export const contributeFunds = async function (projectId, amount) {
     // create session on server side
     const session = await axios.post(`/api/v1/contribution/fundsContributionSession/${projectId}`, {
       amount,
+      successPath: '/project/{SLUG}?alert=Contribution successful.',
+      cancelPath: '/project/{SLUG}?error=Contribution cancelled.',
     });
 
     // follow to session checkout
