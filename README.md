@@ -102,7 +102,7 @@ This project is licensed under the MIT License.
     JWT_SECRET=your_jwt_secret
     ```
 
-5. **Run the tests**
+5. **Run**
 
     ```bash
     npm run test
