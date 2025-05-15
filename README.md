@@ -74,7 +74,7 @@ This project is licensed under the MIT License.
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/your-username/opencontribute.git
+    git clone https://github.com/btcreator/opencontribute.git
     cd opencontribute
     ```
 
